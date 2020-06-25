@@ -2,7 +2,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 
 **相关功能**
-
+---
 1：文件方式配置数据源信息
 
 2：支持多数据源配置
@@ -13,7 +13,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 
 **运行依赖：**
-
+---
 1：Java版本：JDK1.8
 
 2：Springboot版本：2.0.9.RELEASE
@@ -22,7 +22,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 
 **版本下载**
-
+---
     <dependency>
     	<groupId>com.github.chris2018998</groupId>
     	<artifactId>spring-boot-starter-beecp</artifactId>
@@ -31,15 +31,18 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 
 **配置介绍**
+---
 
-
-
-
+| 配置项                        |      属性解释                         |        必填          |         参考数据                                           |  
+|------------------------------|--------------------------------------|----------------------|-----------------------------------------------------------|            |nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是                   |spring.datasource.nameList=d1,d2,d3                        |  
+|datasourceType                | 数据源类名,必须含有无参构造函数           | 是                   |spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce |  |datasourceAttributeSetFactor  | 数据源属性注入工厂类                    | 否(配置其他池必须必填)  |spring.datasource.d3.datasourceAttributeSetFactory=xxxx    |                
+                                  
 
 
 
 **配置范例**
-	
+---
+
   数据源名清单(必须配置,名字是对应数据源的Ioc注册名)
   
       spring.datasource.nameList=d1,d2,d3
@@ -70,7 +73,8 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
       xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
 
 **扩展接口**
-	
+---
+
      public interface DataSourceAttributeSetFactory {
     
        //get Properties value from environment and set to dataSource
