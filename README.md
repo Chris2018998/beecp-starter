@@ -12,7 +12,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 4：支持配置Jndi数据源引入配置
 
 
-**运行依赖：**
+**运行依赖**
 ---
 1：Java版本：JDK1.8
 
