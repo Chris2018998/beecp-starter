@@ -18,7 +18,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 2：Springboot版本：2.0.9.RELEASE
 
-3：BeeCP版本:2.4.6
+3：BeeCP版本:2.4.7
 
 
 **版本下载**
@@ -26,7 +26,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
     <dependency>
     	<groupId>com.github.chris2018998</groupId>
     	<artifactId>spring-boot-starter-beecp</artifactId>
-    	<version>1.0.RELEASE</version>
+    	<version>1.1.RELEASE</version>
     </dependency>
 
 
