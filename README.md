@@ -57,7 +57,6 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
       
        #第1数据源
       spring.datasource.d1.primary=true  
-      spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce
       spring.datasource.d1.poolName=BeeCP1
       spring.datasource.d1.username=root
       spring.datasource.d1.password=root
@@ -70,7 +69,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
       
     
        #第3数据源
-      spring.datasource.d3.jndiName=testDB
+      spring.datasource.d3.poolName=testDB
       spring.datasource.d3.datasourceType=com.xxx.xxxDataSource
       spring.datasource.d3.datasourceAttributeSetFactory=xxxx
       spring.datasource.d3.username=root
