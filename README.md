@@ -37,7 +37,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |------------------------------|--------------------------------------|---------------|-----------------------------------------------------------|         
 |nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是           |spring.datasource.nameList=d1,d2,d3                        |     
 |datasourceType                | 数据源类名,必须含有无参构造函数           | 否(不填默认采用小蜜蜂数据源)|spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce |         
-|datasourceAttributeSetFactory | 数据源属性注入工厂类                     | 否(其他池必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
+|datasourceAttributeSetFactory | 数据源属性注入工厂类                     | 否(其他数据源必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
 |primary                       | 是否为首要数据源,不配置为false           | 否                   |spring.datasource.d1.primary=true                          |
 |jndiName                      | 中间件数据源Jndi名,若配置则作为首要配置    | 否                   |spring.datasource.d2.jndiName=testDB                      |
 |poolName                      | 数据源地连接池名                         | 否                   |spring.datasource.d1.poolName=BeeCP1                     |
