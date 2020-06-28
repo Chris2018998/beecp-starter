@@ -64,6 +64,7 @@ public class BeeDataSourceAttributeSetFactory implements DataSourceAttributeSetF
      * @param ds           dataSource
      * @param configPrefix  configured prefix name
      * @param environment  SpringBoot environment
+     * @throws Exception
      */
     public void set(DataSource ds,String configPrefix,Environment environment)throws Exception{
         BeeDataSource bds=(BeeDataSource)ds;

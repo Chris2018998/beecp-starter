@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.*;
 import org.springframework.context.ApplicationContext;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +54,7 @@ import java.util.function.Supplier;
  *
  *   @author Chris.Liao
  */
-@Configuration
-public class DataSourceAutoConfiguration {
+public class DataSourceAutoConfiguration implements BeanDefinitionRegistryPostProcessor{
     //Default DataSourceName
     private static final String Default_DataSource_Name="cn.beecp.BeeDataSource";
     //Spring dataSource configuration prefix-key name
@@ -69,13 +69,13 @@ public class DataSourceAutoConfiguration {
         setFactoryMap.put(BeeDataSource.class,new BeeDataSourceAttributeSetFactory());
     }
 
-    @Bean
-    public DataSource createDataSource(ApplicationContext applicationContext,Environment environment) throws BeansException {
-        registerDataSource((DefaultListableBeanFactory)applicationContext.getAutowireCapableBeanFactory(),environment);
-        return null;
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {}
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) throws BeansException {
+        Environment environment=factory.getBean(Environment.class);
+        registerDataSource(factory,environment);
     }
 
-    private void registerDataSource(BeanDefinitionRegistry registry,Environment environment){
+    private void registerDataSource(ConfigurableListableBeanFactory registry,Environment environment){
         String dataSourceNames=environment.getProperty(Spring_DataSource_NameList);
         if(!BeecpUtil.isNullText(dataSourceNames)){
             String[]dsNames=dataSourceNames.trim().split(",");
@@ -90,6 +90,7 @@ public class DataSourceAutoConfiguration {
                 String jndiNameText=environment.getProperty(jndiNameKeyName);
                 String primaryText=environment.getProperty(primaryKeyName);
                 boolean primaryDataSource=BeecpUtil.isNullText(primaryText)?false:Boolean.valueOf(primaryText.trim());
+
                 DataSource ds;
                 if(!BeecpUtil.isNullText(jndiNameText)){//jndi type
                     try {
@@ -139,25 +140,24 @@ public class DataSourceAutoConfiguration {
             }
         }
     }
-    private void registerDataSourceBean(final DataSource dataSource,String beanName,boolean primary,BeanDefinitionRegistry registry) {
-        if (!existsBeanDefinition(beanName,registry)) {
-            BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(DataSource.class);
-            builder.setScope(BeanDefinition.SCOPE_SINGLETON);
-            RootBeanDefinition beanDefinition=(RootBeanDefinition)builder.getRawBeanDefinition();;
-            beanDefinition.setPrimary(primary);
-            beanDefinition.setInstanceSupplier(
-                    new Supplier<DataSource>() {
-                        public DataSource get() {
-                            return dataSource;
-                        }
-                    });
-            registry.registerBeanDefinition(beanName, beanDefinition);
-            log.error("register dataSourceBean({}) with name:{}",dataSource.getClass(),beanName);
+    private void registerDataSourceBean(final DataSource dataSource,String beanName,boolean primary,ConfigurableListableBeanFactory factory) {
+        if (!existsBeanDefinition(beanName,factory)) {
+            GenericBeanDefinition define = new GenericBeanDefinition();
+            define.setBeanClass(dataSource.getClass());
+            define.setPrimary(primary);
+            define.setInstanceSupplier(new Supplier(){
+                public DataSource get() {
+                    return dataSource;
+                }
+            });
+
+            ((DefaultListableBeanFactory) factory).registerBeanDefinition(beanName,define);
+           log.error("register dataSource({}) with name:{}",dataSource.getClass(),beanName);
         } else {
             log.error("BeanDefinition with name:{} already exists in spring context" + beanName);
         }
     }
-    private boolean existsBeanDefinition(String beanName,BeanDefinitionRegistry registry){
+    private boolean existsBeanDefinition(String beanName,ConfigurableListableBeanFactory registry){
         try {
             return (registry.getBeanDefinition(beanName) != null) ? true : false;
         }catch(NoSuchBeanDefinitionException e){

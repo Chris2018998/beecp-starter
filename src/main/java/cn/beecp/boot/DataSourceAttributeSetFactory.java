@@ -26,12 +26,13 @@ import javax.sql.DataSource;
    */
 public interface DataSourceAttributeSetFactory {
 
-  /**
-   *  get Properties values from environment and set to dataSource
-   *
-   * @param ds           dataSource
-   * @param configPrefix  configured prefix name
-   * @param environment  SpringBoot environment
-   */
+    /**
+     *  get Properties values from environment and set to dataSource
+     *
+     * @param ds           dataSource
+     * @param configPrefix  configured prefix name
+     * @param environment  SpringBoot environment
+     * @throws Exception
+     */
     public void set(DataSource ds,String configPrefix,Environment environment)throws Exception;
 }
