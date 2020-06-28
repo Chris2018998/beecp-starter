@@ -5,7 +5,7 @@
 	<groupId>com.github.chris2018998</groupId>
 	<artifactId>spring-boot-starter-beecp</artifactId>
 	<version>1.2.RELEASE</version>
-	<name>BeeCP Starter On Spring Boot</name>
+	<name>spring-boot-starter-beecp</name>
 	<url>https://github.com/Chris2018998/BeeCP</url>
 	<description>BeeCP Starter</description>
 	<properties>
