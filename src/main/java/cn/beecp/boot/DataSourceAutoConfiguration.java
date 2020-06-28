@@ -55,6 +55,8 @@ import java.util.function.Supplier;
  */
 @Configuration
 public class DataSourceAutoConfiguration {
+    //Default DataSourceName
+    private static final String Default_DataSource_Name="cn.beecp.BeeDataSource";
     //Spring dataSource configuration prefix-key name
     private static final String Spring_DataSource_Prefix="spring.datasource";
     //Spring dataSource configuration key name
@@ -102,37 +104,36 @@ public class DataSourceAutoConfiguration {
                     String dataSourceClassName=environment.getProperty(dataSourceType);
                     String dataSourceAttributeSetFactoryClassName=environment.getProperty(dataSourceAttributeSetFactory);
 
-                    if(!BeecpUtil.isNullText(dataSourceClassName)){
-                        Class dataSourceClass=loadClass(dataSourceClassName,DataSource.class,"DataSource");
-                        if(dataSourceClass==null){
-                            log.error("DataSource class load failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
-                            continue;
-                        }
-                        ds=(DataSource)createInstanceByClassName(dataSourceClass,DataSource.class,"DataSource");
-                        if(ds==null){
-                            log.error("DataSource instance create failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
-                            continue;
-                        }
+                    if(BeecpUtil.isNullText(dataSourceClassName))
+                        dataSourceClassName=Default_DataSource_Name;//BeeDataSource is default
 
-                        DataSourceAttributeSetFactory dsAttrSetFactory=null;
-                        if(!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)){
-                            Class dataSourceAttributeSetFactoryClass=loadClass(dataSourceAttributeSetFactoryClassName,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
-                            dsAttrSetFactory=(DataSourceAttributeSetFactory)createInstanceByClassName(dataSourceAttributeSetFactoryClass,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
-                        }
-                        if(dsAttrSetFactory==null)dsAttrSetFactory=setFactoryMap.get(dataSourceClass);
-                        if(dsAttrSetFactory==null) {
-                            log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
-                        }else{
-                            try {
-                                dsAttrSetFactory.set(ds,dsConfigPrefix,environment);//set properties to dataSource
-                                registerDataSourceBean(ds,dsName,primaryDataSource,registry);//register DataSource as Ioc Bean
-                            }catch(Exception e) {
-                                e.printStackTrace();
-                                log.error("Failed to set attribute on dataSource:" + dsName,e);
-                            }
-                        }
+                    Class dataSourceClass=loadClass(dataSourceClassName,DataSource.class,"DataSource");
+                    if(dataSourceClass==null){
+                        log.error("DataSource class load failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
+                        continue;
+                    }
+                    ds=(DataSource)createInstanceByClassName(dataSourceClass,DataSource.class,"DataSource");
+                    if(ds==null){
+                        log.error("DataSource instance create failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
+                        continue;
+                    }
+
+                    DataSourceAttributeSetFactory dsAttrSetFactory=null;
+                    if(!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)){
+                        Class dataSourceAttributeSetFactoryClass=loadClass(dataSourceAttributeSetFactoryClassName,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
+                        dsAttrSetFactory=(DataSourceAttributeSetFactory)createInstanceByClassName(dataSourceAttributeSetFactoryClass,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
+                    }
+                    if(dsAttrSetFactory==null)dsAttrSetFactory=setFactoryMap.get(dataSourceClass);
+                    if(dsAttrSetFactory==null) {
+                        log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
                     }else{
-                        log.error("Missed 'datasourceType for dataSource(" + dsName+")");
+                        try {
+                            dsAttrSetFactory.set(ds,dsConfigPrefix,environment);//set properties to dataSource
+                            registerDataSourceBean(ds,dsName,primaryDataSource,registry);//register DataSource as Ioc Bean
+                        }catch(Exception e) {
+                            e.printStackTrace();
+                            log.error("Failed to set attribute on dataSource:" + dsName,e);
+                        }
                     }
                 }
             }
