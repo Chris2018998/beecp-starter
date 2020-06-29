@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.beecp.boot.SingleDataSourceAutoConfiguration,\
-cn.beecp.boot.MultiDataSourceAutoConfiguration
+cn.beecp.boot.SingleDataSourceAutoConfiguration
