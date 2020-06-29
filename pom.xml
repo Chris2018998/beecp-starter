@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.chris2018998</groupId>
 	<artifactId>spring-boot-starter-beecp</artifactId>
-	<version>1.3.RELEASE</version>
-	<name>spring-boot-starter-beecp</name>
+	<version>1.3.1.RELEASE</version>
+	<name>BeeCP-Starter</name>
 	<url>https://github.com/Chris2018998/BeeCP-Starter</url>
 	<description>BeeCP Starter</description>
 	<properties>
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
+			<version>1.7.29</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
