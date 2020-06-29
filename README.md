@@ -50,19 +50,15 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 **单数据源范例**
 ---
 application.properties
- 
-   spring.datasource.type=cn.beecp.BeeDataSource
    
-   spring.datasource.poolName=BeeCP1
-   
-   spring.datasource.username=root
-   
-   spring.datasource.password=
-   
-   spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
-   
-   spring.datasource.driverClassName=com.mysql.jdbc.Driver
- 
+       #单数据源配置点
+       spring.datasource.type=cn.beecp.BeeDataSource
+       spring.datasource.poolName=BeeCP1
+       spring.datasource.username=root
+       spring.datasource.password=
+       spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
+       spring.datasource.driverClassName=com.mysql.jdbc.Driver
+  
 
 **多数据源范例**
 ---
