@@ -47,53 +47,62 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
 
   
-
-
+**单数据源范例**
+---
+application.properties
  
-
-
+   spring.datasource.type=cn.beecp.BeeDataSource
+   
+   spring.datasource.poolName=BeeCP1
+   
+   spring.datasource.username=root
+   
+   spring.datasource.password=
+   
+   spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
+   
+   spring.datasource.driverClassName=com.mysql.jdbc.Driver
+ 
 
 **多数据源范例**
 ---
+application.properties
 
- application.properties
-       
-       
-      spring.datasource.nameList=d1,d2,d3
-      
-       #第1数据源
-      spring.datasource.d1.primary=true  
-      spring.datasource.d1.poolName=BeeCP1
-      spring.datasource.d1.username=root
-      spring.datasource.d1.password=root
-      spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test
-      spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver
+    #多数据源配置起点
+    spring.datasource.nameList=d1,d2,d3 
+    
+    #第1数据源
+    spring.datasource.d1.primary=true  
+    spring.datasource.d1.poolName=BeeCP1
+    spring.datasource.d1.username=root
+    spring.datasource.d1.password=root
+    spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test
+    spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver
+     
+    #第2数据源
+    spring.datasource.d2.jndiName=testDB 
       
     
-       #第2数据源
-      spring.datasource.d2.jndiName=testDB 
-      
-    
-       #第3数据源
-      spring.datasource.d3.poolName=testDB
-      spring.datasource.d3.datasourceType=com.xxx.xxxDataSource
-      spring.datasource.d3.datasourceAttributeSetFactory=xxxx
-      spring.datasource.d3.username=root
-      spring.datasource.d3.password=root
-      spring.datasource.d3.jdbcUrl=jdbc:mysql://localhost:3306/test
-      spring.datasource.d3.driverClassName=com.mysql.cj.jdbc.Driver
+    #第3数据源
+    spring.datasource.d3.poolName=testDB
+    spring.datasource.d3.datasourceType=com.xxx.xxxDataSource
+    spring.datasource.d3.datasourceAttributeSetFactory=xxxx
+    spring.datasource.d3.username=root
+    spring.datasource.d3.password=root
+    spring.datasource.d3.jdbcUrl=jdbc:mysql://localhost:3306/test
+    spring.datasource.d3.driverClassName=com.mysql.cj.jdbc.Driver
   
-      #xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
+    #xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
       
      
-      //引入多数据源标签
-      @EnableMultiDataSource
-      @SpringBootApplication
-      public class DemoApplication {
-	    public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-        }
-      }
+    //引入多数据源标签
+    @EnableMultiDataSource
+    @SpringBootApplication
+    public class DemoApplication {
+      public static void main(String[] args) {
+         SpringApplication.run(DemoApplication.class, args);
+       }
+    }
       
 
 **扩展接口**
