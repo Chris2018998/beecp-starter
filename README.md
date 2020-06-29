@@ -89,7 +89,10 @@ application.properties
     spring.datasource.d3.driverClassName=com.mysql.cj.jdbc.Driver
   
     #xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
-      
+  
+  
+  
+  DemoApplication.java   
      
     //引入多数据源标签
     @EnableMultiDataSource
