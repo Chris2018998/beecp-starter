@@ -26,7 +26,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
     <dependency>
     	<groupId>com.github.chris2018998</groupId>
     	<artifactId>spring-boot-starter-beecp</artifactId>
-    	<version>1.3.RELEASE</version>
+    	<version>1.3.1.RELEASE</version>
     </dependency>
 
 
@@ -47,12 +47,18 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
 
   
-**参考范例**
----
- application.properties
+
+
  
-  数据源名清单(必须配置,名字是对应数据源的Ioc注册名)
-  
+
+
+
+**多数据源范例**
+---
+
+ application.properties
+       
+       
       spring.datasource.nameList=d1,d2,d3
       
        #第1数据源
@@ -77,7 +83,18 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
       spring.datasource.d3.jdbcUrl=jdbc:mysql://localhost:3306/test
       spring.datasource.d3.driverClassName=com.mysql.cj.jdbc.Driver
   
-      xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
+      #xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
+      
+     
+      //引入多数据源标签
+      @EnableMultiDataSource
+      @SpringBootApplication
+      public class DemoApplication {
+	    public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+        }
+      }
+      
 
 **扩展接口**
 ---
