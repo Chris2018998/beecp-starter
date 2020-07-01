@@ -60,6 +60,8 @@ application.properties
        spring.datasource.driverClassName=com.mysql.jdbc.Driver
   
 
+  参考源码工程: https://github.com/Chris2018998/BeeCP-Starter/tree/master/doc/SingleDataSourceTest.zip
+
 **多数据源范例**
 ---
 application.properties
@@ -103,6 +105,8 @@ application.properties
        }
     }
       
+
+  参考源码工程 https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDataSourceTest.zip
 
 **扩展接口**
 ---
