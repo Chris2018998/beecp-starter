@@ -64,9 +64,9 @@ public class BeeDataSourceAttributeSetFactory implements DataSourceAttributeSetF
      * @param ds           dataSource
      * @param configPrefix  configured prefix name
      * @param environment  SpringBoot environment
-     * @throws Exception
+     * @throws Exception  when fail to set
      */
-    public void set(DataSource ds,String configPrefix,Environment environment)throws Exception{
+    public void set(Object ds,String configPrefix,Environment environment)throws Exception{
         BeeDataSource bds=(BeeDataSource)ds;
         Iterator<Field> itor=attributeList.iterator();
         while(itor.hasNext()){
@@ -75,17 +75,25 @@ public class BeeDataSourceAttributeSetFactory implements DataSourceAttributeSetF
             if(!BeecpUtil.isNullText(configVal)) {
                 configVal=configVal.trim();
                 Class fieldType=field.getType();
-                if(Modifier.isPrivate(field.getModifiers())||Modifier.isProtected(field.getModifiers()))
-                 field.setAccessible(true);
 
-                if(fieldType.equals(String.class)){
-                    field.set(bds,configVal);
-                }else if(fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)){
-                    field.set(bds,Boolean.valueOf(configVal));
-                }else if(fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)){
-                    field.set(bds,Integer.valueOf(configVal));
-                }else if(fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)){
-                    field.set(bds,Long.valueOf(configVal));
+                boolean ChangedAccessible=false;
+                try {
+                    if (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())) {
+                        field.setAccessible(true);
+                        ChangedAccessible = true;
+                    }
+
+                    if (fieldType.equals(String.class)) {
+                        field.set(bds, configVal);
+                    } else if (fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)) {
+                        field.set(bds, Boolean.valueOf(configVal));
+                    } else if (fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)) {
+                        field.set(bds, Integer.valueOf(configVal));
+                    } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
+                        field.set(bds, Long.valueOf(configVal));
+                    }
+                }finally {
+                    if(ChangedAccessible)field.setAccessible(false);//reset
                 }
             }
         }

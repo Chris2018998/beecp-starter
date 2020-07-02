@@ -18,8 +18,9 @@ package cn.beecp.boot;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
-  /*
+/*
    *  DataSource properties set factory
    *
    *  @author Chris.Liao
@@ -29,10 +30,10 @@ public interface DataSourceAttributeSetFactory {
     /**
      *  get Properties values from environment and set to dataSource
      *
-     * @param ds            dataSource
+     * @param ds            may be DataSource or XADataSource
      * @param configPrefix  configured prefix name
      * @param environment   SpringBoot environment
-     * @throws Exception
+     * @throws Exception    when fail to set
      */
-    public void set(DataSource ds,String configPrefix,Environment environment)throws Exception;
+    public void set(Object ds,String configPrefix, Environment environment)throws Exception;
 }

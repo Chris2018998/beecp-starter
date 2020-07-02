@@ -46,6 +46,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import javax.xml.crypto.Data;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ import java.util.function.Supplier;
  */
 public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefinitionRegistrar {
     //Default DataSourceName
-    private static final String Default_DataSource_Name="cn.beecp.BeeDataSource";
+    private static final String Default_DataSource_Class_Name="cn.beecp.BeeDataSource";
     //Spring dataSource configuration prefix-key name
     private static final String Spring_DataSource_Prefix="spring.datasource";
     //Spring dataSource configuration key name
@@ -84,7 +85,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
     }
 
     //store dataSource register Info
-    private List<DataSourceRegisterInfo> registerInfoList=new LinkedList();
+    private List<DataSourceRegisterInfo> dataSourceRegisterList=new LinkedList();
 
     /**
      *  Read dataSource configuration from environment and create DataSource
@@ -106,69 +107,95 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
                 String primaryText=environment.getProperty(primaryKeyName);
                 boolean primaryDataSource=BeecpUtil.isNullText(primaryText)?false:Boolean.valueOf(primaryText.trim());
 
-                DataSource ds=null;
-                Exception exception=null;
-                if(!BeecpUtil.isNullText(jndiNameText)){//jndi type
-                    try {
-                        ds = lookupDataSource(jndiNameText.trim());
-                    }catch(NamingException e) {
-                        exception=e;
-                        log.error("Jndi DataSource not found：" + dsName);
-                    }
-                }else{//independent type
-                    String dataSourceType=dsConfigPrefix+".datasourceType";
-                    String dataSourceAttributeSetFactory=dsConfigPrefix+".datasourceAttributeSetFactory";
-                    String dataSourceClassName=environment.getProperty(dataSourceType);
-                    String dataSourceAttributeSetFactoryClassName=environment.getProperty(dataSourceAttributeSetFactory);
-
-                    if(BeecpUtil.isNullText(dataSourceClassName))
-                        dataSourceClassName=Default_DataSource_Name;//BeeDataSource is default
-
-                    Class dataSourceClass=loadClass(dataSourceClassName,DataSource.class,"DataSource");
-                    if(dataSourceClass==null){
-                        log.error("DataSource class load failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
-                        continue;
-                    }
-                    ds=(DataSource)createInstanceByClassName(dataSourceClass,DataSource.class,"DataSource");
-                    if(ds==null){
-                        log.error("DataSource instance create failed,dataSource name:{},class name:{}",dsName,dataSourceClassName);
-                        continue;
-                    }
-
-                    DataSourceAttributeSetFactory dsAttrSetFactory=null;
-                    if(!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)){
-                        Class dataSourceAttributeSetFactoryClass=loadClass(dataSourceAttributeSetFactoryClassName,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
-                        dsAttrSetFactory=(DataSourceAttributeSetFactory)createInstanceByClassName(dataSourceAttributeSetFactoryClass,DataSourceAttributeSetFactory.class,"DataSourceAttributeSetFactory");
-                    }
-                    if(dsAttrSetFactory==null)dsAttrSetFactory=setFactoryMap.get(dataSourceClass);
-                    if(dsAttrSetFactory==null) {
-                        log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
-                    }else{
-                        try {
-                            dsAttrSetFactory.set(ds,dsConfigPrefix,environment);//set properties to dataSource
-                        }catch(Exception e) {
-                            exception=e;
-                            log.error("Failed to set attribute on dataSource:" + dsName,e);
-                        }
-                    }
+                Object ds=null;//may be DataSource or XADataSource
+                if(!BeecpUtil.isNullText(jndiNameText)){//jndi dataSource
+                    ds=lookupJndiDataSource(jndiNameText);
+                }else {//independent type
+                    ds=createDataSource(dsName,dsConfigPrefix,environment);
                 }
 
-                if(ds!=null&&exception==null){
+                if(ds!=null){
                     DataSourceRegisterInfo info = new DataSourceRegisterInfo();
-                    info.setDataSource(ds);
+                    info.setDataSource(ds);//maybe XA Type
                     info.setPrimary(primaryDataSource);
                     info.setRegisterName(dsName);
-                    registerInfoList.add(info);
+                    dataSourceRegisterList.add(info);
                 }
             }
         }
+    }
+
+    //jndi name context
+    private InitialContext context=null;
+    //maybe XADataSource,if failed,then log error info,and return null
+    private Object lookupJndiDataSource(String jndiName){
+        try {
+            if(context==null)context=new InitialContext();
+            Object namingObj=context.lookup(jndiName.trim());
+            if(namingObj instanceof XADataSource){
+                return new JndiXADataSourceWrapper((XADataSource)namingObj);
+            }else if(namingObj instanceof DataSource){
+                return new JndiDataSourceWrapper((DataSource)namingObj);
+            }else{
+                log.error("Jndi name("+jndiName+")is a valid dataSource");
+                return null;
+            }
+        }catch(NamingException e) {
+            log.error("Jndi DataSource not found：" + jndiName,e);
+            return null;
+        }
+    }
+    //maybe XADataSource,if failed,then log error info,and return null
+    private Object createDataSource(String dsName,String dsConfigPrefix,Environment environment) {
+        String dataSourceType = dsConfigPrefix + ".datasourceType";
+        String dataSourceAttributeSetFactory = dsConfigPrefix + ".datasourceAttributeSetFactory";
+        String dataSourceClassName = environment.getProperty(dataSourceType);
+        String dataSourceAttributeSetFactoryClassName = environment.getProperty(dataSourceAttributeSetFactory);
+
+        if (BeecpUtil.isNullText(dataSourceClassName))
+            dataSourceClassName = Default_DataSource_Class_Name;//BeeDataSource is default
+
+        Class dataSourceClass = loadClass(dataSourceClassName, DataSource.class, "DataSource");
+        if (dataSourceClass == null) {
+            log.error("DataSource class load failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
+            return null;
+        }
+
+        Object ds = null;//may be DataSource or XADataSource
+        if (XADataSource.class.isAssignableFrom(dataSourceClass)) {
+            ds = (XADataSource) createInstanceByClassName(dataSourceClass, DataSource.class, "XADataSource");
+        } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
+            ds = (DataSource) createInstanceByClassName(dataSourceClass, DataSource.class, "DataSource");
+        } else {
+            log.error("DataSource class must be extended from DataSource or XADataSource,dataSource name:{},class name:{}", dsName, dataSourceClassName);
+            return null;
+        }
+
+        DataSourceAttributeSetFactory dsAttrSetFactory = null;
+        if (!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)) {
+            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
+            dsAttrSetFactory = (DataSourceAttributeSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
+        }
+
+        if (dsAttrSetFactory == null) dsAttrSetFactory = setFactoryMap.get(dataSourceClass);
+        if (dsAttrSetFactory == null) {
+            log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
+        } else {
+            try {
+                dsAttrSetFactory.set(ds,dsConfigPrefix,environment);//set properties to dataSource
+            } catch (Exception e) {
+                log.error("Failed to set attribute on dataSource:" + dsName, e);
+            }
+        }
+
+        return ds;
     }
 
     //Register self bean to ioc
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                         BeanDefinitionRegistry registry) {
 
-        for(DataSourceRegisterInfo regInfo:registerInfoList){
+        for(DataSourceRegisterInfo regInfo:dataSourceRegisterList){
             registerDataSourceBean(regInfo,registry);
         }
     }
@@ -179,7 +206,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
             define.setBeanClass(regInfo.getDataSource().getClass());
             define.setPrimary(regInfo.isPrimary());
             define.setInstanceSupplier(new Supplier(){
-                public DataSource get() {
+                public Object get() {
                     return regInfo.getDataSource();
                 }
             });
@@ -196,10 +223,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
             return false;
         }
     }
-    private DataSource lookupDataSource(String name)throws NamingException {
-        InitialContext context=new InitialContext();
-        return new JndiDataSourceWrapper((DataSource) context.lookup(name));
-    }
+
     private Class loadClass(String className,Class type,String typeName){
         try {
             Class objClass = Class.forName(className);

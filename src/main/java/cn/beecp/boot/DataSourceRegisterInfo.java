@@ -27,7 +27,7 @@ class DataSourceRegisterInfo {
 
     private String registerName;
 
-    private DataSource dataSource;
+    private Object dataSource;
 
     public boolean isPrimary() {
         return primary;
@@ -45,11 +45,11 @@ class DataSourceRegisterInfo {
         this.registerName = registerName;
     }
 
-    public DataSource getDataSource() {
+    public Object getDataSource() {
         return dataSource;
     }
 
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(Object dataSource) {
         this.dataSource = dataSource;
     }
 }
