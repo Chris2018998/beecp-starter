@@ -26,7 +26,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
     <dependency>
     	<groupId>com.github.chris2018998</groupId>
     	<artifactId>spring-boot-starter-beecp</artifactId>
-    	<version>1.3.1.RELEASE</version>
+    	<version>1.3.2.RELEASE</version>
     </dependency>
 
 
@@ -114,7 +114,7 @@ application.properties
      public interface DataSourceAttributeSetFactory {
     
        //get Properties value from environment and set to dataSource
-       public void set(DataSource ds,String configPrefix,Environment environment)throws Exception;
+       public void set(Object ds,String configPrefix,Environment environment)throws Exception;
     }
     
 
