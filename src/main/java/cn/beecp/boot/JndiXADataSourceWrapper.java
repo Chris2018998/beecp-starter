@@ -22,7 +22,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- *  Jndi DataSource wrapper.
+ *  Jndi XADataSource wrapper.
  *  When SpringBoot project redeploy,referred Jndi dataSource from middleware will be closed,
  *  add wrapper around jndi data Source,which can avoid being closed.
  *
