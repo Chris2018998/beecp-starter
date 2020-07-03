@@ -5,11 +5,11 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 ---
 1：文件方式配置数据源信息
 
-2：支持多数据源配置
+2：支持一个或多数据源配置
 
-3：可通过自定义的方式支持其他数据源
+3：支持配置Jndi数据源
 
-4：支持配置Jndi数据源引
+4：扩展支持其他数据源
 
 
 **运行依赖**
@@ -26,7 +26,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
     <dependency>
     	<groupId>com.github.chris2018998</groupId>
     	<artifactId>spring-boot-starter-beecp</artifactId>
-    	<version>1.3.2.RELEASE</version>
+    	<version>1.3.4.RELEASE</version>
     </dependency>
 
 
@@ -60,7 +60,7 @@ application.properties
        spring.datasource.driverClassName=com.mysql.jdbc.Driver
   
 
-  参考源码工程: https://github.com/Chris2018998/BeeCP-Starter/tree/master/doc/SingleDataSourceTest.zip
+   下载参考代码: https://github.com/Chris2018998/BeeCP-Starter/tree/master/doc/SingleDataSourceTest.zip
 
 **多数据源范例**
 ---
@@ -82,18 +82,16 @@ application.properties
       
     
     #第3数据源
-    spring.datasource.d3.poolName=testDB
-    spring.datasource.d3.datasourceType=com.xxx.xxxDataSource
-    spring.datasource.d3.datasourceAttributeSetFactory=xxxx
+    spring.datasource.d3.poolName=Hikari
+    spring.datasource.d3.datasourceType=com.zaxxer.hikari.HikariDataSource 
+    spring.datasource.d3.datasourceAttributeSetFactory=cn.beecp.boot.setFactory.HikariDataSourceSetFactory
     spring.datasource.d3.username=root
     spring.datasource.d3.password=root
     spring.datasource.d3.jdbcUrl=jdbc:mysql://localhost:3306/test
     spring.datasource.d3.driverClassName=com.mysql.cj.jdbc.Driver
   
     #xxxx为对应连接池的属性注入工厂类的实现,请参照*扩展接口*
-  
-  
-  
+
   DemoApplication.java   
      
     //引入多数据源标签
@@ -117,6 +115,13 @@ application.properties
        public void set(Object ds,String configPrefix,Environment environment)throws Exception;
     }
     
+    
+**扩展接口**
+---
+   |数据源类名                                |      属性注入工厂                                     | 
+   |com.zaxxer.hikari.HikariDataSource      |  cn.beecp.boot.setFactory.HikariDataSourceSetFactory | 
+   |com.alibaba.druid.pool.DruidDataSource  |  cn.beecp.boot.setFactory.DruidDataSourceSetFactory  | 
+   |org.apache.tomcat.jdbc.pool.DataSource  |  cn.beecp.boot.setFactory.TomcatJdbcDataSourceSetFactory  | 
 
 
 
