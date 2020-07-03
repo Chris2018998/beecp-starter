@@ -109,19 +109,21 @@ application.properties
 **扩展接口**
 ---
 
-     public interface DataSourceAttributeSetFactory {
+  public interface DataSourceAttributeSetFactory {
     
-       //get Properties value from environment and set to dataSource
-       public void set(Object ds,String configPrefix,Environment environment)throws Exception;
-    }
+     //get Properties value from environment and set to dataSource
+     public void setAttribute(Object ds,String configPrefix,Environment environment)throws Exception;
+  }
     
     
-**扩展接口**
+**其他数据源属性工厂实现**
 ---
-   |数据源类名                                |      属性注入工厂                                     | 
-   |com.zaxxer.hikari.HikariDataSource      |  cn.beecp.boot.setFactory.HikariDataSourceSetFactory | 
-   |com.alibaba.druid.pool.DruidDataSource  |  cn.beecp.boot.setFactory.DruidDataSourceSetFactory  | 
-   |org.apache.tomcat.jdbc.pool.DataSource  |  cn.beecp.boot.setFactory.TomcatJdbcDataSourceSetFactory  | 
+
+| 数据源类名                              |      属性注入工厂                                        | 
+|----------------------------------------|--------------------------------------------------------|
+|com.zaxxer.hikari.HikariDataSource      |  cn.beecp.boot.setFactory.HikariDataSourceSetFactory   | 
+|com.alibaba.druid.pool.DruidDataSource  |  cn.beecp.boot.setFactory.DruidDataSourceSetFactory     | 
+|org.apache.tomcat.jdbc.pool.DataSource  |  cn.beecp.boot.setFactory.TomcatJdbcDataSourceSetFactory | 
 
 
 
