@@ -15,21 +15,22 @@
  */
 package cn.beecp.boot;
 
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.springframework.core.env.Environment;
 
 /*
- *  Bee Data Source Attribute Set Factory
- *
- *  @author Chris.Liao
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(ElementType.TYPE)
-@Import(value={MultiDataSourceRegister.class})
-public @interface EnableMultiDataSource{ }
+   *  DataSource properties set factory
+   *
+   *  @author Chris.Liao
+   */
+public interface DataSourceAttributeSetFactory {
+
+    /**
+     *  get Properties values from environment and set to dataSource
+     *
+     * @param ds            may be DataSource or XADataSource
+     * @param configPrefix  configured prefix name
+     * @param environment   SpringBoot environment
+     * @throws Exception    when fail to set
+     */
+    public void setAttribute(Object ds,String configPrefix, Environment environment)throws Exception;
+}

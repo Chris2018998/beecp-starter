@@ -16,29 +16,14 @@
 package cn.beecp.boot;
 
 import cn.beecp.BeeDataSource;
+import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import cn.beecp.util.BeecpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinition;
-
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.*;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
@@ -47,7 +32,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.xml.crypto.Data;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -81,7 +65,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
     //logger
     private static final Logger log = LoggerFactory.getLogger(MultiDataSourceRegister.class);
     static{
-        setFactoryMap.put(BeeDataSource.class,new BeeDataSourceAttributeSetFactory());
+        setFactoryMap.put(BeeDataSource.class,new BeeDataSourceSetFactory());
     }
 
     //store dataSource register Info
@@ -182,12 +166,11 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
             log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
         } else {
             try {
-                dsAttrSetFactory.set(ds,dsConfigPrefix,environment);//set properties to dataSource
+                dsAttrSetFactory.setAttribute(ds,dsConfigPrefix,environment);//set properties to dataSource
             } catch (Exception e) {
                 log.error("Failed to set attribute on dataSource:" + dsName, e);
             }
         }
-
         return ds;
     }
 
@@ -211,7 +194,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
                 }
             });
             registry.registerBeanDefinition(regInfo.getRegisterName(),define);
-           log.error("register dataSource({}) with name:{}",define.getBeanClassName(),regInfo.getRegisterName());
+           log.info("Register dataSource({}) with name:{}",define.getBeanClassName(),regInfo.getRegisterName());
         } else {
             log.error("BeanDefinition with name:{} already exists in spring context",regInfo.getRegisterName());
         }

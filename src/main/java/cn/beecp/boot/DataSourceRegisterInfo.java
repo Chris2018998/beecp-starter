@@ -15,8 +15,6 @@
  */
 package cn.beecp.boot;
 
-import javax.sql.DataSource;
-
 /*
  *  DataSource Register Info
  *
