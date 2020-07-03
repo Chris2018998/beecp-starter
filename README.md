@@ -109,12 +109,13 @@ application.properties
 **扩展接口**
 ---
 
+```java
   public interface DataSourceAttributeSetFactory {
     
      //get Properties value from environment and set to dataSource
      public void setAttribute(Object ds,String configPrefix,Environment environment)throws Exception;
   }
-    
+ ```
     
 **其他数据源属性工厂实现**
 ---
