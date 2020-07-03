@@ -104,7 +104,7 @@ application.properties
     }
       
 
-  参考源码工程 https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDataSourceTest.zip
+  下载参考代码 https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDataSourceTest.zip
 
 **扩展接口**
 ---
