@@ -194,7 +194,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
                 }
             });
             registry.registerBeanDefinition(regInfo.getRegisterName(),define);
-           log.info("Register dataSource({}) with name:{}",define.getBeanClassName(),regInfo.getRegisterName());
+           log.info("Register dataSource({}) with bean name:{}",define.getBeanClassName(),regInfo.getRegisterName());
         } else {
             log.error("BeanDefinition with name:{} already exists in spring context",regInfo.getRegisterName());
         }
