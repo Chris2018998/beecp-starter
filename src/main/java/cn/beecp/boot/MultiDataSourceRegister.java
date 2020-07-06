@@ -93,7 +93,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
 
                 Object ds=null;//may be DataSource or XADataSource
                 if(!BeecpUtil.isNullText(jndiNameText)){//jndi dataSource
-                    ds=lookupJndiDataSource(jndiNameText);
+                    ds=lookupJndiDataSource(jndiNameText.trim());
                 }else {//independent type
                     ds=createDataSource(dsName,dsConfigPrefix,environment);
                 }
@@ -115,7 +115,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
     private Object lookupJndiDataSource(String jndiName){
         try {
             if(context==null)context=new InitialContext();
-            Object namingObj=context.lookup(jndiName.trim());
+            Object namingObj=context.lookup(jndiName);
             if(namingObj instanceof XADataSource){
                 return new JndiXADataSourceWrapper((XADataSource)namingObj);
             }else if(namingObj instanceof DataSource){
@@ -138,6 +138,8 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
 
         if (BeecpUtil.isNullText(dataSourceClassName))
             dataSourceClassName = Default_DataSource_Class_Name;//BeeDataSource is default
+        else
+            dataSourceClassName=dataSourceClassName.trim();
 
         Class dataSourceClass = loadClass(dataSourceClassName, DataSource.class, "DataSource");
         if (dataSourceClass == null) {
@@ -157,6 +159,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
 
         DataSourceAttributeSetFactory dsAttrSetFactory = null;
         if (!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)) {
+            dataSourceAttributeSetFactoryClassName=dataSourceAttributeSetFactoryClassName.trim();
             Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
             dsAttrSetFactory = (DataSourceAttributeSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
         }
