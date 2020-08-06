@@ -16,10 +16,12 @@
 package cn.beecp.boot.setFactory;
 
 import cn.beecp.BeeDataSourceConfig;
+import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /*
  *  Bee Data Source Attribute Set Factory
@@ -45,11 +47,36 @@ public class BeeDataSourceSetFactory extends DataSourceBaseSetFactory {
         for(Field field:fields) {
             String fieldName = field.getName();
             if ("checked".equals(fieldName)
-                    || "connectionFactory".equals(fieldName)
-                    || "connectProperties".equals(fieldName))
+                    || "connectionFactory".equals(fieldName))
                 continue;
             attributeList.add(field);
         }
         return attributeList.toArray(new Field[attributeList.size()]);
+    }
+
+    /**
+     *  get Properties values from environment and set to dataSource
+     *
+     * @param ds           dataSource
+     * @param field      attributeFiled
+     * @param attributeValue  SpringBoot environment
+     * @throws Exception  when fail to set
+     */
+    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment){
+        try {
+            if ("connectProperties".equals(field.getName())) {
+                Properties connectProperties = new Properties();
+                attributeValue = attributeValue.trim();
+                String[] attributeArray = attributeValue.split(";");
+                for (String attribute : attributeArray) {
+                    String[]pairs=attribute.split("=");
+                    if(pairs.length==2)
+                        connectProperties.put(pairs[0].trim(),pairs[1].trim());
+                }
+                field.set(ds, new Object[]{connectProperties});
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

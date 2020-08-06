@@ -42,14 +42,14 @@ public abstract class DataSourceBaseSetFactory implements DataSourceAttributeSet
      * @param environment  SpringBoot environment
      * @throws Exception  when fail to set
      */
-    public void setAttribute(Object ds, String configPrefix, Environment environment)throws Exception{
+    public void setAttributes(Object ds, String configPrefix, Environment environment)throws Exception{
         Field[] fields=getConfigFields();
         for(Field field:fields){
             String configVal=environment.getProperty(configPrefix+"."+field.getName());
             if(!BeecpUtil.isNullText(configVal)) {
                 configVal=configVal.trim();
-                Class fieldType=field.getType();
 
+                Class fieldType=field.getType();
                 boolean ChangedAccessible=false;
                 try {
                     if (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())) {
@@ -65,6 +65,8 @@ public abstract class DataSourceBaseSetFactory implements DataSourceAttributeSet
                         field.set(ds, Integer.valueOf(configVal));
                     } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
                         field.set(ds, Long.valueOf(configVal));
+                    } else {
+                        setAttribute(ds,field,configVal,environment);
                     }
                 }finally {
                     if(ChangedAccessible)field.setAccessible(false);//reset
@@ -72,4 +74,14 @@ public abstract class DataSourceBaseSetFactory implements DataSourceAttributeSet
             }
         }
     }
+
+    /**
+     *  set complex properties values from environment and set to dataSource
+     *
+     * @param ds           dataSource
+     * @param field      attributeFiled
+     * @param attributeValue  SpringBoot environment
+     * @throws Exception  when fail to set
+     */
+    protected void setAttribute(Object ds,Field field,String attributeValue, Environment environment){ }
 }

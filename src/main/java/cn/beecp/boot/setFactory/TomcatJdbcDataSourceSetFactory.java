@@ -43,9 +43,9 @@ public class TomcatJdbcDataSourceSetFactory extends DataSourceBaseSetFactory {
      * @param environment  SpringBoot environment
      * @throws Exception  when fail to set
      */
-    public void setAttribute(Object ds, String configPrefix, Environment environment)throws Exception{
+    public void setAttributes(Object ds, String configPrefix, Environment environment)throws Exception{
         PoolProperties p = new PoolProperties();
-        super.setAttribute(p,configPrefix,environment);
+        super.setAttributes(p,configPrefix,environment);
         org.apache.tomcat.jdbc.pool.DataSource tds=(org.apache.tomcat.jdbc.pool.DataSource)ds;
         tds.setPoolProperties(p);
     }
