@@ -169,7 +169,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
             log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
         } else {
             try {
-                dsAttrSetFactory.setAttribute(ds,dsConfigPrefix,environment);//set properties to dataSource
+                dsAttrSetFactory.setAttributes(ds,dsConfigPrefix,environment);//set properties to dataSource
             } catch (Exception e) {
                 log.error("Failed to set attribute on dataSource:" + dsName, e);
             }

@@ -32,5 +32,5 @@ public interface DataSourceAttributeSetFactory {
      * @param environment   SpringBoot environment
      * @throws Exception    when fail to set
      */
-    public void setAttribute(Object ds,String configPrefix, Environment environment)throws Exception;
+    public void setAttributes(Object ds,String configPrefix, Environment environment)throws Exception;
 }
