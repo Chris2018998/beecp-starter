@@ -73,6 +73,8 @@ public abstract class DataSourceBaseSetFactory implements DataSourceAttributeSet
                 }
             }
         }
+
+        afterSetAttributes(ds,environment);
     }
 
     /**
@@ -83,5 +85,14 @@ public abstract class DataSourceBaseSetFactory implements DataSourceAttributeSet
      * @param attributeValue  SpringBoot environment
      * @throws Exception  when fail to set
      */
-    protected void setAttribute(Object ds,Field field,String attributeValue, Environment environment){ }
+    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment){ }
+
+    /**
+     *  after Set Attributes
+     *
+     * @param ds           dataSource
+     * @param environment  SpringBoot environment
+     * @throws Exception  when fail to set
+     */
+    protected void afterSetAttributes(Object ds,Environment environment)throws Exception{}
 }
