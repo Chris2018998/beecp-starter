@@ -85,7 +85,7 @@ public abstract class BaseDataSourceSetFactory implements DataSourceAttributeSet
      * @param attributeValue  SpringBoot environment
      * @throws Exception  when fail to set
      */
-    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment){ }
+    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment)throws Exception{ }
 
     /**
      *  after Set Attributes

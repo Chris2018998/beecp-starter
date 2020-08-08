@@ -62,21 +62,17 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
      * @param attributeValue  SpringBoot environment
      * @throws Exception  when fail to set
      */
-    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment){
-        try {
-            if ("connectProperties".equals(field.getName())) {
-                Properties connectProperties = new Properties();
-                attributeValue = attributeValue.trim();
-                String[] attributeArray = attributeValue.split(";");
-                for (String attribute : attributeArray) {
-                    String[]pairs=attribute.split("=");
-                    if(pairs.length==2)
-                        connectProperties.put(pairs[0].trim(),pairs[1].trim());
-                }
-                field.set(ds, new Object[]{connectProperties});
+    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment)throws Exception{
+        if ("connectProperties".equals(field.getName())) {
+            Properties connectProperties = new Properties();
+            attributeValue = attributeValue.trim();
+            String[] attributeArray = attributeValue.split(";");
+            for (String attribute : attributeArray) {
+                String[]pairs=attribute.split("=");
+                if(pairs.length==2)
+                    connectProperties.put(pairs[0].trim(),pairs[1].trim());
             }
-        }catch(Exception e){
-            e.printStackTrace();
+            field.set(ds, new Object[]{connectProperties});
         }
     }
 }
