@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
  *
  *  @author Chris.Liao
  */
-public class HikariDataSourceSetFactory extends DataSourceBaseSetFactory {
+public class HikariDataSourceSetFactory extends BaseDataSourceSetFactory {
 
     /**
      * return config field

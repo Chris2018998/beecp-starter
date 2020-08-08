@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
  *  @author Chris.Liao
  */
 
-public class TomcatJdbcDataSourceSetFactory extends DataSourceBaseSetFactory {
+public class TomcatJdbcDataSourceSetFactory extends BaseDataSourceSetFactory {
 
     /**
      * return config field

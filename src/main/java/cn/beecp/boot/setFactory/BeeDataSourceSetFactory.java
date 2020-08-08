@@ -35,7 +35,7 @@ import java.util.Properties;
  *  @author Chris.Liao
  */
 
-public class BeeDataSourceSetFactory extends DataSourceBaseSetFactory {
+public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
 
     /**
      * return config field

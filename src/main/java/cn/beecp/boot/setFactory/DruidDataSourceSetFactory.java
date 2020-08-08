@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
  *  @author Chris.Liao
  */
 
-public class DruidDataSourceSetFactory extends DataSourceBaseSetFactory {
+public class DruidDataSourceSetFactory extends BaseDataSourceSetFactory {
 
     /**
      * return config field
