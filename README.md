@@ -110,7 +110,7 @@ application.properties
   public interface DataSourceAttributeSetFactory {
     
      //get Properties value from environment and set to dataSource
-     public void setAttribute(Object ds,String configPrefix,Environment environment)throws Exception;
+     public void setAttributes(Object ds,String configPrefix,Environment environment)throws Exception;
   }
  ```
     
