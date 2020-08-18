@@ -15,6 +15,8 @@
  */
 package cn.beecp.boot;
 
+import cn.beecp.BeeDataSource;
+import cn.beecp.boot.monitor.DataSourceCollector;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,6 +41,8 @@ public class SingleDataSourceRegister {
     @Bean
     @ConfigurationProperties(prefix="spring.datasource")
     public DataSource beeDataSource() throws BeansException {
-        return new cn.beecp.BeeDataSource();
+        BeeDataSource ds= new BeeDataSource();
+        DataSourceCollector.getInstance().addDataSource(ds);
+        return ds;
     }
 }

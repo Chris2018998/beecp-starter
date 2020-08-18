@@ -16,6 +16,7 @@
 package cn.beecp.boot;
 
 import cn.beecp.BeeDataSource;
+import cn.beecp.boot.monitor.DataSourceCollector;
 import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import cn.beecp.util.BeecpUtil;
 import org.slf4j.Logger;
@@ -152,6 +153,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
             ds = (XADataSource) createInstanceByClassName(dataSourceClass, DataSource.class, "XADataSource");
         } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
             ds = (DataSource) createInstanceByClassName(dataSourceClass, DataSource.class, "DataSource");
+            if(ds instanceof BeeDataSource) DataSourceCollector.getInstance().addDataSource((BeeDataSource)ds);
         } else {
             log.error("DataSource class must be extended from DataSource or XADataSource,dataSource name:{},class name:{}", dsName, dataSourceClassName);
             return null;
