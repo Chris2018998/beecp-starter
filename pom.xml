@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.chris2018998</groupId>
 	<artifactId>spring-boot-starter-beecp</artifactId>
-	<version>1.3.5.RELEASE</version>
+	<version>1.3.6</version>
 	<name>BeeCP-Starter</name>
 	<url>https://github.com/Chris2018998/BeeCP-Starter</url>
 	<description>BeeCP Starter</description>
