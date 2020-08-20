@@ -16,50 +16,54 @@
 package cn.beecp.boot.monitor;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.pool.FastConnectionPool;
+import cn.beecp.pool.ConnectionPool;
+import cn.beecp.pool.ConnectionPoolMonitorVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-public class DataSourceMonitor{
-   private  List<Map<String,Object>> poolInfoList=new LinkedList<Map<String,Object>>();
+public class DataSourceMonitor {
+    private static Field poolField = null;
+    static {
+        try {
+            poolField = BeeDataSource.class.getDeclaredField("pool");
+            poolField.setAccessible(true);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+    }
 
-    @RequestMapping( "/dataSourceMonitor/getDataSourceInfo" )
-    public List<Map<String,Object>> getDataSourceInfo(){
+    //logger
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
+    @RequestMapping("/dataSourceMonitor/getDataSourceInfo")
+    public List<ConnectionPoolMonitorVo> getDataSourceInfo() {
+        if(poolField==null)throw new java.lang.RuntimeException("Missed 'pool' field in BeeDataSource class");
+
         poolInfoList.clear();
-        BeeDataSource[] dsArray=DataSourceCollector.getInstance().getAllDataSource();
-        for(BeeDataSource ds:dsArray){
+        DataSourceCollector collector=DataSourceCollector.getInstance();
+
+        BeeDataSource[] dsArray = collector.getAllDataSource();
+        for (BeeDataSource ds : dsArray) {
             try {
-                if (ds.isClosed()) {
-                    DataSourceCollector.getInstance().removeDataSource(ds);
-                }else{
-                    retrievePoolInfo(ds,poolInfoList);
-                }
-            }catch(SQLException e){ }
+                  ConnectionPool pool=(ConnectionPool)poolField.get(ds);
+                  ConnectionPoolMonitorVo vo=pool.getMonitorVo();
+                  if(vo.getPoolState()==3){//POOL_CLOSED
+                      collector.removeDataSource(ds);
+                  }else{
+                      poolInfoList.add(vo);
+                  }
+            } catch (Exception e) {
+                log.info("Failed to get dataSource monitor info",e);
+            }
         }
 
         return poolInfoList;
-    }
-
-    private static Field field=null;
-    private static void retrievePoolInfo(final BeeDataSource ds,List<Map<String,Object>> poolInfoList) {
-        try {
-            if(field==null){
-                field = ds.getClass().getDeclaredField("pool");
-                field.setAccessible(true);
-            }
-             Object pool= field.get(ds);
-            if(pool instanceof FastConnectionPool){
-                poolInfoList.add(((FastConnectionPool)pool).getPoolInfo());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

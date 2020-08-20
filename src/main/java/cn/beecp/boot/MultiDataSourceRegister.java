@@ -64,7 +64,7 @@ public class MultiDataSourceRegister implements EnvironmentAware,ImportBeanDefin
     //Spring  DataSourceAttributeSetFactory map
     private static final Map<Class,DataSourceAttributeSetFactory> setFactoryMap=new HashMap<>();
     //logger
-    private static final Logger log = LoggerFactory.getLogger(MultiDataSourceRegister.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     static{
         setFactoryMap.put(BeeDataSource.class,new BeeDataSourceSetFactory());
     }
