@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/dsMonitor")
 public class DataSourceMonitor {
     private static Field poolField = null;
     static {
@@ -38,32 +39,32 @@ public class DataSourceMonitor {
           e.printStackTrace();
         }
     }
+    @RequestMapping("/getJson")
+    public List<ConnectionPoolMonitorVo> getJson() {
+        return getPoolInfoList();
+    }
 
-    //logger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
-    @RequestMapping("/dataSourceMonitor/getDataSourceInfo")
-    public List<ConnectionPoolMonitorVo> getDataSourceInfo() {
+    private List<ConnectionPoolMonitorVo> getPoolInfoList(){
         if(poolField==null)throw new java.lang.RuntimeException("Missed 'pool' field in BeeDataSource class");
-
         poolInfoList.clear();
         DataSourceCollector collector=DataSourceCollector.getInstance();
 
         BeeDataSource[] dsArray = collector.getAllDataSource();
         for (BeeDataSource ds : dsArray) {
             try {
-                  ConnectionPool pool=(ConnectionPool)poolField.get(ds);
-                  ConnectionPoolMonitorVo vo=pool.getMonitorVo();
-                  if(vo.getPoolState()==3){//POOL_CLOSED
-                      collector.removeDataSource(ds);
-                  }else{
-                      poolInfoList.add(vo);
-                  }
+                ConnectionPool pool=(ConnectionPool)poolField.get(ds);
+                ConnectionPoolMonitorVo vo=pool.getMonitorVo();
+                if(vo.getPoolState()==3){//POOL_CLOSED
+                    collector.removeDataSource(ds);
+                }else{
+                    poolInfoList.add(vo);
+                }
             } catch (Exception e) {
                 log.info("Failed to get dataSource monitor info",e);
             }
         }
-
         return poolInfoList;
     }
 }

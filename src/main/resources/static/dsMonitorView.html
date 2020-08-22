@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="html">
+<head>
+    <meta charset='utf-8'>
+    <title>BeeCP Monitor</title>
+    <style type="text/css">
+        table
+        {
+            border-collapse: collapse;
+            margin: 0 auto;
+            text-align: center;
+        }
+        table td, table th
+        {
+            border: 1px solid #cad9ea;
+            color: #666;
+            height: 30px;
+        }
+        table tr th
+        {
+            background-color: #CCE8EB;
+            width: 100px;
+        }
+        table tr:nth-child(odd)
+        {
+            background: #fff;
+        }
+        table tr:nth-child(even)
+        {
+            background: #F5FAFA;
+        }
+    </style>
+</head>
+<body>
+<script src="jquery.min.js"></script>
+<script>
+    $(function(){
+        var reqURL=getContextPath()+'/dsMonitor/getJson';
+        $("#refresh").click(function(){
+            $.ajax({
+                type: 'GET',
+                url: reqURL,
+                dataType: 'json',
+                success: function(data){
+                    console.info(data);
+                    $("#monitorTable tr:not(:first)").empty();
+                    if(data){
+                        $.each(data, function(i, element){
+                            var state;
+                            if(element.poolState==1)
+                                state="Uninitialized";
+                            else if(element.poolState==2)
+                                state="Started";
+                            else if(element.poolState==3)
+                                state="Closed";
+                            else if(element.poolState==4)
+                                state="Reseting";
+
+                            var tableHtml = "<tr>" +
+                                "<td>" + element.poolName + "</td>" +
+                                "<td>" + element.poolMode+ "</td>" +
+                                "<td>" + state + "</td>" +
+                                "<td>" + element.maxActive + "</td>" +
+                                "<td>" + element.idleSize + "</td>" +
+                                "<td>" + element.usingSize + "</td>" +
+                                "<td>" + element.semaphoreWaiterSize + "</td>" +
+                                "<td>" + element.transferWaiterSize + "</td>" +
+                                "</tr>";
+                            $("#monitorTable").append(tableHtml);
+                        });
+                    }
+                }
+            });
+        });
+
+        function getContextPath() {
+            var webFullPath=window.document.location.href;
+            var strPath=window.document.location.pathname;
+            var pos=webFullPath.indexOf(strPath);
+            var webHostPath=webFullPath.substring(0,pos);
+            var projectName=strPath.substring(0,strPath.substr(1).indexOf("/")+1);
+            return(webHostPath+projectName);
+        }
+    });
+</script>
+<table id="monitorTable"  class="table table-hover">
+    <tr class="table-header">
+        <th>Pool Name</th>
+        <th>Pool Mode</th>
+        <th>Pool State</th>
+        <th>Max Active</th>
+        <th>Idle Size</th>
+        <th>Using Size</th>
+        <th>Semaphore Waiter Size</th>
+        <th>Transfer Waiter Size</th>
+    </tr>
+</table>
+<p></p>
+<div align="center"><input type="button"  id="refresh" valign="center" value="Refresh"/></div>
+</body>
+</html>
