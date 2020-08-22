@@ -126,10 +126,11 @@ application.properties
 
 
 **数据源池监控**
-   在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/dsMonitorView_zh.html  （其中xxxx为项目名）效果页面如下
+---
+
+在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/dsMonitorView_zh.html  （其中xxxx为项目名）效果页面如下
    
-   
-   <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitorView.png"></img>
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitorView.png"></img>
 
     
 
