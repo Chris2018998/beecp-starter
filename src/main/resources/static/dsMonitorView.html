@@ -72,7 +72,6 @@
                 }
             });
         });
-
         function getContextPath() {
             var webFullPath=window.document.location.href;
             var strPath=window.document.location.pathname;
@@ -81,6 +80,8 @@
             var projectName=strPath.substring(0,strPath.substr(1).indexOf("/")+1);
             return(webHostPath+projectName);
         }
+
+        $("#refresh").trigger("click");
     });
 </script>
 <table id="monitorTable"  class="table table-hover">
