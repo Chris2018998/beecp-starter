@@ -29,7 +29,7 @@ public class HikariDataSourceSetFactory extends BaseDataSourceSetFactory {
     /**
      * return config field
      */
-    public Field[] getConfigFields(){
-      return HikariConfig.class.getDeclaredFields();
+    public Field[] getConfigFields() {
+        return HikariConfig.class.getDeclaredFields();
     }
 }

@@ -31,22 +31,22 @@ public class TomcatJdbcDataSourceSetFactory extends BaseDataSourceSetFactory {
     /**
      * return config field
      */
-    public Field[] getConfigFields(){
+    public Field[] getConfigFields() {
         return PoolProperties.class.getDeclaredFields();
     }
 
     /**
-     *  get Properties values from environment and set to dataSource
+     * get Properties values from environment and set to dataSource
      *
      * @param ds           dataSource
-     * @param configPrefix  configured prefix name
+     * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
-     * @throws Exception  when fail to set
+     * @throws Exception when fail to set
      */
-    public void setAttributes(Object ds, String configPrefix, Environment environment)throws Exception{
+    public void setAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
         PoolProperties p = new PoolProperties();
-        super.setAttributes(p,configPrefix,environment);
-        org.apache.tomcat.jdbc.pool.DataSource tds=(org.apache.tomcat.jdbc.pool.DataSource)ds;
+        super.setAttributes(p, configPrefix, environment);
+        org.apache.tomcat.jdbc.pool.DataSource tds = (org.apache.tomcat.jdbc.pool.DataSource) ds;
         tds.setPoolProperties(p);
     }
 }

@@ -30,27 +30,27 @@ import java.lang.reflect.Modifier;
 public abstract class BaseDataSourceSetFactory implements DataSourceAttributeSetFactory {
 
     /**
-     * @return  config fields
+     * @return config fields
      */
     public abstract Field[] getConfigFields();
 
     /**
-     *  get Properties values from environment and set to dataSource
+     * get Properties values from environment and set to dataSource
      *
      * @param ds           dataSource
-     * @param configPrefix  configured prefix name
+     * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
-     * @throws Exception  when fail to set
+     * @throws Exception when fail to set
      */
-    public void setAttributes(Object ds, String configPrefix, Environment environment)throws Exception{
-        Field[] fields=getConfigFields();
-        for(Field field:fields){
-            String configVal=environment.getProperty(configPrefix+"."+field.getName());
-            if(!BeecpUtil.isNullText(configVal)) {
-                configVal=configVal.trim();
+    public void setAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
+        Field[] fields = getConfigFields();
+        for (Field field : fields) {
+            String configVal = environment.getProperty(configPrefix + "." + field.getName());
+            if (!BeecpUtil.isNullText(configVal)) {
+                configVal = configVal.trim();
 
-                Class fieldType=field.getType();
-                boolean ChangedAccessible=false;
+                Class fieldType = field.getType();
+                boolean ChangedAccessible = false;
                 try {
                     if (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())) {
                         field.setAccessible(true);
@@ -66,35 +66,37 @@ public abstract class BaseDataSourceSetFactory implements DataSourceAttributeSet
                     } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
                         field.set(ds, Long.valueOf(configVal));
                     } else {
-                        setAttribute(ds,field,configVal,environment);
+                        setAttribute(ds, field, configVal, environment);
                     }
-                }finally {
-                    if(ChangedAccessible)field.setAccessible(false);//reset
+                } finally {
+                    if (ChangedAccessible) field.setAccessible(false);//reset
                 }
             }
         }
 
-        afterSetAttributes(ds,configPrefix,environment);
+        afterSetAttributes(ds, configPrefix, environment);
     }
 
     /**
-     *  set complex properties values from environment and set to dataSource
+     * set complex properties values from environment and set to dataSource
      *
-     * @param ds           dataSource
-     * @param field        attributeFiled
-     * @param attributeValue  attributeFiled value
-     * @param environment  SpringBoot environment
-     * @throws Exception  when fail to set
+     * @param ds             dataSource
+     * @param field          attributeFiled
+     * @param attributeValue attributeFiled value
+     * @param environment    SpringBoot environment
+     * @throws Exception when fail to set
      */
-    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment)throws Exception{ }
+    protected void setAttribute(Object ds, Field field, String attributeValue, Environment environment) throws Exception {
+    }
 
     /**
-     *  after Set Attributes
+     * after Set Attributes
      *
      * @param ds           dataSource
-      * @param configPrefix  configured prefix name
+     * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
-     * @throws Exception  when fail to set
+     * @throws Exception when fail to set
      */
-    protected void afterSetAttributes(Object ds, String configPrefix, Environment environment)throws Exception{}
+    protected void afterSetAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
+    }
 }

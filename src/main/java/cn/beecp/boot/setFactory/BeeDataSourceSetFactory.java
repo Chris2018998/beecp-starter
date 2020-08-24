@@ -40,11 +40,11 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
     /**
      * return config field
      */
-    public Field[] getConfigFields(){
-        List<Field> attributeList=new LinkedList<Field>();
-        Class configClass=BeeDataSourceConfig.class;
-        Field[] fields=configClass.getDeclaredFields();
-        for(Field field:fields) {
+    public Field[] getConfigFields() {
+        List<Field> attributeList = new LinkedList<Field>();
+        Class configClass = BeeDataSourceConfig.class;
+        Field[] fields = configClass.getDeclaredFields();
+        for (Field field : fields) {
             String fieldName = field.getName();
             if ("checked".equals(fieldName)
                     || "connectionFactory".equals(fieldName))
@@ -55,22 +55,22 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
     }
 
     /**
-     *  get Properties values from environment and set to dataSource
+     * get Properties values from environment and set to dataSource
      *
-     * @param ds           dataSource
-     * @param field      attributeFiled
-     * @param attributeValue  SpringBoot environment
-     * @throws Exception  when fail to set
+     * @param ds             dataSource
+     * @param field          attributeFiled
+     * @param attributeValue SpringBoot environment
+     * @throws Exception when fail to set
      */
-    protected void setAttribute(Object ds,Field field,String attributeValue,Environment environment)throws Exception{
+    protected void setAttribute(Object ds, Field field, String attributeValue, Environment environment) throws Exception {
         if ("connectProperties".equals(field.getName())) {
             Properties connectProperties = new Properties();
             attributeValue = attributeValue.trim();
             String[] attributeArray = attributeValue.split(";");
             for (String attribute : attributeArray) {
-                String[]pairs=attribute.split("=");
-                if(pairs.length==2)
-                    connectProperties.put(pairs[0].trim(),pairs[1].trim());
+                String[] pairs = attribute.split("=");
+                if (pairs.length == 2)
+                    connectProperties.put(pairs[0].trim(), pairs[1].trim());
             }
             field.set(ds, new Object[]{connectProperties});
         }

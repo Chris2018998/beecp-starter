@@ -29,7 +29,7 @@ public class DruidDataSourceSetFactory extends BaseDataSourceSetFactory {
     /**
      * return config field
      */
-    public Field[] getConfigFields(){
+    public Field[] getConfigFields() {
         return DruidDataSource.class.getDeclaredFields();
     }
 }
