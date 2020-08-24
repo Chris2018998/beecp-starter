@@ -17,11 +17,7 @@ package cn.beecp.boot;
 
 import org.springframework.context.annotation.Import;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /*
  *  Bee Data Source Attribute Set Factory
@@ -31,5 +27,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.TYPE)
-@Import(value={MultiDataSourceRegister.class})
-public @interface EnableMultiDataSource{ }
+@Import(value = {MultiDataSourceRegister.class})
+public @interface EnableMultiDataSource {
+}

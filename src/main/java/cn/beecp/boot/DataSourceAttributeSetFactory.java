@@ -18,19 +18,19 @@ package cn.beecp.boot;
 import org.springframework.core.env.Environment;
 
 /*
-   *  DataSource properties set factory
-   *
-   *  @author Chris.Liao
-   */
+ *  DataSource properties set factory
+ *
+ *  @author Chris.Liao
+ */
 public interface DataSourceAttributeSetFactory {
 
     /**
-     *  get Properties values from environment and set to dataSource
+     * get Properties values from environment and set to dataSource
      *
-     * @param ds            may be DataSource or XADataSource
-     * @param configPrefix  configured prefix name
-     * @param environment   SpringBoot environment
-     * @throws Exception    when fail to set
+     * @param ds           may be DataSource or XADataSource
+     * @param configPrefix configured prefix name
+     * @param environment  SpringBoot environment
+     * @throws Exception when fail to set
      */
-    public void setAttributes(Object ds,String configPrefix, Environment environment)throws Exception;
+    void setAttributes(Object ds, String configPrefix, Environment environment) throws Exception;
 }

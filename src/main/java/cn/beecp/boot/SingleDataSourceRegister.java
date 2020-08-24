@@ -36,12 +36,12 @@ import javax.sql.DataSource;
 
 @Configuration
 @ConditionalOnClass(cn.beecp.BeeDataSource.class)
-@ConditionalOnProperty(name="spring.datasource.type",havingValue="cn.beecp.BeeDataSource")
+@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
     @Bean
-    @ConfigurationProperties(prefix="spring.datasource")
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource beeDataSource() throws BeansException {
-        BeeDataSource ds= new BeeDataSource();
+        BeeDataSource ds = new BeeDataSource();
         DataSourceCollector.getInstance().addDataSource(ds);
         return ds;
     }

@@ -22,51 +22,52 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- *  Jndi DataSource wrapper.
- *  When SpringBoot project redeploy,referred Jndi dataSource from middleware will be closed,
- *  add wrapper around jndi data Source,which can avoid being closed.
+ * Jndi DataSource wrapper.
+ * When SpringBoot project redeploy,referred Jndi dataSource from middleware will be closed,
+ * add wrapper around jndi data Source,which can avoid being closed.
  *
  * @author Chris.Liao
  */
 public class JndiDataSourceWrapper implements DataSource {
-	private DataSource delegate;
-	public JndiDataSourceWrapper(DataSource delegate) {
-		this.delegate = delegate;
-	}
+    private DataSource delegate;
 
-	public Connection getConnection() throws SQLException {
-		return delegate.getConnection();
-	}
+    public JndiDataSourceWrapper(DataSource delegate) {
+        this.delegate = delegate;
+    }
 
-	public Connection getConnection(String username, String password) throws SQLException {
-		return delegate.getConnection(username, password);
-	}
+    public Connection getConnection() throws SQLException {
+        return delegate.getConnection();
+    }
 
-	public java.io.PrintWriter getLogWriter() throws SQLException {
-		return delegate.getLogWriter();
-	}
+    public Connection getConnection(String username, String password) throws SQLException {
+        return delegate.getConnection(username, password);
+    }
 
-	public void setLogWriter(java.io.PrintWriter out) throws SQLException {
-		delegate.setLogWriter(out);
-	}
+    public java.io.PrintWriter getLogWriter() throws SQLException {
+        return delegate.getLogWriter();
+    }
 
-	public void setLoginTimeout(int seconds) throws SQLException {
-		delegate.setLoginTimeout(seconds);
-	}
+    public void setLogWriter(java.io.PrintWriter out) throws SQLException {
+        delegate.setLogWriter(out);
+    }
 
-	public int getLoginTimeout() throws SQLException {
-		return delegate.getLoginTimeout();
-	}
+    public void setLoginTimeout(int seconds) throws SQLException {
+        delegate.setLoginTimeout(seconds);
+    }
 
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		return delegate.getParentLogger();
-	}
+    public int getLoginTimeout() throws SQLException {
+        return delegate.getLoginTimeout();
+    }
 
-	public <T> T unwrap(Class<T> iface) throws SQLException {
-		return delegate.unwrap(iface);
-	}
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return delegate.getParentLogger();
+    }
 
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return delegate.isWrapperFor(iface);
-	}
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return delegate.unwrap(iface);
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return delegate.isWrapperFor(iface);
+    }
 }
