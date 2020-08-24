@@ -24,23 +24,23 @@ import java.util.List;
  * Collect Bee dataSource
  */
 public class DataSourceCollector {
-    private static DataSourceCollector single=new DataSourceCollector();
+    private static DataSourceCollector single = new DataSourceCollector();
 
-    public static DataSourceCollector getInstance(){
+    public static DataSourceCollector getInstance() {
         return single;
     }
 
-    private List<BeeDataSource> dsList=new LinkedList<BeeDataSource>();
+    private List<BeeDataSource> dsList = new LinkedList<BeeDataSource>();
 
-    public void addDataSource(BeeDataSource ds){
+    public void addDataSource(BeeDataSource ds) {
         dsList.add(ds);
     }
 
-    public void removeDataSource(BeeDataSource ds){
+    public void removeDataSource(BeeDataSource ds) {
         dsList.remove(ds);
     }
 
-    public BeeDataSource[] getAllDataSource(){
-       return dsList.toArray(new BeeDataSource[dsList.size()]);
+    public BeeDataSource[] getAllDataSource() {
+        return dsList.toArray(new BeeDataSource[dsList.size()]);
     }
 }

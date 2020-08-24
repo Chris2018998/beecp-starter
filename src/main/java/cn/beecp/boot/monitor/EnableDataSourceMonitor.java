@@ -27,6 +27,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.TYPE)
-@Import(value={DataSourceMonitorRegister.class})
-public @interface EnableDataSourceMonitor { }
+@Import(value = {DataSourceMonitorRegister.class})
+public @interface EnableDataSourceMonitor {
+}
 

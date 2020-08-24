@@ -28,35 +28,35 @@ import java.util.function.Supplier;
 /**
  * Register Monitor to springboot
  *
- *
- *  @author Chris.Liao
+ * @author Chris.Liao
  */
 public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     //Register self bean to ioc
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
-        String registerName="cn.beecp.boot.monitor.DataSourceMonitor";
-        if (!existsBeanDefinition(registerName,registry)) {
+        String registerName = "cn.beecp.boot.monitor.DataSourceMonitor";
+        if (!existsBeanDefinition(registerName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(new Supplier(){
+            define.setInstanceSupplier(new Supplier() {
                 public Object get() {
                     return new DataSourceMonitor();
                 }
             });
-            registry.registerBeanDefinition(registerName,define);
-            log.info("Register dataSource monitor({}) with bean name:{}",define.getBeanClassName(),registerName);
+            registry.registerBeanDefinition(registerName, define);
+            log.info("Register dataSource monitor({}) with bean name:{}", define.getBeanClassName(), registerName);
         } else {
-            log.error("BeanDefinition with name:{} already exists in spring context",registerName);
+            log.error("BeanDefinition with name:{} already exists in spring context", registerName);
         }
     }
 
-    private boolean existsBeanDefinition(String beanName,BeanDefinitionRegistry registry){
+    private boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
         try {
-            return (registry.getBeanDefinition(beanName) != null) ? true : false;
-        }catch(NoSuchBeanDefinitionException e){
+            return registry.getBeanDefinition(beanName) != null;
+        } catch (NoSuchBeanDefinitionException e) {
             return false;
         }
     }

@@ -31,14 +31,16 @@ import java.util.List;
 @RequestMapping("/dsMonitor")
 public class DataSourceMonitor {
     private static Field poolField = null;
+
     static {
         try {
             poolField = BeeDataSource.class.getDeclaredField("pool");
             poolField.setAccessible(true);
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
     }
+
     @RequestMapping("/getJson")
     public List<ConnectionPoolMonitorVo> getJson() {
         return getPoolInfoList();
@@ -46,23 +48,24 @@ public class DataSourceMonitor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
-    private List<ConnectionPoolMonitorVo> getPoolInfoList(){
-        if(poolField==null)throw new java.lang.RuntimeException("Missed 'pool' field in BeeDataSource class");
+
+    private List<ConnectionPoolMonitorVo> getPoolInfoList() {
+        if (poolField == null) throw new java.lang.RuntimeException("Missed 'pool' field in BeeDataSource class");
         poolInfoList.clear();
-        DataSourceCollector collector=DataSourceCollector.getInstance();
+        DataSourceCollector collector = DataSourceCollector.getInstance();
 
         BeeDataSource[] dsArray = collector.getAllDataSource();
         for (BeeDataSource ds : dsArray) {
             try {
-                ConnectionPool pool=(ConnectionPool)poolField.get(ds);
-                ConnectionPoolMonitorVo vo=pool.getMonitorVo();
-                if(vo.getPoolState()==3){//POOL_CLOSED
+                ConnectionPool pool = (ConnectionPool) poolField.get(ds);
+                ConnectionPoolMonitorVo vo = pool.getMonitorVo();
+                if (vo.getPoolState() == 3) {//POOL_CLOSED
                     collector.removeDataSource(ds);
-                }else{
+                } else {
                     poolInfoList.add(vo);
                 }
             } catch (Exception e) {
-                log.info("Failed to get dataSource monitor info",e);
+                log.info("Failed to get dataSource monitor info", e);
             }
         }
         return poolInfoList;
