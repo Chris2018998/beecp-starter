@@ -34,7 +34,6 @@ import javax.sql.DataSource;
  *   @author Chris.Liao
  */
 
-@Configuration
 @ConditionalOnClass(cn.beecp.BeeDataSource.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {

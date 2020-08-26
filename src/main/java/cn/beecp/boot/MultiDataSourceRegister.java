@@ -43,14 +43,14 @@ import java.util.function.Supplier;
 /*
  *  SpringBoot dataSource config demo
  *
- *  spring.datasource.name=d1,d2
- *  spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce
- *  spring.datasource.d1.datasourceAttributeSetFactory=cn.beecp.boot.BeeDataSourceAttributeSetFactory
- *  spring.datasource.d1.primary=true
- *  spring.datasource.d1.attributeX=xxxx
+ *  spring.datasource.name=ds1,ds2
+ *  spring.datasource.ds1.datasourceType=cn.beecp.BeeDataSoruce
+ *  spring.datasource.ds1.datasourceAttributeSetFactory=cn.beecp.boot.BeeDataSourceAttributeSetFactory
+ *  spring.datasource.ds1.primary=true
+ *  spring.datasource.ds1.attributeX=xxxx
  *
- *  spring.datasource.d2.primary=false
- *  spring.datasource.d2.jndiName=PlatformJndi
+ *  spring.datasource.ds2.primary=false
+ *  spring.datasource.ds2.jndiName=PlatformJndi
  *
  *   @author Chris.Liao
  */
@@ -63,15 +63,17 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
     private static final String Spring_DataSource_NameList = "spring.datasource.nameList";
     //Spring  DataSourceAttributeSetFactory map
     private static final Map<Class, DataSourceAttributeSetFactory> setFactoryMap = new HashMap<>();
-    //logger
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     static {
         setFactoryMap.put(BeeDataSource.class, new BeeDataSourceSetFactory());
     }
 
-    //store dataSource register Info
-    private List<DataSourceRegisterInfo> dataSourceRegisterList = new LinkedList();
+    //logger
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    //springboot
+    private Environment environment;
+    //jndi name context
+    private InitialContext context = null;
 
     /**
      * Read dataSource configuration from environment and create DataSource
@@ -79,6 +81,19 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param environment SpringBoot Environment
      */
     public final void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    /**
+     * Read dataSource configuration from environment and create DataSource
+     *
+     * @param importingClassMetadata register class meta
+     * @param registry               springboot bean definition registry factory
+     */
+    public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+                                              BeanDefinitionRegistry registry) {
+        //store dataSource register Info
+        List<DataSourceRegisterInfo> dataSourceRegisterList = new LinkedList();
         String dataSourceNames = environment.getProperty(Spring_DataSource_NameList);
         if (!BeecpUtil.isNullText(dataSourceNames)) {
             String[] dsNames = dataSourceNames.trim().split(",");
@@ -110,10 +125,11 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
                 }
             }
         }
-    }
 
-    //jndi name context
-    private InitialContext context = null;
+        for (DataSourceRegisterInfo regInfo : dataSourceRegisterList) {
+            registerDataSourceBean(regInfo, registry);
+        }
+    }
 
     //maybe XADataSource,if failed,then log error info,and return null
     private Object lookupJndiDataSource(String jndiName) {
@@ -181,15 +197,6 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             }
         }
         return ds;
-    }
-
-    //Register self bean to ioc
-    public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-                                              BeanDefinitionRegistry registry) {
-
-        for (DataSourceRegisterInfo regInfo : dataSourceRegisterList) {
-            registerDataSourceBean(regInfo, registry);
-        }
     }
 
     private void registerDataSourceBean(DataSourceRegisterInfo regInfo, BeanDefinitionRegistry registry) {

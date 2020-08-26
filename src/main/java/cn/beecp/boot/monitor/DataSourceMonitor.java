@@ -41,7 +41,7 @@ public class DataSourceMonitor {
         }
     }
 
-    @RequestMapping("/getJson")
+    @RequestMapping("/getConnectionPoolJson")
     public List<ConnectionPoolMonitorVo> getJson() {
         return getPoolInfoList();
     }
