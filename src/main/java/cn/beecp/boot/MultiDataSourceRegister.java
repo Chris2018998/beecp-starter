@@ -18,7 +18,7 @@ package cn.beecp.boot;
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.monitor.DataSourceCollector;
 import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
-import cn.beecp.util.BeecpUtil;
+import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -95,10 +95,10 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         //store dataSource register Info
         List<DataSourceRegisterInfo> dataSourceRegisterList = new LinkedList();
         String dataSourceNames = environment.getProperty(Spring_DataSource_NameList);
-        if (!BeecpUtil.isNullText(dataSourceNames)) {
+        if (!PoolStaticCenter.isBlank(dataSourceNames)) {
             String[] dsNames = dataSourceNames.trim().split(",");
             for (String dsName : dsNames) {
-                if (BeecpUtil.isNullText(dsName)) continue;
+                if (PoolStaticCenter.isBlank(dsName)) continue;
 
                 dsName = dsName.trim();
                 String dsConfigPrefix = Spring_DataSource_Prefix + "." + dsName;
@@ -107,10 +107,10 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
 
                 String jndiNameText = environment.getProperty(jndiNameKeyName);
                 String primaryText = environment.getProperty(primaryKeyName);
-                boolean primaryDataSource = BeecpUtil.isNullText(primaryText) ? false : Boolean.valueOf(primaryText.trim());
+                boolean primaryDataSource = PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText.trim());
 
                 Object ds = null;//may be DataSource or XADataSource
-                if (!BeecpUtil.isNullText(jndiNameText)) {//jndi dataSource
+                if (!PoolStaticCenter.isBlank(jndiNameText)) {//jndi dataSource
                     ds = lookupJndiDataSource(jndiNameText.trim());
                 } else {//independent type
                     ds = createDataSource(dsName, dsConfigPrefix, environment);
@@ -157,7 +157,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         String dataSourceClassName = environment.getProperty(dataSourceType);
         String dataSourceAttributeSetFactoryClassName = environment.getProperty(dataSourceAttributeSetFactory);
 
-        if (BeecpUtil.isNullText(dataSourceClassName))
+        if (PoolStaticCenter.isBlank(dataSourceClassName))
             dataSourceClassName = Default_DataSource_Class_Name;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
@@ -180,7 +180,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         }
 
         DataSourceAttributeSetFactory dsAttrSetFactory = null;
-        if (!BeecpUtil.isNullText(dataSourceAttributeSetFactoryClassName)) {
+        if (!PoolStaticCenter.isBlank(dataSourceAttributeSetFactoryClassName)) {
             dataSourceAttributeSetFactoryClassName = dataSourceAttributeSetFactoryClassName.trim();
             Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
             dsAttrSetFactory = (DataSourceAttributeSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceAttributeSetFactory.class, "DataSourceAttributeSetFactory");
