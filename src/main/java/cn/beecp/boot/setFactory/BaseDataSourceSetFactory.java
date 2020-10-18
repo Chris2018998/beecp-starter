@@ -16,7 +16,7 @@
 package cn.beecp.boot.setFactory;
 
 import cn.beecp.boot.DataSourceAttributeSetFactory;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.boot.SystemUtil;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
@@ -46,7 +46,7 @@ public abstract class BaseDataSourceSetFactory implements DataSourceAttributeSet
         Field[] fields = getConfigFields();
         for (Field field : fields) {
             String configVal = environment.getProperty(configPrefix + "." + field.getName());
-            if (!PoolStaticCenter.isBlank(configVal)) {
+            if (!SystemUtil.isBlank(configVal)) {
                 configVal = configVal.trim();
 
                 Class fieldType = field.getType();
