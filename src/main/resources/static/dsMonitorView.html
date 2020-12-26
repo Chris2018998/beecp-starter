@@ -1,91 +1,125 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" class="html">
-<head>
-    <meta charset='utf-8'>
-    <title>BeeCP Monitor</title>
-    <style type="text/css">
-        table
-        {
-            border-collapse: collapse;
-            margin: 0 auto;
-            text-align: center;
-        }
-        table td, table th
-        {
-            border: 1px solid #cad9ea;
-            color: #666;
-            height: 30px;
-        }
-        table tr th
-        {
-            background-color: #CCE8EB;
-            width: 100px;
-        }
-        table tr:nth-child(odd)
-        {
-            background: #fff;
-        }
-        table tr:nth-child(even)
-        {
-            background: #F5FAFA;
-        }
-    </style>
-</head>
-<body>
-<script src="jquery.min.js"></script>
-<script>
-    $(function(){
-        var reqURL=getContextPath()+'/dsMonitor/getConnectionPoolJson';
-        $("#refresh").click(function(){
-            $.ajax({
-                type: 'GET',
-                url: reqURL,
-                dataType: 'json',
-                success: function(data){
-                    console.info(data);
-                    $("#monitorTable tr:not(:first)").empty();
-                    if(data){
-                        $.each(data, function(i, element){
-                            var state;
-                            if(element.poolState==1)
-                                state="Uninitialized";
-                            else if(element.poolState==2)
-                                state="Started";
-                            else if(element.poolState==3)
-                                state="Closed";
-                            else if(element.poolState==4)
-                                state="Reseting";
+<html lang="en">
+ <head> 
+  <meta charset="UTF-8" /> 
+  <title>BeeCP Monitor</title> 
+  <style>
+.tab-contain{
+ margin: 0 auto;
+ width: 100%;
+ height: 100%;
+ padding:5px;
+ background: #7F7D7D;
+}
+#tabs {
+ overflow: hidden;
+ width: 100%;
+ height: 100%;
+ margin: 0;
+ padding: 0;
+ list-style: none;
+}
+#tabs li {
+ float: left;
+ margin: 0;
+}
+li a {
+ position: relative;
+ background: #ddd;
+ padding: 10px 50px;
+ float: left;
+ text-decoration: none;
+ color: #444;
+ text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+ border-radius: 20px 20px 0 0;
+ box-shadow: 0 2px 2px rgba(0, 0, 0, .4);
+}
+ 
+.current a{
+  outline: 0;
+  background: #AAC8B9;
+  color: #0E2D5F;
+  z-index: 4;
+}
+.hoverItem a{
+ background: #AAC8B9;
+}
+#content {
+ background: #fff;
+ margin: 0;
+ padding: 0px;
+ height: 100%;
+ position: relative;
+ border-radius: 5px 5px 5px 5px;
+ box-shadow: 0 -2px 3px -2px rgba(0, 0, 0, .5);
+ 
+ border-collapse:collapse;
+ border-color:#95B8E7;
+ border-width: 1px;
+ border-style: solid;
+}
+.item{
+ display: none;
+ 
+ margin: 0;
+ width: 100%;
+ height: 100%;
+ align: left;
+}
+ 
+.show{
+ display: block;
+ background: #f7fafc;
+}
 
-                            var tableHtml = "<tr>" +
-                                "<td>" + element.poolName + "</td>" +
-                                "<td>" + element.poolMode+ "</td>" +
-                                "<td>" + state + "</td>" +
-                                "<td>" + element.maxActive + "</td>" +
-                                "<td>" + element.idleSize + "</td>" +
-                                "<td>" + element.usingSize + "</td>" +
-                                "<td>" + element.semaphoreWaiterSize + "</td>" +
-                                "<td>" + element.transferWaiterSize + "</td>" +
-                                "</tr>";
-                            $("#monitorTable").append(tableHtml);
-                        });
-                    }
-                }
-            });
-        });
-        function getContextPath() {
-            var webFullPath=window.document.location.href;
-            var strPath=window.document.location.pathname;
-            var pos=webFullPath.indexOf(strPath);
-            var webHostPath=webFullPath.substring(0,pos);
-            var projectName=strPath.substring(0,strPath.substr(1).indexOf("/")+1);
-            return(webHostPath+projectName);
-        }
+table {
+	border-collapse: collapse;
+	text-align: center;
+	align: center;
+	width: 100%;
+	height: 100%;
+}
 
-        $("#refresh").trigger("click");
-    });
-</script>
-<table id="monitorTable"  class="table table-hover">
-    <tr class="table-header">
+table td, table th {
+	border: 1px solid #cad9ea;
+	color: #666;
+	height: 30px;
+}
+
+table th {
+	font: 12px bold 'Lucida Sans Unicode','Lucida Grande',Helvetica,Arial,sans-serif;
+}
+
+table td {
+	font: 12px 'Lucida Sans Unicode','Lucida Grande',Helvetica,Arial,sans-serif;
+}
+
+table tr th {
+	background-color: #CCE8EB;
+	width: 100px;
+}
+
+table tr:nth-child(odd) {
+	background: #fff;
+}
+
+table tr:nth-child(even) {
+	background: #F5FAFA;
+}
+</style> 
+ </head> 
+ <body> 
+  <!-- tab栏 --> 
+  <ul id="tabs"> 
+   <li class="current"><a href="#" rel="external nofollow" title="tab1">Pool List</a></li> 
+   <li><a href="#" rel="external nofollow" title="tab2">SQL Execution</a></li> 
+  </ul> 
+  <!-- 对应显示内容 --> 
+  <div id="content"> 
+   <div id="tab1" class="item show"> 
+    <table class="table table-hover" id="pool-monitorTable"> 
+     <tbody> 
+      <tr class="table-header"> 
         <th>Pool Name</th>
         <th>Pool Mode</th>
         <th>Pool State</th>
@@ -94,9 +128,133 @@
         <th>Using Size</th>
         <th>Semaphore Waiter Size</th>
         <th>Transfer Waiter Size</th>
-    </tr>
-</table>
-<p></p>
-<div align="center"><input type="button"  id="refresh" valign="center" value="Refresh"/></div>
-</body>
+      </tr> 
+     </tbody> 
+    </table> 
+    <p></p> 
+    <div align="center"> 
+     <input id="pool_Refresh" type="button" valign="center" value="刷 新" /> 
+     <p></p> 
+    </div> 
+   </div> 
+   <div id="tab2" class="item"> 
+    <table class="table table-hover" id="sql-monitorTable"> 
+     <tbody> 
+      <tr class="table-header"> 
+       <th>SQL</th> 
+       <th>Pool Name</th> 
+       <th>Start Time</th> 
+       <th>End Time</th> 
+       <th>Took Time(Ms)</th> 
+       <th>Sucessful</th> 
+       <th>Method</th> 
+      </tr> 
+     </tbody> 
+    </table> 
+    <p></p> 
+    <div align="center"> 
+     <input id="sql-refresh" type="button" valign="center" value="刷 新" /> 
+     <p></p> 
+    </div> 
+   </div> 
+  </div> 
+  <script src="jquery.min.js"></script> 
+  <script type="text/javascript">
+$(function(){
+	 var poolURL = getContextPath() + '/dsMonitor/getConnectionPoolList';
+	 var sqlURL = getContextPath() + '/dsMonitor/getSQLExecutionList';
+	 
+	$("#pool_Refresh").click(function () {
+		$.ajax({
+			type: 'GET',
+			url: poolURL,
+			dataType: 'json',
+			success: function (data) {
+				console.info(data);
+				$("#pool-monitorTable tr:not(:first)").empty();
+				if (data) {
+					$.each(data, function (i, element) {
+				       var state;
+                       if (element.poolState == 1)
+                         state = "Uninitialized";
+                        else if (element.poolState == 2)
+                          state = "Started";
+                        else if (element.poolState == 3)
+                         state = "Closed";
+                        else if (element.poolState == 4)
+                                state = "Reseting";
+								
+						var tableHtml = "<tr>" +
+							"<td>" + element.poolName + "</td>" +
+							"<td>" + element.poolMode + "</td>" +
+							"<td>" + state + "</td>" +
+							"<td>" + element.maxActive + "</td>" +
+							"<td>" + element.idleSize + "</td>" +
+							"<td>" + element.usingSize + "</td>" +
+							"<td>" + element.semaphoreWaiterSize + "</td>" +
+							"<td>" + element.transferWaiterSize + "</td>" +
+							"</tr>";
+						$("#pool-monitorTable").append(tableHtml);
+					});
+				}
+			}
+		});
+	});
+	
+	$("#sql-refresh").click(function () {
+		$.ajax({
+			type: 'GET',
+			url: sqlURL,
+			dataType: 'json',
+			success: function (data) {
+				console.info(data);
+				$("#sql-monitorTable tr:not(:first)").empty();
+				if (data) {
+					$.each(data, function (i, element) {
+						var tableHtml = "<tr>" +
+							"<td>" + element.executeSQL + "</td>" +
+							"<td>" + element.poolName + "</td>" +
+							"<td>" + element.startTime + "</td>" +
+							"<td>" + element.endTime + "</td>" +
+							"<td>" + element.tookTimeMs + "</td>" +
+							"<td>" + element.success + "</td>" +
+							"<td>" + element.statementType+'.'+element.methodName +"</td>" +
+							"</tr>";
+						$("#sql-monitorTable").append(tableHtml);
+					});
+				}
+			}
+		});
+	});
+	
+	function getContextPath() {
+		var webFullPath = window.document.location.href;
+		var strPath = window.document.location.pathname;
+		var pos = webFullPath.indexOf(strPath);
+		var webHostPath = webFullPath.substring(0, pos);
+		var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
+		return (webHostPath + projectName);
+	}
+
+	$("#pool_Refresh").trigger("click");
+   
+
+	$('#tabs a').click(function(e) {
+	  e.preventDefault();    
+	  $('#tabs li').removeClass("current").removeClass("hoverItem");
+	  $(this).parent().addClass("current");
+	  $("#content div").removeClass("show");
+	  $('#' + $(this).attr('title')).addClass('show');
+	 });
+ 
+	$('#tabs a').hover(function(){
+	 if(!$(this).parent().hasClass("current")){
+	  $(this).parent().addClass("hoverItem");
+	 }
+	 },function(){
+	 $(this).parent().removeClass("hoverItem");
+	 });
+});
+</script> 　　  
+ </body>
 </html>
