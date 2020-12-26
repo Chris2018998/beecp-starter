@@ -15,50 +15,44 @@
  */
 package cn.beecp.boot.monitor;
 
-import cn.beecp.BeeDataSource;
-import cn.beecp.pool.ConnectionPool;
+import cn.beecp.boot.monitor.proxy.SQLExecutionPool;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+
+/**
+ * Restful Controller
+ *
+ * @author Chris.Liao
+ */
 
 @RestController
 @RequestMapping("/dsMonitor")
 public class DataSourceMonitor {
-    private static Field poolField = null;
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
+    private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
 
-    static {
-        try {
-            poolField = BeeDataSource.class.getDeclaredField("pool");
-            poolField.setAccessible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @RequestMapping("/getConnectionPoolJson")
+    @RequestMapping("/getConnectionPoolList")
     public List<ConnectionPoolMonitorVo> getJson() {
         return getPoolInfoList();
     }
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
+    @RequestMapping("/getSQLExecutionList")
+    public Object getSQLExecutionListJson() {
+        return SQLExecutionPool.getInstance().getTraceQueue();
+    }
 
     private List<ConnectionPoolMonitorVo> getPoolInfoList() {
-        if (poolField == null) throw new java.lang.RuntimeException("Missed 'pool' field in BeeDataSource class");
         poolInfoList.clear();
         DataSourceCollector collector = DataSourceCollector.getInstance();
-
-        BeeDataSource[] dsArray = collector.getAllDataSource();
-        for (BeeDataSource ds : dsArray) {
+        DataSourceWrapper[] dsArray = collector.getAllDataSource();
+        for (DataSourceWrapper ds : dsArray) {
             try {
-                ConnectionPool pool = (ConnectionPool) poolField.get(ds);
-                ConnectionPoolMonitorVo vo = pool.getMonitorVo();
+                ConnectionPoolMonitorVo vo = ds.getMonitorVo();
                 if (vo.getPoolState() == 3) {//POOL_CLOSED
                     collector.removeDataSource(ds);
                 } else {
@@ -70,4 +64,5 @@ public class DataSourceMonitor {
         }
         return poolInfoList;
     }
+
 }

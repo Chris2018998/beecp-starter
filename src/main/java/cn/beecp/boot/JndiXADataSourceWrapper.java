@@ -51,12 +51,12 @@ public class JndiXADataSourceWrapper implements XADataSource {
         delegate.setLogWriter(out);
     }
 
-    public void setLoginTimeout(int seconds) throws SQLException {
-        delegate.setLoginTimeout(seconds);
-    }
-
     public int getLoginTimeout() throws SQLException {
         return delegate.getLoginTimeout();
+    }
+
+    public void setLoginTimeout(int seconds) throws SQLException {
+        delegate.setLoginTimeout(seconds);
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {

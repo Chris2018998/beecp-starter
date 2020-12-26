@@ -17,14 +17,17 @@ package cn.beecp.boot;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.monitor.DataSourceCollector;
-import org.springframework.beans.BeansException;
+import cn.beecp.boot.monitor.DataSourceWrapper;
+import cn.beecp.boot.monitor.proxy.SQLExecutionPool;
+import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
+
+import static cn.beecp.boot.SystemUtil.*;
 
 /*
  *  SpringBoot dataSource config demo
@@ -33,15 +36,34 @@ import javax.sql.DataSource;
  *
  *   @author Chris.Liao
  */
-
-@ConditionalOnClass(cn.beecp.BeeDataSource.class)
+@ConditionalOnClass(cn.beecp.boot.monitor.DataSourceWrapper.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
+
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource beeDataSource() throws BeansException {
+    public DataSource beeDataSource(Environment environment) throws Exception {
+        String sqlExecTraceInd = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace);
+        String sqlExecTraceTimeout = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace_Timeout);
+
+        boolean traceSqlExecution = true;
+        if (!SystemUtil.isBlank(sqlExecTraceInd)) {
+            try {
+                traceSqlExecution = Boolean.parseBoolean(sqlExecTraceInd.trim());
+            } catch (Throwable e) {
+            }
+        }
+        if (!SystemUtil.isBlank(sqlExecTraceTimeout)) {
+            try {
+                SQLExecutionPool.getInstance().setTracedTimeoutMs(Long.parseLong(sqlExecTraceTimeout.trim()));
+            } catch (Throwable e) {
+            }
+        }
+
         BeeDataSource ds = new BeeDataSource();
-        DataSourceCollector.getInstance().addDataSource(ds);
-        return ds;
+        BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
+        dsAttrSetFactory.setAttributes(ds, Spring_DS_Prefix, environment);//set properties to dataSource
+        DataSourceWrapper dsWrapper = new DataSourceWrapper(ds, traceSqlExecution);
+        DataSourceCollector.getInstance().addDataSource(dsWrapper);
+        return dsWrapper;
     }
 }

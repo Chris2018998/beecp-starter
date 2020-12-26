@@ -51,6 +51,7 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
                 continue;
             attributeList.add(field);
         }
+
         return attributeList.toArray(new Field[attributeList.size()]);
     }
 

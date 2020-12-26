@@ -17,6 +17,8 @@ package cn.beecp.boot;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.monitor.DataSourceCollector;
+import cn.beecp.boot.monitor.DataSourceWrapper;
+import cn.beecp.boot.monitor.proxy.SQLExecutionPool;
 import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +41,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static cn.beecp.boot.SystemUtil.*;
+
 /*
  *  SpringBoot dataSource config demo
  *
- *  spring.datasource.name=ds1,ds2
+ *  spring.datasource.sqlExecutionTrace=true
+ *  spring.datasource.sqlExecutionTraceTimeout=18000
+ *
+ *  spring.datasource.nameList=ds1,ds2
  *  spring.datasource.ds1.datasourceType=cn.beecp.BeeDataSoruce
  *  spring.datasource.ds1.datasourceAttributeSetFactory=cn.beecp.boot.BeeDataSourceAttributeSetFactory
  *  spring.datasource.ds1.primary=true
@@ -54,12 +61,7 @@ import java.util.function.Supplier;
  *   @author Chris.Liao
  */
 public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefinitionRegistrar {
-    //Default DataSourceName
-    private static final String Default_DataSource_Class_Name = "cn.beecp.BeeDataSource";
-    //Spring dataSource configuration prefix-key name
-    private static final String Spring_DataSource_Prefix = "spring.datasource";
-    //Spring dataSource configuration key name
-    private static final String Spring_DataSource_NameList = "spring.datasource.nameList";
+
     //Spring  DataSourceAttributeSetFactory map
     private static final Map<Class, DataSourceAttributeSetFactory> setFactoryMap = new HashMap<>();
 
@@ -93,14 +95,30 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
                                               BeanDefinitionRegistry registry) {
         //store dataSource register Info
         List<DataSourceRegisterInfo> dataSourceRegisterList = new LinkedList();
-        String dataSourceNames = environment.getProperty(Spring_DataSource_NameList);
+        String dataSourceNames = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
         if (!SystemUtil.isBlank(dataSourceNames)) {
             String[] dsNames = dataSourceNames.trim().split(",");
+            String sqlExecTraceInd = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace);
+            String sqlExecTraceTimeout = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace_Timeout);
+
+            boolean traceSqlExec = true;
+            if (!SystemUtil.isBlank(sqlExecTraceInd)) {
+                try {
+                    traceSqlExec = Boolean.parseBoolean(sqlExecTraceInd.trim());
+                } catch (Throwable e) {
+                }
+            }
+            if (!SystemUtil.isBlank(sqlExecTraceTimeout)) {
+                try {
+                    SQLExecutionPool.getInstance().setTracedTimeoutMs(Long.parseLong(sqlExecTraceTimeout.trim()));
+                } catch (Throwable e) {
+                }
+            }
+
             for (String dsName : dsNames) {
                 if (SystemUtil.isBlank(dsName)) continue;
-
                 dsName = dsName.trim();
-                String dsConfigPrefix = Spring_DataSource_Prefix + "." + dsName;
+                String dsConfigPrefix = Spring_DS_Prefix + "." + dsName;
                 String jndiNameKeyName = dsConfigPrefix + ".jndiName";
                 String primaryKeyName = dsConfigPrefix + ".primary";
 
@@ -116,6 +134,12 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
                 }
 
                 if (ds != null) {
+                    if (ds instanceof BeeDataSource) {
+                        DataSourceWrapper dsWrapper = new DataSourceWrapper((BeeDataSource) ds, traceSqlExec);
+                        DataSourceCollector.getInstance().addDataSource(dsWrapper);
+                        ds = dsWrapper;
+                    }
+
                     DataSourceRegisterInfo info = new DataSourceRegisterInfo();
                     info.setDataSource(ds);//maybe XA Type
                     info.setPrimary(primaryDataSource);
@@ -157,7 +181,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         String dataSourceAttributeSetFactoryClassName = environment.getProperty(dataSourceAttributeSetFactory);
 
         if (SystemUtil.isBlank(dataSourceClassName))
-            dataSourceClassName = Default_DataSource_Class_Name;//BeeDataSource is default
+            dataSourceClassName = Default_DS_Class_Name;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
 
@@ -172,7 +196,6 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             ds = createInstanceByClassName(dataSourceClass, DataSource.class, "XADataSource");
         } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
             ds = createInstanceByClassName(dataSourceClass, DataSource.class, "DataSource");
-            if (ds instanceof BeeDataSource) DataSourceCollector.getInstance().addDataSource((BeeDataSource) ds);
         } else {
             log.error("DataSource class must be extended from DataSource or XADataSource,dataSource name:{},class name:{}", dsName, dataSourceClassName);
             return null;
@@ -195,6 +218,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
                 log.error("Failed to set attribute on dataSource:" + dsName, e);
             }
         }
+
         return ds;
     }
 

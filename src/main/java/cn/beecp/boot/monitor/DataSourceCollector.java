@@ -15,32 +15,31 @@
  */
 package cn.beecp.boot.monitor;
 
-import cn.beecp.BeeDataSource;
-
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Collect Bee dataSource
+ *
+ * @author Chris.Liao
  */
 public class DataSourceCollector {
     private static DataSourceCollector single = new DataSourceCollector();
+    private List<DataSourceWrapper> dsList = new LinkedList<DataSourceWrapper>();
 
     public static DataSourceCollector getInstance() {
         return single;
     }
 
-    private List<BeeDataSource> dsList = new LinkedList<BeeDataSource>();
-
-    public void addDataSource(BeeDataSource ds) {
+    public void addDataSource(DataSourceWrapper ds) {
         dsList.add(ds);
     }
 
-    public void removeDataSource(BeeDataSource ds) {
+    public void removeDataSource(DataSourceWrapper ds) {
         dsList.remove(ds);
     }
 
-    public BeeDataSource[] getAllDataSource() {
-        return dsList.toArray(new BeeDataSource[dsList.size()]);
+    public DataSourceWrapper[] getAllDataSource() {
+        return dsList.toArray(new DataSourceWrapper[dsList.size()]);
     }
 }

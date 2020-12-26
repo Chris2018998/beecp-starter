@@ -21,6 +21,23 @@ package cn.beecp.boot;
  *  @author Chris.Liao
  */
 public class SystemUtil {
+
+    //Spring dataSource configuration prefix-key name
+    public static final String Spring_DS_Prefix = "spring.datasource";
+
+    //Spring dataSource configuration key name
+    public static final String Spring_DS_KEY_NameList = "nameList";
+
+    //indicator for sql execution trace
+    public static final String Spring_DS_KEY_ExecutionTrace = "sqlExecutionTrace";
+
+    //timeout ms,when timeout then removed from trace queue
+    public static final String Spring_DS_KEY_ExecutionTrace_Timeout = "sqlExecutionTraceTimeout";
+
+    //Default DataSourceName
+    public static final String Default_DS_Class_Name = "cn.beecp.BeeDataSource";
+
+
     public static final boolean isBlank(String str) {
         if (str == null) return true;
         int strLen = str.length();
