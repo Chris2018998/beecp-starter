@@ -46,9 +46,6 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
 
 
-
-
-
   
 **单数据源范例**
 ---
@@ -132,6 +129,7 @@ application.properties
 
 **SQL执行监控**
 ---
+
 ```xml
 spring.datasource.sqlExecutionTrace=true            //开启动SQL监控(默认为True)
 spring.datasource.sqlExecutionTraceMaxSize=1000     //SQL最大跟踪个数
