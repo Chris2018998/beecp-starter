@@ -45,6 +45,10 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |jdbcUrl                       | JDBC连接URL                            | 是                   |spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test|
 |driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
 
+
+
+
+
   
 **单数据源范例**
 ---
@@ -125,6 +129,14 @@ application.properties
 |com.alibaba.druid.pool.DruidDataSource  |  cn.beecp.boot.setFactory.DruidDataSourceSetFactory     | 
 |org.apache.tomcat.jdbc.pool.DataSource  |  cn.beecp.boot.setFactory.TomcatJdbcDataSourceSetFactory | 
 
+
+**SQL执行监控**
+---
+spring.datasource.sqlExecutionTrace=true            //开启动SQL监控(默认为True)
+spring.datasource.sqlExecutionTraceMaxSize=1000     //SQL最大跟踪个数
+spring.datasource.sqlExecutionTraceTimeout=18000    //记录超时，大于此值，则将从Trace队列中移除
+spring.datasource.sqlExecutionAlertTime=6000        //SQL执行时间预警值
+spring.datasource.sqlExecutionAlertAction=xxxx      //SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.monitor.proxy.SqlExecutionAlert)
 
 **数据源池监控**
 ---
