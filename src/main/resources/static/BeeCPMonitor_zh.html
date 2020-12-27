@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>小蜜蜂连接池监控</title>
+    <link href="js/BeeCPMonitorView.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- tab栏 -->
+<ul id="tabs">
+    <li class="current"><a href="#" rel="external nofollow" title="tab1">连接池列表</a></li>
+    <li><a href="#" rel="external nofollow" title="tab2">SQL执行情况</a></li>
+</ul>
+<!-- 对应显示内容 -->
+<div id="content">
+    <div class="item show" id="tab1">
+        <table id="pool-monitorTable">
+            <thead>
+            <tr>
+                <th>池名称</th>
+                <th>池模式</th>
+                <th>池状态</th>
+                <th>最大连接</th>
+                <th>闲置连接</th>
+                <th>使用中连接</th>
+                <th>信号等待数</th>
+                <th>传递等待数</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <p></p>
+        <div align="center">
+            <input id="pool_Refresh" type="button" valign="center" value="刷 新"/>
+            <p></p>
+        </div>
+    </div>
+    <div class="item" id="tab2">
+        <table class="table table-hover" id="sql-monitorTable">
+            <thead>
+            <tr>
+                <th>SQL语句</th>
+                <th>所属池</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>执行时间(毫秒)</th>
+                <th>是否成功</th>
+                <th>执行方法</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <p></p>
+        <div align="center">
+            <input id="sql-refresh" type="button" valign="center" value="刷 新"/>
+            <p></p>
+        </div>
+    </div>
+</div>
+<script src="js/jquery-1.9.0.min.js" type="text/javascript"></script>
+<script src="js/jquery.tablesort.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $('table').tablesort().data('tablesort');
+        var poolURL = getContextPath() + '/dsMonitor/getPoolList';
+        var sqlURL = getContextPath() + '/dsMonitor/getSqlExecTraceList';
+
+        $("#pool_Refresh").click(function () {
+            $.ajax({
+                type: 'GET',
+                url: poolURL,
+                dataType: 'json',
+                success: function (data) {
+                    console.info(data);
+                    $("#pool-monitorTable tr:not(:first)").empty();
+                    if (data) {
+                        $.each(data, function (i, element) {
+                            var mode = (element.poolMode == 'compete') ? '竞争' : '公平';
+                            var state;
+                            if (element.poolState == 1)
+                                state = "未初始化";
+                            else if (element.poolState == 2)
+                                state = "已启动";
+                            else if (element.poolState == 3)
+                                state = "已关闭";
+                            else if (element.poolState == 4)
+                                state = "重置中";
+
+                            var tableHtml = "<tr>" +
+                                "<td>" + element.poolName + "</td>" +
+                                "<td>" + mode + "</td>" +
+                                "<td>" + state + "</td>" +
+                                "<td>" + element.maxActive + "</td>" +
+                                "<td>" + element.idleSize + "</td>" +
+                                "<td>" + element.usingSize + "</td>" +
+                                "<td>" + element.semaphoreWaiterSize + "</td>" +
+                                "<td>" + element.transferWaiterSize + "</td>" +
+                                "</tr>";
+                            $("#pool-monitorTable").append(tableHtml);
+                        });
+                    }
+                }
+            });
+        });
+
+        $("#sql-refresh").click(function () {
+            $.ajax({
+                type: 'GET',
+                url: sqlURL,
+                dataType: 'json',
+                success: function (data) {
+                    console.info(data);
+                    $("#sql-monitorTable tr:not(:first)").empty();
+                    if (data) {
+                        $.each(data, function (i, element) {
+                            var tableHtml = "<tr>" +
+                                "<td>" + element.executeSQL + "</td>" +
+                                "<td>" + element.poolName + "</td>" +
+                                "<td>" + element.startTime + "</td>" +
+                                "<td>" + element.endTime + "</td>" +
+                                "<td>" + element.tookTimeMs + "</td>" +
+                                "<td>" + element.success + "</td>" +
+                                "<td>" + element.statementType + '.' + element.methodName + "</td>" +
+                                "</tr>";
+                            $("#sql-monitorTable").append(tableHtml);
+                        });
+                    }
+                }
+            });
+        });
+
+        function getContextPath() {
+            var webFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = webFullPath.indexOf(strPath);
+            var webHostPath = webFullPath.substring(0, pos);
+            var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
+            return (webHostPath + projectName);
+        }
+
+        $("#pool_Refresh").trigger("click");
+
+
+        $('#tabs a').click(function (e) {
+            e.preventDefault();
+            $('#tabs li').removeClass("current").removeClass("hoverItem");
+            $(this).parent().addClass("current");
+            $("#content div").removeClass("show");
+            $('#' + $(this).attr('title')).addClass('show');
+        });
+
+        $('#tabs a').hover(function () {
+            if (!$(this).parent().hasClass("current")) {
+                $(this).parent().addClass("hoverItem");
+            }
+        }, function () {
+            $(this).parent().removeClass("hoverItem");
+        });
+    });
+</script>
+　　
+</body>
+</html>

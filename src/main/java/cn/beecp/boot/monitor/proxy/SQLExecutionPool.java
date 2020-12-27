@@ -21,11 +21,14 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /*
  * SQL Execute Monitor center
@@ -35,36 +38,59 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SQLExecutionPool {
     private static final SQLExecutionPool instance = new SQLExecutionPool();
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private long tracedTimeoutMs = TimeUnit.MINUTES.toMillis(3);
+    private int traceMaxSize = 1000;
+    private SqlExecutionAlert sqlexecutionAlert = new SqlExecutionAlert();
+    private long sqlExecutionAlertTime = TimeUnit.MINUTES.toMillis(1);
     private AtomicInteger tracedSize = new AtomicInteger(0);
+    private long traceTimeoutMs = TimeUnit.MINUTES.toMillis(3);
+
     private ConcurrentLinkedQueue<SQLExecutionVo> sqlTraceQueue = new ConcurrentLinkedQueue<SQLExecutionVo>();
     private ScheduledThreadPoolExecutor timeoutSchExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
+    private LinkedList<SQLExecutionVo> alertList = new LinkedList();
 
     private SQLExecutionPool() {
-        timeoutSchExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
+        timeoutSchExecutor.setKeepAliveTime(15, SECONDS);
+        timeoutSchExecutor.allowCoreThreadTimeOut(true);
         timeoutSchExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {// check idle connection
                 removeTimeoutTrace();
             }
-        }, 1000, 3, TimeUnit.MINUTES);
+        }, 0, 3, TimeUnit.SECONDS);
     }
 
     public static final SQLExecutionPool getInstance() {
         return instance;
     }
 
+    public void setTraceMaxSize(int traceMaxSize) {
+        if (traceMaxSize > 0)
+            this.traceMaxSize = traceMaxSize;
+    }
+
+    public void setTraceTimeoutMs(long traceTimeoutMs) {
+        if (traceTimeoutMs > 0)
+            this.traceTimeoutMs = traceTimeoutMs;
+    }
+
+    public void setSqlExecutionAlertTime(long sqlExecutionAlertTime) {
+        if (sqlExecutionAlertTime > 0)
+            this.sqlExecutionAlertTime = sqlExecutionAlertTime;
+    }
+
+    public void setSqlExecutionAlert(SqlExecutionAlert arlert) {
+        if (arlert != null)
+            this.sqlexecutionAlert = arlert;
+    }
+
     public final ConcurrentLinkedQueue getTraceQueue() {
         return sqlTraceQueue;
     }
 
-    public void setTracedTimeoutMs(long tracedTimeoutMs) {
-        this.tracedTimeoutMs = tracedTimeoutMs;
-    }
-
-    Object executeSQL(SQLExecutionVo vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
+    Object executeStatement(SQLExecutionVo vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
         vo.setMethodName(method.getName());
-        tracedSize.incrementAndGet();
+        int size = tracedSize.incrementAndGet();
         sqlTraceQueue.offer(vo);
+        if (size > traceMaxSize) sqlTraceQueue.poll();
 
         try {
             Date startDate = new Date();
@@ -91,19 +117,26 @@ public class SQLExecutionPool {
     }
 
     private void removeTimeoutTrace() {
+        alertList.clear();
         Iterator<SQLExecutionVo> itor = sqlTraceQueue.iterator();
         while (itor.hasNext()) {
             SQLExecutionVo vo = itor.next();
-            if (System.currentTimeMillis() - vo.getStartTimeMs() > tracedTimeoutMs) {
+            if (vo.getTookTimeMs() >= traceTimeoutMs)
+                alertList.add(vo);
+            if (System.currentTimeMillis() - vo.getStartTimeMs() > traceTimeoutMs) {
                 tracedSize.decrementAndGet();
                 sqlTraceQueue.remove(vo);
             }
+        }
+
+        if (!alertList.isEmpty()) {
+            sqlexecutionAlert.alert(alertList);
         }
     }
 
     private static final class TimeoutScanThreadThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
-            Thread th = new Thread(r, "SQLTrace-TimeoutScan");
+            Thread th = new Thread(r, "SQLExecTrace-TimeoutScan");
             th.setDaemon(true);
             return th;
         }

@@ -36,12 +36,12 @@ public class DataSourceMonitor {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
     private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
 
-    @RequestMapping("/getConnectionPoolList")
+    @RequestMapping("/getPoolList")
     public List<ConnectionPoolMonitorVo> getJson() {
         return getPoolInfoList();
     }
 
-    @RequestMapping("/getSQLExecutionList")
+    @RequestMapping("/getSqlExecTraceList")
     public Object getSQLExecutionListJson() {
         return SQLExecutionPool.getInstance().getTraceQueue();
     }

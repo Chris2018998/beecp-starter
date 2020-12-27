@@ -24,10 +24,10 @@ import java.util.List;
  * @author Chris.Liao
  */
 public class DataSourceCollector {
-    private static DataSourceCollector single = new DataSourceCollector();
+    private final static DataSourceCollector single = new DataSourceCollector();
     private List<DataSourceWrapper> dsList = new LinkedList<DataSourceWrapper>();
 
-    public static DataSourceCollector getInstance() {
+    public final static DataSourceCollector getInstance() {
         return single;
     }
 

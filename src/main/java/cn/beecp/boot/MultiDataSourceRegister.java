@@ -18,7 +18,6 @@ package cn.beecp.boot;
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.monitor.DataSourceCollector;
 import cn.beecp.boot.monitor.DataSourceWrapper;
-import cn.beecp.boot.monitor.proxy.SQLExecutionPool;
 import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,7 @@ import static cn.beecp.boot.SystemUtil.*;
  *
  *   @author Chris.Liao
  */
-public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefinitionRegistrar {
+public class MultiDataSourceRegister extends SingleDataSourceRegister implements EnvironmentAware, ImportBeanDefinitionRegistrar {
 
     //Spring  DataSourceAttributeSetFactory map
     private static final Map<Class, DataSourceAttributeSetFactory> setFactoryMap = new HashMap<>();
@@ -98,29 +97,13 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         String dataSourceNames = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
         if (!SystemUtil.isBlank(dataSourceNames)) {
             String[] dsNames = dataSourceNames.trim().split(",");
-            String sqlExecTraceInd = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace);
-            String sqlExecTraceTimeout = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace_Timeout);
-
-            boolean traceSqlExec = true;
-            if (!SystemUtil.isBlank(sqlExecTraceInd)) {
-                try {
-                    traceSqlExec = Boolean.parseBoolean(sqlExecTraceInd.trim());
-                } catch (Throwable e) {
-                }
-            }
-            if (!SystemUtil.isBlank(sqlExecTraceTimeout)) {
-                try {
-                    SQLExecutionPool.getInstance().setTracedTimeoutMs(Long.parseLong(sqlExecTraceTimeout.trim()));
-                } catch (Throwable e) {
-                }
-            }
-
+            boolean traceSqlExec = setSQLExecutionTrace(environment);
             for (String dsName : dsNames) {
                 if (SystemUtil.isBlank(dsName)) continue;
                 dsName = dsName.trim();
                 String dsConfigPrefix = Spring_DS_Prefix + "." + dsName;
-                String jndiNameKeyName = dsConfigPrefix + ".jndiName";
-                String primaryKeyName = dsConfigPrefix + ".primary";
+                String jndiNameKeyName = dsConfigPrefix + "." + Spring_DS_KEY_Jndi;
+                String primaryKeyName = dsConfigPrefix + "." + Spring_DS_KEY_Primary;
 
                 String jndiNameText = environment.getProperty(jndiNameKeyName);
                 String primaryText = environment.getProperty(primaryKeyName);
@@ -175,8 +158,9 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
 
     //maybe XADataSource,if failed,then log error info,and return null
     private Object createDataSource(String dsName, String dsConfigPrefix, Environment environment) {
-        String dataSourceType = dsConfigPrefix + ".datasourceType";
-        String dataSourceAttributeSetFactory = dsConfigPrefix + ".datasourceAttributeSetFactory";
+        String dataSourceType = dsConfigPrefix + "." + Spring_DS_KEY_DatasourceType;
+        String dataSourceAttributeSetFactory = dsConfigPrefix + "." + Spring_DS_KEY_DatasourceAttributeSetFactory;
+
         String dataSourceClassName = environment.getProperty(dataSourceType);
         String dataSourceAttributeSetFactoryClassName = environment.getProperty(dataSourceAttributeSetFactory);
 

@@ -19,6 +19,7 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.monitor.DataSourceCollector;
 import cn.beecp.boot.monitor.DataSourceWrapper;
 import cn.beecp.boot.monitor.proxy.SQLExecutionPool;
+import cn.beecp.boot.monitor.proxy.SqlExecutionAlert;
 import cn.beecp.boot.setFactory.BeeDataSourceSetFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,28 +43,62 @@ public class SingleDataSourceRegister {
 
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        String sqlExecTraceInd = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace);
-        String sqlExecTraceTimeout = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_ExecutionTrace_Timeout);
+        boolean traceSqlExec = setSQLExecutionTrace(environment);
+        BeeDataSource ds = new BeeDataSource();
+        BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
+        dsAttrSetFactory.setAttributes(ds, Spring_DS_Prefix, environment);//set properties to dataSource
+        DataSourceWrapper dsWrapper = new DataSourceWrapper(ds, traceSqlExec);
+        DataSourceCollector.getInstance().addDataSource(dsWrapper);
+        return dsWrapper;
+    }
 
-        boolean traceSqlExecution = true;
+    //read sql execution trace configuration
+    protected boolean setSQLExecutionTrace(Environment environment) {
+        String sqlExecTraceInd = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_SQL_Exec_Trace);
+        String sqlExecTraceTimeout = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_SQL_Exec_Trace_Timeout);
+        String sqlExecTraceMaxSize = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_SQL_Exec_Trace_MaxSize);
+        String sqlExecutionAlertTime = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_SQL_Exec_Alert_Time);
+        String sqlExecutionAlertAction = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_SQL_Exec_Alert_Action);
+
+        boolean traceSQLExecution = true;
+        SQLExecutionPool tracePool = SQLExecutionPool.getInstance();
         if (!SystemUtil.isBlank(sqlExecTraceInd)) {
             try {
-                traceSqlExecution = Boolean.parseBoolean(sqlExecTraceInd.trim());
+                traceSQLExecution = Boolean.parseBoolean(sqlExecTraceInd.trim());
             } catch (Throwable e) {
             }
         }
         if (!SystemUtil.isBlank(sqlExecTraceTimeout)) {
             try {
-                SQLExecutionPool.getInstance().setTracedTimeoutMs(Long.parseLong(sqlExecTraceTimeout.trim()));
+                tracePool.setTraceTimeoutMs(Long.parseLong(sqlExecTraceTimeout.trim()));
             } catch (Throwable e) {
             }
         }
 
-        BeeDataSource ds = new BeeDataSource();
-        BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
-        dsAttrSetFactory.setAttributes(ds, Spring_DS_Prefix, environment);//set properties to dataSource
-        DataSourceWrapper dsWrapper = new DataSourceWrapper(ds, traceSqlExecution);
-        DataSourceCollector.getInstance().addDataSource(dsWrapper);
-        return dsWrapper;
+        if (!SystemUtil.isBlank(sqlExecTraceMaxSize)) {
+            try {
+                tracePool.setTraceMaxSize(Integer.parseInt(sqlExecTraceMaxSize.trim()));
+            } catch (Throwable e) {
+            }
+        }
+
+        if (!SystemUtil.isBlank(sqlExecutionAlertTime)) {
+            try {
+                tracePool.setSqlExecutionAlertTime(Long.parseLong(sqlExecutionAlertTime.trim()));
+            } catch (Throwable e) {
+            }
+        }
+
+        if (!SystemUtil.isBlank(sqlExecutionAlertAction)) {
+            try {
+                Class actionClass = Class.forName(sqlExecutionAlertAction);
+                SqlExecutionAlert alert = (SqlExecutionAlert) actionClass.newInstance();
+
+                tracePool.setSqlExecutionAlert(alert);
+            } catch (Throwable e) {
+            }
+        }
+
+        return traceSQLExecution;
     }
 }

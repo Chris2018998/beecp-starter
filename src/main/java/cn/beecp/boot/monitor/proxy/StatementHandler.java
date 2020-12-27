@@ -25,6 +25,7 @@ import java.sql.Statement;
  * @author Chris.Liao
  */
 public class StatementHandler implements InvocationHandler {
+    private static final String Execute = "execute";
     private String poolName;
     private String targetSql;
     private Statement statement;
@@ -42,17 +43,16 @@ public class StatementHandler implements InvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String name = method.getName();
-        if (name.startsWith("execute")) {
+        if (method.getName().startsWith(Execute)) {
             if (args == null || args.length == 0) {
                 if (!SystemUtil.isBlank(targetSql)) {
                     SQLExecutionVo sqlVo = new SQLExecutionVo(targetSql, poolName, statementType);
-                    return SQLExecutionPool.getInstance().executeSQL(sqlVo, statement, method, args, poolName);
+                    return SQLExecutionPool.getInstance().executeStatement(sqlVo, statement, method, args, poolName);
                 } else
                     return method.invoke(statement, args);
             } else {
                 SQLExecutionVo sqlVo = new SQLExecutionVo(poolName, (String) args[0], statementType);
-                return SQLExecutionPool.getInstance().executeSQL(sqlVo, statement, method, args, poolName);
+                return SQLExecutionPool.getInstance().executeStatement(sqlVo, statement, method, args, poolName);
             }
         } else {
             return method.invoke(statement, args);
