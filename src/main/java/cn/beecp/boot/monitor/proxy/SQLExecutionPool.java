@@ -121,8 +121,11 @@ public class SQLExecutionPool {
         Iterator<SQLExecutionVo> itor = sqlTraceQueue.iterator();
         while (itor.hasNext()) {
             SQLExecutionVo vo = itor.next();
-            if (vo.getTookTimeMs() >= traceTimeoutMs)
+            if (vo.getTookTimeMs() >= sqlExecutionAlertTime) {
+                vo.setTimeAlert(true);
                 alertList.add(vo);
+            }
+
             if (System.currentTimeMillis() - vo.getStartTimeMs() > traceTimeoutMs) {
                 tracedSize.decrementAndGet();
                 sqlTraceQueue.remove(vo);

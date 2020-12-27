@@ -28,7 +28,8 @@ public class SQLExecutionVo {
     private long startTimeMs;
     private String endTime;
     private long tookTimeMs;
-    private boolean isSuccess;
+    private boolean success;
+    private boolean timeAlert;
     private String methodName;
     private Throwable failCause;
 
@@ -95,11 +96,19 @@ public class SQLExecutionVo {
     }
 
     public boolean isSuccess() {
-        return isSuccess;
+        return success;
     }
 
     public void setSuccess(boolean success) {
-        isSuccess = success;
+        this.success = success;
+    }
+
+    public boolean isTimeAlert() {
+        return timeAlert;
+    }
+
+    public void setTimeAlert(boolean timeAlert) {
+        this.timeAlert = timeAlert;
     }
 
     public String getMethodName() {
