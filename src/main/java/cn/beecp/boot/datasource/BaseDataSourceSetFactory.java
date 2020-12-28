@@ -22,6 +22,9 @@ import org.springframework.core.env.Environment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import static cn.beecp.boot.SystemUtil.Spring_DS_Prefix;
+import static cn.beecp.boot.SystemUtil.propertyToField;
+
 /*
  *  Data Source Base Set Factory
  *
@@ -46,31 +49,32 @@ public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
         Field[] fields = getConfigFields();
         for (Field field : fields) {
             String configVal = environment.getProperty(configPrefix + "." + field.getName());
-            if (!SystemUtil.isBlank(configVal)) {
-                configVal = configVal.trim();
+            if (SystemUtil.isBlank(configVal))
+                configVal = environment.getProperty(configPrefix + "." + propertyToField(field.getName()));
+            if (SystemUtil.isBlank(configVal))continue;;
 
-                Class fieldType = field.getType();
-                boolean ChangedAccessible = false;
-                try {
-                    if (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers())) {
-                        field.setAccessible(true);
-                        ChangedAccessible = true;
-                    }
-
-                    if (fieldType.equals(String.class)) {
-                        field.set(ds, configVal);
-                    } else if (fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)) {
-                        field.set(ds, Boolean.valueOf(configVal));
-                    } else if (fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)) {
-                        field.set(ds, Integer.valueOf(configVal));
-                    } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
-                        field.set(ds, Long.valueOf(configVal));
-                    } else {
-                        setAttribute(ds, field, configVal, environment);
-                    }
-                } finally {
-                    if (ChangedAccessible) field.setAccessible(false);//reset
+            configVal = configVal.trim();
+            Class fieldType = field.getType();
+            boolean ChangedAccessible = false;
+            try {
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                    ChangedAccessible = true;
                 }
+
+                if (fieldType.equals(String.class)) {
+                    field.set(ds, configVal);
+                } else if (fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)) {
+                    field.set(ds, Boolean.valueOf(configVal));
+                } else if (fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)) {
+                    field.set(ds, Integer.valueOf(configVal));
+                } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
+                    field.set(ds, Long.valueOf(configVal));
+                } else {
+                    setAttribute(ds, field, configVal, environment);
+                }
+            } finally {
+                if (ChangedAccessible) field.setAccessible(false);//reset
             }
         }
 
