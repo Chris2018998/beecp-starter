@@ -51,7 +51,7 @@ import static cn.beecp.boot.SystemUtil.*;
  *
  *  spring.datasource.nameList=ds1,ds2
  *  spring.datasource.ds1.datasourceType=cn.beecp.BeeDataSoruce
- *  spring.datasource.ds1.datasourceAttributeSetFactory=cn.beecp.boot.BeeDsAttributeSetFactory
+ *  spring.datasource.ds1.propertySetFactory=cn.beecp.boot.BeeDsAttributeSetFactory
  *  spring.datasource.ds1.primary=true
  *  spring.datasource.ds1.attributeX=xxxx
  *
@@ -95,7 +95,8 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                                               BeanDefinitionRegistry registry) {
         //store dataSource register Info
         List<DsRegisterInfo> dataSourceRegisterList = new LinkedList();
-        String dataSourceNames = environment.getProperty(Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
+        String dataSourceNames = getConfigValue(Spring_DS_Prefix, Spring_DS_KEY_NameList, environment);
+
         if (!SystemUtil.isBlank(dataSourceNames)) {
             String[] dsNames = dataSourceNames.trim().split(",");
             configSqlTracePool(environment);
@@ -105,16 +106,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 if (SystemUtil.isBlank(dsName)) continue;
                 dsName = dsName.trim();
                 String dsConfigPrefix = Spring_DS_Prefix + "." + dsName;
-                String jndiNameKeyName = dsConfigPrefix + "." + Spring_DS_KEY_Jndi;
-                String primaryKeyName = dsConfigPrefix + "." + Spring_DS_KEY_Primary;
 
-                String jndiNameText = environment.getProperty(jndiNameKeyName);
-                String primaryText = environment.getProperty(primaryKeyName);
+                String jndiNameTex = getConfigValue(dsConfigPrefix, Spring_DS_KEY_Jndi, environment);
+                String primaryText = environment.getProperty(dsConfigPrefix + "." + Spring_DS_KEY_Primary);
                 boolean primaryDataSource = SystemUtil.isBlank(primaryText) ? false : Boolean.valueOf(primaryText.trim());
 
                 Object ds = null;//may be DataSource or XADataSource
-                if (!SystemUtil.isBlank(jndiNameText)) {//jndi dataSource
-                    ds = lookupJndiDataSource(jndiNameText.trim());
+                if (!SystemUtil.isBlank(jndiNameTex)) {//jndi dataSource
+                    ds = lookupJndiDataSource(jndiNameTex.trim());
                 } else {//independent type
                     ds = createDataSource(dsName, dsConfigPrefix, environment);
                 }
@@ -161,11 +160,8 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
     //maybe XADataSource,if failed,then log error info,and return null
     private Object createDataSource(String dsName, String dsConfigPrefix, Environment environment) {
-        String dataSourceType = dsConfigPrefix + "." + Spring_DS_KEY_DatasourceType;
-        String dataSourceAttributeSetFactory = dsConfigPrefix + "." + Spring_DS_KEY_DatasourceAttributeSetFactory;
-
-        String dataSourceClassName = environment.getProperty(dataSourceType);
-        String dataSourceAttributeSetFactoryClassName = environment.getProperty(dataSourceAttributeSetFactory);
+        String dataSourceClassName = getConfigValue(dsConfigPrefix, Spring_DS_KEY_DatasourceType, environment);
+        String dataSourceAttributeSetFactoryClassName = getConfigValue(dsConfigPrefix, Spring_DS_KEY_PropertySetFactory, environment);
 
         if (SystemUtil.isBlank(dataSourceClassName))
             dataSourceClassName = Default_DS_Class_Name;//BeeDataSource is default
@@ -191,8 +187,8 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         DsPropertySetFactory dsAttrSetFactory = null;
         if (!SystemUtil.isBlank(dataSourceAttributeSetFactoryClassName)) {
             dataSourceAttributeSetFactoryClassName = dataSourceAttributeSetFactoryClassName.trim();
-            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DsPropertySetFactory.class, "DsAttributeSetFactory");
-            dsAttrSetFactory = (DsPropertySetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DsPropertySetFactory.class, "DsAttributeSetFactory");
+            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DsPropertySetFactory.class, "DsPropertySetFactory");
+            dsAttrSetFactory = (DsPropertySetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DsPropertySetFactory.class, "DsPropertySetFactory");
         }
 
         if (dsAttrSetFactory == null) dsAttrSetFactory = setFactoryMap.get(dataSourceClass);

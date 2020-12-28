@@ -71,9 +71,7 @@ public class SingleDataSourceRegister {
             while (itor.hasNext()) {
                 Field field = itor.next();
                 String name = field.getName();
-                String configVal = environment.getProperty(Spring_DS_Prefix + "." + name);
-                if (SystemUtil.isBlank(configVal))
-                    configVal = environment.getProperty(Spring_DS_Prefix + "." + propertyToField(name));
+                String configVal = getConfigValue(Spring_DS_Prefix, name, environment);
 
                 if (!SystemUtil.isBlank(configVal))
                     setSqlTracePoolFieldValue(field, configVal, tracePool);
@@ -108,5 +106,12 @@ public class SingleDataSourceRegister {
         } finally {
             if (ChangedAccessible) field.setAccessible(false);//reset field Accessible
         }
+    }
+
+    protected String getConfigValue(String configPrefix, String key, Environment environment) {
+        String value = environment.getProperty(configPrefix + "." + key);
+        if (SystemUtil.isBlank(value))
+            value = environment.getProperty(configPrefix + "." + propertyToField(key));
+        return value;
     }
 }

@@ -20,9 +20,7 @@ import cn.beecp.boot.SystemUtil;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
-import static cn.beecp.boot.SystemUtil.Spring_DS_Prefix;
 import static cn.beecp.boot.SystemUtil.propertyToField;
 
 /*
@@ -51,7 +49,8 @@ public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
             String configVal = environment.getProperty(configPrefix + "." + field.getName());
             if (SystemUtil.isBlank(configVal))
                 configVal = environment.getProperty(configPrefix + "." + propertyToField(field.getName()));
-            if (SystemUtil.isBlank(configVal))continue;;
+            if (SystemUtil.isBlank(configVal)) continue;
+            ;
 
             configVal = configVal.trim();
             Class fieldType = field.getType();

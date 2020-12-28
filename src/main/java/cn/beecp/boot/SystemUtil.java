@@ -37,11 +37,11 @@ public class SystemUtil {
     //Datasource class name
     public static final String Spring_DS_KEY_DatasourceType = "datasourceType";
 
+    //Datasource attribute set factory
+    public static final String Spring_DS_KEY_PropertySetFactory = "propertySetFactory";
+
     //Default DataSourceName
     public static final String Default_DS_Class_Name = "cn.beecp.BeeDataSource";
-
-    //Datasource attribute set factory
-    public static final String Spring_DS_KEY_DatasourceAttributeSetFactory = "datasourcePropertySetFactory";
 
     public static final boolean isBlank(String str) {
         if (str == null) return true;
