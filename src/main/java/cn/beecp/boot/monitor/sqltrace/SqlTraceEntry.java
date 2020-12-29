@@ -20,7 +20,7 @@ package cn.beecp.boot.monitor.sqltrace;
  *
  *  @author Chris.Liao
  */
-public class SqlTraceEntry {
+public class SqlTraceEntry implements Comparable<SqlTraceEntry> {
     private String sql;
     private String poolName;
     private String statementType;
@@ -137,5 +137,12 @@ public class SqlTraceEntry {
 
     public void setFailCause(Throwable failCause) {
         this.failCause = failCause;
+    }
+
+    public int compareTo(SqlTraceEntry o) {
+        long cmp = execTookTimeMs - o.execTookTimeMs;
+        if (cmp == 0) return 0;
+        if (cmp > 0) return -1;
+        return 1;
     }
 }

@@ -16,12 +16,12 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.DsPropertySetFactory;
-import cn.beecp.boot.SystemUtil;
+import cn.beecp.boot.DataSourceUtil;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
 
-import static cn.beecp.boot.SystemUtil.propertyToField;
+import static cn.beecp.boot.DataSourceUtil.getConfigValue;
 
 /*
  *  Data Source Base Set Factory
@@ -46,11 +46,8 @@ public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
     public void setAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
         Field[] fields = getConfigFields();
         for (Field field : fields) {
-            String configVal = environment.getProperty(configPrefix + "." + field.getName());
-            if (SystemUtil.isBlank(configVal))
-                configVal = environment.getProperty(configPrefix + "." + propertyToField(field.getName()));
-            if (SystemUtil.isBlank(configVal)) continue;
-            ;
+            String configVal = getConfigValue(environment, configPrefix, field.getName());
+            if (DataSourceUtil.isBlank(configVal)) continue;
 
             configVal = configVal.trim();
             Class fieldType = field.getType();

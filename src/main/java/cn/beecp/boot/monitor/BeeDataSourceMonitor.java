@@ -38,20 +38,19 @@ public class BeeDataSourceMonitor {
     private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
 
     @RequestMapping("/getPoolList")
-    public List<ConnectionPoolMonitorVo> getJson() {
+    public List<ConnectionPoolMonitorVo> getPoolList() {
         return getPoolInfoList();
     }
 
-    @RequestMapping("/getSqlExecTraceList")
-    public Object getSQLExecutionListJson() {
+    @RequestMapping("/getSqTraceList")
+    public Object getSqTraceList() {
         return SqlTracePool.getInstance().getTraceQueue();
     }
 
     private List<ConnectionPoolMonitorVo> getPoolInfoList() {
         poolInfoList.clear();
         BeeDataSourceCollector collector = BeeDataSourceCollector.getInstance();
-        BeeDataSourceWrapper[] dsArray = collector.getAllDataSource();
-        for (BeeDataSourceWrapper ds : dsArray) {
+        for (BeeDataSourceWrapper ds : collector.getAllDataSource()) {
             try {
                 ConnectionPoolMonitorVo vo = ds.getMonitorVo();
                 if (vo.getPoolState() == 3) {//POOL_CLOSED

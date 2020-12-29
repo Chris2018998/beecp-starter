@@ -16,7 +16,7 @@
 package cn.beecp.boot.monitor;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.SystemUtil;
+import cn.beecp.boot.DataSourceUtil;
 import cn.beecp.boot.monitor.sqltrace.ProxyFactory;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 
@@ -48,7 +48,7 @@ public class BeeDataSourceWrapper implements DataSource {
     public Connection getConnection() throws SQLException {
         Connection con = delegete.getConnection();
         if (traceSQL) {
-            if (SystemUtil.isBlank(poolName)) {
+            if (DataSourceUtil.isBlank(poolName)) {
                 ConnectionPoolMonitorVo vo = delegete.getMonitorVo();
                 poolName = vo.getPoolName();
             }

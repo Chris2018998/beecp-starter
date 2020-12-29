@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.monitor.sqltrace;
 
-import cn.beecp.boot.SystemUtil;
+import cn.beecp.boot.DataSourceUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -39,7 +39,7 @@ public class StatementHandler implements InvocationHandler {
         this.poolName = poolName;
         this.statement = statement;
         this.statementType = statementType;
-        if (!SystemUtil.isBlank(sql)) {
+        if (!DataSourceUtil.isBlank(sql)) {
             traceEntry = new SqlTraceEntry(sql, poolName, statementType);
         }
     }
@@ -48,12 +48,12 @@ public class StatementHandler implements InvocationHandler {
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {
                 if (traceEntry != null) {
-                    return SqlTracePool.getInstance().executeStatement(traceEntry, statement, method, args, poolName);
+                    return SqlTracePool.getInstance().trace(traceEntry, statement, method, args, poolName);
                 } else
                     return method.invoke(statement, args);
             } else {
                 SqlTraceEntry sqlVo = new SqlTraceEntry(poolName, (String) args[0], statementType);
-                return SqlTracePool.getInstance().executeStatement(sqlVo, statement, method, args, poolName);
+                return SqlTracePool.getInstance().trace(sqlVo, statement, method, args, poolName);
             }
         } else {
             return method.invoke(statement, args);

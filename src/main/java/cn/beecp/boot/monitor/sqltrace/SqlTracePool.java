@@ -17,10 +17,8 @@ package cn.beecp.boot.monitor.sqltrace;
 
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,12 +44,12 @@ public class SqlTracePool {
     private static final SqlTracePool instance = new SqlTracePool();
     private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private final List<Field> configFields = new ArrayList<Field>();
     private final LinkedList<SqlTraceEntry> alertList = new LinkedList();
     private final AtomicInteger tracedQueueSize = new AtomicInteger(0);
     private final ConcurrentLinkedQueue<SqlTraceEntry> traceQueue = new ConcurrentLinkedQueue<SqlTraceEntry>();
     private final ScheduledThreadPoolExecutor timeoutSchExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
 
+    private boolean inited;
     private boolean sqlTrace = true;
     private boolean sqlShow = false;
     private int sqlTraceSize = 1000;
@@ -67,64 +65,46 @@ public class SqlTracePool {
                 removeTimeoutTrace();
             }
         }, 1, 3, TimeUnit.SECONDS);
-
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (!Modifier.isFinal(field.getModifiers())) {
-                configFields.add(field);
-            }
-        }
     }
 
     public static final SqlTracePool getInstance() {
         return instance;
     }
 
+    public void init(SqlTraceConfig config) {
+        if (!inited) {
+            int sqlTraceSize = config.getSqlTraceSize();
+            long sqlTraceTimeout = config.getSqlTraceTimeout();
+            long sqlTraceAlertTime = config.getSqlTraceAlertTime();
+            SqlTraceAlert sqlTraceAlert = config.getSqlTraceAlert();
+
+            this.sqlTrace = config.isSqlTrace();
+            this.sqlShow = config.isSqlShow();
+            if (sqlTraceSize > 0 && sqlTraceSize < 1000)
+                this.sqlTraceSize = sqlTraceSize;
+            if (sqlTraceTimeout > 0)
+                this.sqlTraceTimeout = sqlTraceTimeout;
+            if (sqlTraceAlertTime > 0)
+                this.sqlTraceAlertTime = sqlTraceAlertTime;
+            if (sqlTraceAlert != null)
+                this.sqlTraceAlert = sqlTraceAlert;
+            this.inited = true;
+        }
+    }
+
     public boolean isSqlTrace() {
         return this.sqlTrace;
-    }
-
-    public void setSqlTrace(boolean sqlTrace) {
-        this.sqlTrace = sqlTrace;
-    }
-
-    public void setSqlShow(boolean sqlShow) {
-        this.sqlShow = sqlShow;
-    }
-
-    public void setSqlTraceSize(int sqlTraceSize) {
-        if (sqlTraceSize > 0 && sqlTraceSize < 1000)
-            this.sqlTraceSize = sqlTraceSize;
-    }
-
-    public void setSqlTraceTimeout(long sqlTraceTimeout) {
-        if (sqlTraceTimeout > 0)
-            this.sqlTraceTimeout = sqlTraceTimeout;
-    }
-
-    public void setSqlTraceAlertTime(long sqlTraceAlertTime) {
-        if (sqlTraceAlertTime > 0)
-            this.sqlTraceAlertTime = sqlTraceAlertTime;
-    }
-
-    public void setSqlTraceAlert(SqlTraceAlert sqlTraceAlert) {
-        if (sqlTraceAlert != null)
-            this.sqlTraceAlert = sqlTraceAlert;
-    }
-
-    public List<Field> getConfigFields() {
-        return configFields;
     }
 
     public final int getTraceQueueSize() {
         return tracedQueueSize.get();
     }
 
-    public final ConcurrentLinkedQueue getTraceQueue() {
-        return traceQueue;
+    public final Collection<SqlTraceEntry> getTraceQueue() {
+        return new TreeSet(traceQueue);
     }
 
-    Object executeStatement(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
+    Object trace(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
         vo.setMethodName(method.getName());
         int size = tracedQueueSize.incrementAndGet();
         traceQueue.offer(vo);

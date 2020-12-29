@@ -20,6 +20,7 @@ import cn.beecp.boot.datasource.BeeDataSourceSetFactory;
 import cn.beecp.boot.monitor.BeeDataSourceCollector;
 import cn.beecp.boot.monitor.BeeDataSourceWrapper;
 import cn.beecp.boot.monitor.sqltrace.SqlTraceAlert;
+import cn.beecp.boot.monitor.sqltrace.SqlTraceConfig;
 import cn.beecp.boot.monitor.sqltrace.SqlTracePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +31,9 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
 
-import static cn.beecp.boot.SystemUtil.*;
+import static cn.beecp.boot.DataSourceUtil.Spring_DS_Prefix;
+import static cn.beecp.boot.DataSourceUtil.getConfigValue;
 
 /*
  *  SpringBoot dataSource config demo
@@ -63,25 +63,21 @@ public class SingleDataSourceRegister {
     //read sql trace configuration and set then to trace pool
     protected void configSqlTracePool(Environment environment) {
         try {
-            SqlTracePool tracePool = SqlTracePool.getInstance();
-
-            List<Field> configFields = SqlTracePool.getInstance().getConfigFields();
-            Iterator<Field> itor = configFields.iterator();
-            while (itor.hasNext()) {
-                Field field = itor.next();
-                String name = field.getName();
-                String configVal = getConfigValue(Spring_DS_Prefix, name, environment);
-
-                if (!SystemUtil.isBlank(configVal))
-                    setSqlTracePoolFieldValue(field, configVal, tracePool);
+            SqlTraceConfig config = new SqlTraceConfig();
+            Field[] configFields = config.getClass().getDeclaredFields();
+            for (Field field : configFields) {
+                String configVal = getConfigValue(environment, Spring_DS_Prefix, field.getName());
+                if (!DataSourceUtil.isBlank(configVal))
+                    setSqlTraceConfig(field, configVal, config);
             }
+            SqlTracePool.getInstance().init(config);
         } catch (Exception e) {
             log.warn("Fail to config sql trace monitor", e);
         }
     }
 
-    //set one config value to SqlTracePool object
-    private void setSqlTracePoolFieldValue(Field field, String configVal, SqlTracePool tracePool) throws Exception {
+    //set one config value to sql trace config
+    private void setSqlTraceConfig(Field field, String configVal, SqlTraceConfig config) throws Exception {
         Class fieldType = field.getType();
         boolean ChangedAccessible = false;
         try {
@@ -90,29 +86,20 @@ public class SingleDataSourceRegister {
                 ChangedAccessible = true;
             }
             if (fieldType.equals(String.class)) {
-                field.set(tracePool, configVal);
+                field.set(config, configVal);
             } else if (fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)) {
-                field.set(tracePool, Boolean.valueOf(configVal));
+                field.set(config, Boolean.valueOf(configVal));
             } else if (fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)) {
-                field.set(tracePool, Integer.valueOf(configVal));
+                field.set(config, Integer.valueOf(configVal));
             } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
-                field.set(tracePool, Long.valueOf(configVal));
+                field.set(config, Long.valueOf(configVal));
             } else if (fieldType.equals(SqlTraceAlert.class)) {
                 Class actionClass = Class.forName(configVal);
                 SqlTraceAlert alert = (SqlTraceAlert) actionClass.newInstance();
-                field.set(tracePool, alert);
+                field.set(config, alert);
             }
         } finally {
             if (ChangedAccessible) field.setAccessible(false);//reset field Accessible
         }
-    }
-
-    protected String getConfigValue(String configPrefix, String key, Environment environment) {
-        String value = environment.getProperty(configPrefix + "." + key);
-        if (SystemUtil.isBlank(value))
-            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_MiddleLine));
-        if (SystemUtil.isBlank(value))
-            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_UnderLine));
-        return value;
     }
 }

@@ -118,13 +118,14 @@
                     if (data) {
                         $.each(data, function (i, element) {
                             var tableHtml = "<tr>" +
-                                "<td>" + element.executeSQL + "</td>" +
+                                "<td>" + element.sql + "</td>" +
                                 "<td>" + element.poolName + "</td>" +
-                                "<td>" + element.startTime + "</td>" +
-                                "<td>" + element.endTime + "</td>" +
-                                "<td>" + element.tookTimeMs + "</td>" +
-                                "<td>" + element.success + "</td>" +
+                                "<td>" + element.execStartTime + "</td>" +
+                                "<td>" + element.execEndTime + "</td>" +
+                                "<td>" + element.execTookTimeMs + "</td>" +
+                                "<td>" + element.execSuccess + "</td>" +
                                 "<td>" + element.statementType + '.' + element.methodName + "</td>" +
+                                "</tr>";
                                 "</tr>";
                             $("#sql-monitorTable").append(tableHtml);
                         });
