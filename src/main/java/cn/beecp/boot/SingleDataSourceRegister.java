@@ -33,8 +33,7 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
-import static cn.beecp.boot.SystemUtil.Spring_DS_Prefix;
-import static cn.beecp.boot.SystemUtil.propertyToField;
+import static cn.beecp.boot.SystemUtil.*;
 
 /*
  *  SpringBoot dataSource config demo
@@ -111,7 +110,9 @@ public class SingleDataSourceRegister {
     protected String getConfigValue(String configPrefix, String key, Environment environment) {
         String value = environment.getProperty(configPrefix + "." + key);
         if (SystemUtil.isBlank(value))
-            value = environment.getProperty(configPrefix + "." + propertyToField(key));
+            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_MiddleLine));
+        if (SystemUtil.isBlank(value))
+            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_UnderLine));
         return value;
     }
 }

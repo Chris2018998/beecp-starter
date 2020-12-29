@@ -128,7 +128,8 @@ public class SqlTracePool {
         vo.setMethodName(method.getName());
         int size = tracedQueueSize.incrementAndGet();
         traceQueue.offer(vo);
-        if (sqlTrace) log.info("Begin running sql:{}", vo.getExecuteSQL());
+        vo.setTraceStartTime(System.currentTimeMillis());
+        if (sqlTrace) log.info("Begin running sql:{}", vo.getSql());
 
         if (size > sqlTraceSize) {
             traceQueue.poll();
@@ -137,13 +138,13 @@ public class SqlTracePool {
 
         try {
             Date startDate = new Date();
-            vo.setStartTime(formatter.format(startDate));
-            vo.setStartTimeMs(startDate.getTime());
+            vo.setExecStartTime(formatter.format(startDate));
+            vo.setExecStartTimeMs(startDate.getTime());
             Object re = method.invoke(statement, args);
-            vo.setSuccess(true);
+            vo.setExecSuccess(true);
             return re;
         } catch (Throwable e) {
-            vo.setSuccess(false);
+            vo.setExecSuccess(false);
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException ee = (InvocationTargetException) e;
                 if (ee.getCause() != null) {
@@ -154,8 +155,8 @@ public class SqlTracePool {
             throw e;
         } finally {
             Date endDate = new Date();
-            vo.setEndTime(formatter.format(endDate));
-            vo.setTookTimeMs(endDate.getTime() - vo.getStartTimeMs());
+            vo.setExecEndTime(formatter.format(endDate));
+            vo.setExecTookTimeMs(endDate.getTime() - vo.getExecStartTimeMs());
         }
     }
 
@@ -164,12 +165,12 @@ public class SqlTracePool {
         Iterator<SqlTraceEntry> itor = traceQueue.iterator();
         while (itor.hasNext()) {
             SqlTraceEntry vo = itor.next();
-            if (vo.getTookTimeMs() >= sqlTraceAlertTime) {
+            if (vo.getExecTookTimeMs() >= sqlTraceAlertTime) {
                 vo.setTimeAlert(true);
                 alertList.add(vo);
             }
 
-            if (System.currentTimeMillis() - vo.getStartTimeMs() > sqlTraceTimeout) {
+            if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout) {
                 tracedQueueSize.decrementAndGet();
                 traceQueue.remove(vo);
             }

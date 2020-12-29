@@ -21,22 +21,34 @@ package cn.beecp.boot.monitor.sqltrace;
  *  @author Chris.Liao
  */
 public class SqlTraceEntry {
+    private String sql;
     private String poolName;
     private String statementType;
-    private String executeSQL;
-    private String startTime;
-    private long startTimeMs;
-    private String endTime;
-    private long tookTimeMs;
-    private boolean success;
+    private String execStartTime;
+    private long execStartTimeMs;
+
+    private String execEndTime;
+    private long execTookTimeMs;
+    private boolean execSuccess;
+    private long traceStartTime;
+
     private boolean timeAlert;
     private String methodName;
     private Throwable failCause;
 
     public SqlTraceEntry(String sql, String poolName, String statementType) {
-        this.executeSQL = sql;
+        this.sql = sql;
         this.poolName = poolName;
         this.statementType = statementType;
+        this.execStartTimeMs = System.currentTimeMillis();
+    }
+
+    public String getSql() {
+        return sql;
+    }
+
+    public void setSql(String sql) {
+        this.sql = sql;
     }
 
     public String getPoolName() {
@@ -55,52 +67,52 @@ public class SqlTraceEntry {
         this.statementType = statementType;
     }
 
-    public String getExecuteSQL() {
-        return executeSQL;
+    public String getExecStartTime() {
+        return execStartTime;
     }
 
-    public void setExecuteSQL(String executeSQL) {
-        this.executeSQL = executeSQL;
+    public void setExecStartTime(String execStartTime) {
+        this.execStartTime = execStartTime;
     }
 
-    public String getStartTime() {
-        return startTime;
+    public long getExecStartTimeMs() {
+        return execStartTimeMs;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setExecStartTimeMs(long execStartTimeMs) {
+        this.execStartTimeMs = execStartTimeMs;
     }
 
-    public long getStartTimeMs() {
-        return startTimeMs;
+    public String getExecEndTime() {
+        return execEndTime;
     }
 
-    public void setStartTimeMs(long startTimeMs) {
-        this.startTimeMs = startTimeMs;
+    public void setExecEndTime(String execEndTime) {
+        this.execEndTime = execEndTime;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public long getExecTookTimeMs() {
+        return execTookTimeMs;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setExecTookTimeMs(long execTookTimeMs) {
+        this.execTookTimeMs = execTookTimeMs;
     }
 
-    public long getTookTimeMs() {
-        return tookTimeMs;
+    public boolean isExecSuccess() {
+        return execSuccess;
     }
 
-    public void setTookTimeMs(long tookTimeMs) {
-        this.tookTimeMs = tookTimeMs;
+    public void setExecSuccess(boolean execSuccess) {
+        this.execSuccess = execSuccess;
     }
 
-    public boolean isSuccess() {
-        return success;
+    public long getTraceStartTime() {
+        return traceStartTime;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public void setTraceStartTime(long traceStartTime) {
+        this.traceStartTime = traceStartTime;
     }
 
     public boolean isTimeAlert() {

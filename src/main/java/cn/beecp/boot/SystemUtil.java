@@ -43,6 +43,13 @@ public class SystemUtil {
     //Default DataSourceName
     public static final String Default_DS_Class_Name = "cn.beecp.BeeDataSource";
 
+    //Separator MiddleLine
+    public static final String Separator_MiddleLine = "-";
+
+    //Separator UnderLine
+    public static final String Separator_UnderLine = "_";
+
+
     public static final boolean isBlank(String str) {
         if (str == null) return true;
         int strLen = str.length();
@@ -54,15 +61,16 @@ public class SystemUtil {
         return true;
     }
 
-    public static final String propertyToField(String property) {
-        if (null == property) {
+    public static final String propertyToField(String property, String separator) {
+        if (property == null) {
             return "";
         }
+
         char[] chars = property.toCharArray();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (char c : chars) {
             if (Character.isUpperCase(c)) {
-                sb.append("-" + Character.toLowerCase(c));
+                sb.append(separator + Character.toLowerCase(c));
             } else {
                 sb.append(c);
             }

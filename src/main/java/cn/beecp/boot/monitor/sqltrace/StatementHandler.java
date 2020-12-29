@@ -27,27 +27,28 @@ import java.sql.Statement;
 public class StatementHandler implements InvocationHandler {
     private static final String Execute = "execute";
     private String poolName;
-    private String targetSql;
     private Statement statement;
     private String statementType;
+    private SqlTraceEntry traceEntry;
 
     public StatementHandler(Statement statement, String statementType, String poolName) {
         this(statement, statementType, poolName, null);
     }
 
-    public StatementHandler(Statement statement, String statementType, String poolName, String targetSql) {
+    public StatementHandler(Statement statement, String statementType, String poolName, String sql) {
         this.poolName = poolName;
         this.statement = statement;
         this.statementType = statementType;
-        this.targetSql = targetSql;
+        if (!SystemUtil.isBlank(sql)) {
+            traceEntry = new SqlTraceEntry(sql, poolName, statementType);
+        }
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (method.getName().startsWith(Execute)) {
+        if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {
-                if (!SystemUtil.isBlank(targetSql)) {
-                    SqlTraceEntry sqlVo = new SqlTraceEntry(targetSql, poolName, statementType);
-                    return SqlTracePool.getInstance().executeStatement(sqlVo, statement, method, args, poolName);
+                if (traceEntry != null) {
+                    return SqlTracePool.getInstance().executeStatement(traceEntry, statement, method, args, poolName);
                 } else
                     return method.invoke(statement, args);
             } else {
