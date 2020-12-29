@@ -137,6 +137,8 @@ public class SqlTracePool {
             Date endDate = new Date();
             vo.setExecEndTime(formatter.format(endDate));
             vo.setExecTookTimeMs(endDate.getTime() - vo.getExecStartTimeMs());
+            if (vo.getExecTookTimeMs() >= sqlTraceAlertTime)//alert
+                vo.setTimeAlert(true);
         }
     }
 
@@ -145,8 +147,7 @@ public class SqlTracePool {
         Iterator<SqlTraceEntry> itor = traceQueue.iterator();
         while (itor.hasNext()) {
             SqlTraceEntry vo = itor.next();
-            if (vo.getExecTookTimeMs() >= sqlTraceAlertTime) {
-                vo.setTimeAlert(true);
+            if (vo.isTimeAlert()) {
                 alertList.add(vo);
             }
 
