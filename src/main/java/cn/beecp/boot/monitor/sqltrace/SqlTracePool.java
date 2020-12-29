@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  *  spring.datasource.sql-trace=true
  *  spring.datasource.sql-show=true
- *  spring.datasource.sql-trace-size=1000
+ *  spring.datasource.sql-trace-size=100
  *  spring.datasource.sql-trace-timeout=18000
  *  spring.datasource.sql-exec-alert-time=5000
  *  spring.datasource.sql-exec-alert-action=xxxxx
@@ -52,7 +52,7 @@ public class SqlTracePool {
     private boolean inited;
     private boolean sqlTrace = true;
     private boolean sqlShow = false;
-    private int sqlTraceSize = 1000;
+    private int sqlTraceSize = 100;
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
     private long sqlTraceAlertTime = TimeUnit.SECONDS.toMillis(6);
     private SqlTraceAlert sqlTraceAlert = new SqlTraceAlert();
