@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.monitor.sqltrace;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,10 +40,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  *  spring.datasource.sql-trace-timeout=18000
  *  spring.datasource.sql-exec-alert-time=5000
  *  spring.datasource.sql-exec-alert-action=xxxxx
+ *  spring.datasource.sql-trace-timeout-scan-period=18000
  */
 public class SqlTracePool {
     private static final SqlTracePool instance = new SqlTracePool();
-    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final LinkedList<SqlTraceEntry> alertList = new LinkedList();
     private final AtomicInteger tracedQueueSize = new AtomicInteger(0);
@@ -56,16 +58,6 @@ public class SqlTracePool {
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
     private long sqlTraceAlertTime = TimeUnit.SECONDS.toMillis(6);
     private SqlTraceAlert sqlTraceAlert = new SqlTraceAlert();
-
-    private SqlTracePool() {
-        timeoutSchExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
-        timeoutSchExecutor.allowCoreThreadTimeOut(true);
-        timeoutSchExecutor.scheduleAtFixedRate(new Runnable() {
-            public void run() {// check idle connection
-                removeTimeoutTrace();
-            }
-        }, 1, 3, TimeUnit.SECONDS);
-    }
 
     public static final SqlTracePool getInstance() {
         return instance;
@@ -89,6 +81,20 @@ public class SqlTracePool {
             if (sqlTraceAlert != null)
                 this.sqlTraceAlert = sqlTraceAlert;
             this.inited = true;
+
+            if (sqlTrace) {
+                long traceTimeoutScanPeriod = TimeUnit.MINUTES.toMillis(3);
+                if (config.getSqlTraceTimeoutScanPeriod() > 0)
+                    traceTimeoutScanPeriod = config.getSqlTraceTimeoutScanPeriod();
+
+                timeoutSchExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
+                timeoutSchExecutor.allowCoreThreadTimeOut(true);
+                timeoutSchExecutor.scheduleAtFixedRate(new Runnable() {
+                    public void run() {// check idle connection
+                        removeTimeoutTrace();
+                    }
+                }, 0, traceTimeoutScanPeriod, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
@@ -101,7 +107,10 @@ public class SqlTracePool {
     }
 
     public final Collection<SqlTraceEntry> getTraceQueue() {
-        return new TreeSet(traceQueue);
+        LinkedList<SqlTraceEntry> tempList = new LinkedList();
+        tempList.addAll(traceQueue);
+        Collections.sort(tempList);
+        return tempList;
     }
 
     Object trace(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
@@ -157,7 +166,7 @@ public class SqlTracePool {
             }
         }
 
-        if (!alertList.isEmpty()) {
+        if (!alertList.isEmpty()) {//should be in short time
             sqlTraceAlert.alert(alertList);
         }
     }

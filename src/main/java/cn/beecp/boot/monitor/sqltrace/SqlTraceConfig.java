@@ -25,6 +25,7 @@ public class SqlTraceConfig {
     private boolean sqlShow;
     private int sqlTraceSize;
     private long sqlTraceTimeout;
+    private long sqlTraceTimeoutScanPeriod;
     private long sqlTraceAlertTime;
     private SqlTraceAlert sqlTraceAlert;
 
@@ -58,6 +59,14 @@ public class SqlTraceConfig {
 
     public void setSqlTraceTimeout(long sqlTraceTimeout) {
         this.sqlTraceTimeout = sqlTraceTimeout;
+    }
+
+    public long getSqlTraceTimeoutScanPeriod() {
+        return sqlTraceTimeoutScanPeriod;
+    }
+
+    public void setSqlTraceTimeoutScanPeriod(long sqlTraceTimeoutScanPeriod) {
+        this.sqlTraceTimeoutScanPeriod = sqlTraceTimeoutScanPeriod;
     }
 
     public long getSqlTraceAlertTime() {
