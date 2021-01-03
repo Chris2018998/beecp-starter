@@ -23,11 +23,11 @@ package cn.beecp.boot.monitor.sqltrace;
 public class SqlTraceConfig {
     private boolean sqlTrace;
     private boolean sqlShow;
-    private int sqlTraceSize;
+    private int sqlTraceMaxSize;
     private long sqlTraceTimeout;
-    private long sqlTraceTimeoutScanPeriod;
-    private long sqlTraceAlertTime;
+    private long sqlExecAlertTime;
     private SqlTraceAlert sqlTraceAlert;
+    private long sqlTraceTimeoutScanPeriod;
 
     public boolean isSqlTrace() {
         return sqlTrace;
@@ -45,12 +45,12 @@ public class SqlTraceConfig {
         this.sqlShow = sqlShow;
     }
 
-    public int getSqlTraceSize() {
-        return sqlTraceSize;
+    public int getSqlTraceMaxSize() {
+        return sqlTraceMaxSize;
     }
 
-    public void setSqlTraceSize(int sqlTraceSize) {
-        this.sqlTraceSize = sqlTraceSize;
+    public void setSqlTraceMaxSize(int sqlTraceMaxSize) {
+        this.sqlTraceMaxSize = sqlTraceMaxSize;
     }
 
     public long getSqlTraceTimeout() {
@@ -61,20 +61,12 @@ public class SqlTraceConfig {
         this.sqlTraceTimeout = sqlTraceTimeout;
     }
 
-    public long getSqlTraceTimeoutScanPeriod() {
-        return sqlTraceTimeoutScanPeriod;
+    public long getSqlExecAlertTime() {
+        return sqlExecAlertTime;
     }
 
-    public void setSqlTraceTimeoutScanPeriod(long sqlTraceTimeoutScanPeriod) {
-        this.sqlTraceTimeoutScanPeriod = sqlTraceTimeoutScanPeriod;
-    }
-
-    public long getSqlTraceAlertTime() {
-        return sqlTraceAlertTime;
-    }
-
-    public void setSqlTraceAlertTime(long sqlTraceAlertTime) {
-        this.sqlTraceAlertTime = sqlTraceAlertTime;
+    public void setSqlExecAlertTime(long sqlExecAlertTime) {
+        this.sqlExecAlertTime = sqlExecAlertTime;
     }
 
     public SqlTraceAlert getSqlTraceAlert() {
@@ -83,5 +75,13 @@ public class SqlTraceConfig {
 
     public void setSqlTraceAlert(SqlTraceAlert sqlTraceAlert) {
         this.sqlTraceAlert = sqlTraceAlert;
+    }
+
+    public long getSqlTraceTimeoutScanPeriod() {
+        return sqlTraceTimeoutScanPeriod;
+    }
+
+    public void setSqlTraceTimeoutScanPeriod(long sqlTraceTimeoutScanPeriod) {
+        this.sqlTraceTimeoutScanPeriod = sqlTraceTimeoutScanPeriod;
     }
 }

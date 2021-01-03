@@ -42,7 +42,7 @@ public class BeeDataSourceMonitor {
         return getPoolInfoList();
     }
 
-    @RequestMapping("/getSqTraceList")
+    @RequestMapping("/getSqlTraceList")
     public Object getSqTraceList() {
         return SqlTracePool.getInstance().getTraceQueue();
     }
