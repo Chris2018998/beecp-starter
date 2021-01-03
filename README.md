@@ -147,10 +147,9 @@ spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值�
 
 在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
    
-<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitorView.png"></img>
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
 
-    
-
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
 
 
 
