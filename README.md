@@ -25,7 +25,7 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.3.9</version>
+   <version>1.4.0</version>
 </dependency>
 ```
 
@@ -131,17 +131,21 @@ application.properties
 ---
 
 ```xml
-spring.datasource.sqlExecutionTrace=true            //开启动SQL监控(默认为True)
-spring.datasource.sqlExecutionTraceMaxSize=1000     //SQL最大跟踪个数
-spring.datasource.sqlExecutionTraceTimeout=18000    //记录超时，大于此值，则将从Trace队列中移除
-spring.datasource.sqlExecutionAlertTime=6000        //SQL执行时间预警值
-spring.datasource.sqlExecutionAlertAction=xxxx      //SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.monitor.proxy.SqlExecutionAlert)
+
+spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
+spring.datasource.sql-show=true                       #是否打印SQL
+spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
+spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
+spring.datasource.sql-exec-alert-time=5000            #SQL执行时间警告值（毫秒） 
+spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
+spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.monitor.sqltrace.SqlTraceAlert)
+
 ```
 
 **数据源池监控**
 ---
 
-在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/dsMonitorView_zh.html  （其中xxxx为项目名）效果页面如下
+在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
    
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitorView.png"></img>
 
