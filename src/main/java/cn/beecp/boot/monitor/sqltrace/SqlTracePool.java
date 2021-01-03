@@ -76,7 +76,7 @@ public class SqlTracePool {
             int sqlTraceMaxSize = config.getSqlTraceMaxSize();
             long sqlTraceTimeout = config.getSqlTraceTimeout();
             long sqlExecAlertTime = config.getSqlExecAlertTime();
-            SqlTraceAlert sqlTraceAlert = config.getSqlTraceAlert();
+            SqlTraceAlert sqlTraceAlert = config.getSqlExecAlertAction();
 
             this.sqlTrace = config.isSqlTrace();
             this.sqlShow = config.isSqlShow();

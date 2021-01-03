@@ -26,8 +26,8 @@ public class SqlTraceConfig {
     private int sqlTraceMaxSize;
     private long sqlTraceTimeout;
     private long sqlExecAlertTime;
-    private SqlTraceAlert sqlTraceAlert;
     private long sqlTraceTimeoutScanPeriod;
+    private SqlTraceAlert sqlExecAlertAction;
 
     public boolean isSqlTrace() {
         return sqlTrace;
@@ -69,12 +69,13 @@ public class SqlTraceConfig {
         this.sqlExecAlertTime = sqlExecAlertTime;
     }
 
-    public SqlTraceAlert getSqlTraceAlert() {
-        return sqlTraceAlert;
+
+    public SqlTraceAlert getSqlExecAlertAction() {
+        return sqlExecAlertAction;
     }
 
-    public void setSqlTraceAlert(SqlTraceAlert sqlTraceAlert) {
-        this.sqlTraceAlert = sqlTraceAlert;
+    public void setSqlExecAlertAction(SqlTraceAlert sqlExecAlertAction) {
+        this.sqlExecAlertAction = sqlExecAlertAction;
     }
 
     public long getSqlTraceTimeoutScanPeriod() {
