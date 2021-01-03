@@ -15,6 +15,8 @@
  */
 package cn.beecp.boot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 /*
@@ -51,6 +53,7 @@ public class DataSourceUtil {
     //Separator UnderLine
     public static final String Separator_UnderLine = "_";
 
+    private static final Logger log = LoggerFactory.getLogger(DataSourceUtil.class);
 
     public static final boolean isBlank(String str) {
         if (str == null) return true;
@@ -64,14 +67,19 @@ public class DataSourceUtil {
     }
 
     public static final String getConfigValue(Environment environment, String configPrefix, String key) {
-        String value = environment.getProperty(configPrefix + "." + key);
+        String value=readConfig(environment,configPrefix + "." + key);
         if (DataSourceUtil.isBlank(value))
-            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_MiddleLine));
+            value=readConfig(environment,configPrefix + "." + propertyToField(key, Separator_MiddleLine));
         if (DataSourceUtil.isBlank(value))
-            value = environment.getProperty(configPrefix + "." + propertyToField(key, Separator_UnderLine));
+            value=readConfig(environment,configPrefix + "." + propertyToField(key, Separator_UnderLine));
         return value;
     }
-
+    private static final String readConfig(Environment environment, String key) {
+        String value = environment.getProperty(key);
+        if (!DataSourceUtil.isBlank(value))
+            log.info("config:{}={}",key,value);
+        return value;
+    }
     public static final String propertyToField(String property, String separator) {
         if (property == null)
             return "";
