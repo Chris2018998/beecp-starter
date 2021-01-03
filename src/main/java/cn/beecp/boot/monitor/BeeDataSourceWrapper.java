@@ -42,14 +42,14 @@ public class BeeDataSourceWrapper implements DataSource {
     }
 
     public ConnectionPoolMonitorVo getMonitorVo() throws Exception {
-        return delegete.getMonitorVo();
+        return delegete.getPoolMonitorVo();
     }
 
     public Connection getConnection() throws SQLException {
         Connection con = delegete.getConnection();
         if (traceSQL) {
             if (DataSourceUtil.isBlank(poolName)) {
-                ConnectionPoolMonitorVo vo = delegete.getMonitorVo();
+                ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
                 poolName = vo.getPoolName();
             }
             return ProxyFactory.createConnection(con, poolName);
