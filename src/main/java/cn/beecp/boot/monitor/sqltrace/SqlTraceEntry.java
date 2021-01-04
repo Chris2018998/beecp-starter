@@ -29,12 +29,13 @@ public class SqlTraceEntry {
 
     private String execEndTime;
     private long execTookTimeMs;
-    private boolean execSuccess;
     private long traceStartTime;
 
-    private boolean timeAlert;
-    private String methodName;
+    private boolean execInd;
+    private boolean execSlowInd;
+    private boolean execSuccessInd;
     private Throwable failCause;
+    private String methodName;
 
     public SqlTraceEntry(String sql, String poolName, String statementType) {
         this.sql = sql;
@@ -99,14 +100,6 @@ public class SqlTraceEntry {
         this.execTookTimeMs = execTookTimeMs;
     }
 
-    public boolean isExecSuccess() {
-        return execSuccess;
-    }
-
-    public void setExecSuccess(boolean execSuccess) {
-        this.execSuccess = execSuccess;
-    }
-
     public long getTraceStartTime() {
         return traceStartTime;
     }
@@ -115,20 +108,28 @@ public class SqlTraceEntry {
         this.traceStartTime = traceStartTime;
     }
 
-    public boolean isTimeAlert() {
-        return timeAlert;
+    public boolean isExecInd() {
+        return execInd;
     }
 
-    public void setTimeAlert(boolean timeAlert) {
-        this.timeAlert = timeAlert;
+    public void setExecInd(boolean execInd) {
+        this.execInd = execInd;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public boolean isExecSuccessInd() {
+        return execSuccessInd;
     }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setExecSuccessInd(boolean execSuccessInd) {
+        this.execSuccessInd = execSuccessInd;
+    }
+
+    public boolean isExecSlowInd() {
+        return execSlowInd;
+    }
+
+    public void setExecSlowInd(boolean execSlowInd) {
+        this.execSlowInd = execSlowInd;
     }
 
     public Throwable getFailCause() {
@@ -137,6 +138,14 @@ public class SqlTraceEntry {
 
     public void setFailCause(Throwable failCause) {
         this.failCause = failCause;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     public String toString() {

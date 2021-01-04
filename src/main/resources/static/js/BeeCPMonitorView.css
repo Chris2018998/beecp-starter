@@ -82,8 +82,11 @@ li a {
     width: 500px;
 }
 
-.timeAlert {
+.sqlExecSlow {
     background-color: yellow;
+}
+.sqlExecFail{
+    background-color: red;
 }
 
 /* tables */

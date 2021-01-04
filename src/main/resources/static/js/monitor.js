@@ -53,8 +53,13 @@ function showSqlTracePage() {//show sql page List
     for (var i = startIndex; i < endIndex; i++) {
         var element = sqlTraceList[i];
         var bgcolor = "";
-        if (element.timeAlert) {
-            bgcolor = " class='timeAlert'";
+
+        if(vo.execInd){
+            if(!element.execSuccessInd) {//fail
+                bgcolor = " class='sqlExecFail'";
+            } else if(!element.execSlowInd){//slow
+                bgcolor = " class='sqlExecSlow'";
+            }
         }
 
         var tableHtml = "<tr " + bgcolor + ">" +
@@ -63,7 +68,7 @@ function showSqlTracePage() {//show sql page List
             "<td>" + element.execStartTime + "</td>" +
             "<td>" + element.execEndTime + "</td>" +
             "<td>" + element.execTookTimeMs + "</td>" +
-            "<td>" + element.execSuccess + "</td>" +
+            "<td>" + element.execSuccessInd + "</td>" +
             "<td>" + element.statementType + '.' + element.methodName + "</td>" +
             "</tr>";
         $("#sql-monitorTable").append(tableHtml);

@@ -133,10 +133,10 @@ public class SqlTracePool {
             vo.setExecStartTime(formatter.format(startDate));
             vo.setExecStartTimeMs(startDate.getTime());
             Object re = method.invoke(statement, args);
-            vo.setExecSuccess(true);
+            vo.setExecSuccessInd(true);
             return re;
         } catch (Throwable e) {
-            vo.setExecSuccess(false);
+            vo.setExecSuccessInd(false);
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException ee = (InvocationTargetException) e;
                 if (ee.getCause() != null) {
@@ -146,12 +146,12 @@ public class SqlTracePool {
             vo.setFailCause(e);
             throw e;
         } finally {
+            vo.setExecInd(true);
             Date endDate = new Date();
             vo.setExecEndTime(formatter.format(endDate));
             vo.setExecTookTimeMs(endDate.getTime() - vo.getExecStartTimeMs());
             if (vo.getExecTookTimeMs() >= sqlExecAlertTime)//alert
-                vo.setTimeAlert(true);
-
+                vo.setExecSlowInd(true);
         }
     }
 
@@ -160,9 +160,9 @@ public class SqlTracePool {
         Iterator<SqlTraceEntry> itor = traceQueue.descendingIterator();
         while (itor.hasNext()) {
             SqlTraceEntry vo = itor.next();
-            if (vo.isTimeAlert()) {
-                alertEntryList.add(vo);
-            }
+           if(vo.isExecInd() &&(!vo.isExecSuccessInd() ||vo.isExecSlowInd())){//failed
+               alertEntryList.add(vo);
+           }
 
             if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout) {
                 tracedQueueSize.decrementAndGet();
