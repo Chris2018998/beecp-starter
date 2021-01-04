@@ -1,4 +1,5 @@
 body {
+	margin: 5px;
     font: 12px Arial, serif;
 }
 
@@ -85,29 +86,26 @@ li a {
 .sqlExecSlow {
     background-color: yellow;
 }
-.sqlExecFail{
+
+.sqlExecFail {
     background-color: red;
 }
 
 /* tables */
 table.tablesorter {
-    font-family: arial;
-    font-size: 8pt;
     width: 100%;
     text-align: left;
     border-collapse: collapse;
 }
 
 table.tablesorter thead tr th {
-    font: 12px Arial, serif;
+    font: 12px Arial,serif;
     background-color: #e6EEEE;
     border: 1px solid black;
-    font-size: 8pt;
     padding: 4px;
     border-top: none;
     border-left: none;
     border-color: #95B8E7;
-
 }
 
 table.tablesorter thead tr .header {
@@ -125,10 +123,7 @@ table.tablesorter tbody td {
     border-top: none;
     border-left: none;
     border-color: #95B8E7;
-}
-
-table.tablesorter tbody tr.odd td {
-    background-color: #F0F0F6;
+	font: 10px italic Arial,serif;
 }
 
 table.tablesorter thead tr .headerSortUp {

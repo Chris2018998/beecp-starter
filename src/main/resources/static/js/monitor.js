@@ -54,12 +54,12 @@ function showSqlTracePage() {//show sql page List
         var element = sqlTraceList[i];
         var bgcolor = "";
 
-        if(vo.execInd){
-            if(!element.execSuccessInd) {//fail
+        if(element.execInd){
+			if(!element.execSuccessInd) {//fail
                 bgcolor = " class='sqlExecFail'";
-            } else if(!element.execSlowInd){//slow
+			}else if(element.execSlowInd){//slow
                 bgcolor = " class='sqlExecSlow'";
-            }
+            } 
         }
 
         var tableHtml = "<tr " + bgcolor + ">" +
