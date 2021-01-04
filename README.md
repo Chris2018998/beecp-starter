@@ -11,6 +11,8 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 
 4：扩展支持其他数据源
 
+5: 连接池监控
+
 
 **运行依赖**
 ---
@@ -29,14 +31,14 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 </dependency>
 ```
 
-**配置介绍**
+**多源配置**
 ---
 
-| 配置项                        |      说明                            | 必填   |         参考数据                                           |  
+| 配置项                        |      说明                            | 必填           |         参考数据                                           |  
 |------------------------------|--------------------------------------|---------------|-----------------------------------------------------------|         
-|nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是           |spring.datasource.nameList=d1,d2,d3                        |     
+|nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是                       |spring.datasource.nameList=d1,d2,d3                        |     
 |datasourceType                | 数据源类名,必须含有无参构造函数           | 否(不填默认采用小蜜蜂数据源)|spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce |         
-|datasourceAttributeSetFactory | 数据源属性注入工厂类                     | 否(其他数据源必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
+|propertySetFactory            | 数据源属性注入工厂类                     | 否(其他数据源必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
 |primary                       | 是否为首要数据源,不配置为false           | 否                   |spring.datasource.d1.primary=true                          |
 |jndiName                      | 中间件数据源Jndi名,若配置则作为首要配置    | 否                   |spring.datasource.d2.jndiName=testDB                      |
 |poolName                      | 数据源地连接池名                         | 否                   |spring.datasource.d1.poolName=BeeCP1                     |
@@ -45,8 +47,6 @@ BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
 |jdbcUrl                       | JDBC连接URL                            | 是                   |spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test|
 |driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
 
-
-  
 **单数据源范例**
 ---
 application.properties
@@ -127,11 +127,19 @@ application.properties
 |org.apache.tomcat.jdbc.pool.DataSource  |  cn.beecp.boot.setFactory.TomcatJdbcDataSourceSetFactory | 
 
 
-**SQL执行监控**
+**监控界面**
+---
+
+在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
+   
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
+
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
+
+**SQL监控配置**
 ---
 
 ```xml
-
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
 spring.datasource.sql-show=true                       #是否打印SQL
 spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
@@ -141,19 +149,6 @@ spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时�
 spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.monitor.sqltrace.SqlTraceAlert)
 
 ```
-
-**数据源池监控**
----
-
-在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
-   
-<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
-
-<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
-
-
-
-
 
 
 
