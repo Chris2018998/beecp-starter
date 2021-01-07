@@ -42,7 +42,7 @@ public class DataSourceUtil {
     public static final String Spring_DS_KEY_DatasourceType = "datasourceType";
 
     //Datasource attribute set factory
-    public static final String Spring_DS_KEY_PropertySetFactory = "propertySetFactory";
+    public static final String Spring_DS_KEY_FieldSetFactory = "fieldSetFactory";
 
     //Default DataSourceName
     public static final String Default_DS_Class_Name = "cn.beecp.BeeDataSource";
@@ -67,19 +67,21 @@ public class DataSourceUtil {
     }
 
     public static final String getConfigValue(Environment environment, String configPrefix, String key) {
-        String value=readConfig(environment,configPrefix + "." + key);
+        String value = readConfig(environment, configPrefix + "." + key);
         if (DataSourceUtil.isBlank(value))
-            value=readConfig(environment,configPrefix + "." + propertyToField(key, Separator_MiddleLine));
+            value = readConfig(environment, configPrefix + "." + propertyToField(key, Separator_MiddleLine));
         if (DataSourceUtil.isBlank(value))
-            value=readConfig(environment,configPrefix + "." + propertyToField(key, Separator_UnderLine));
+            value = readConfig(environment, configPrefix + "." + propertyToField(key, Separator_UnderLine));
         return value;
     }
+
     private static final String readConfig(Environment environment, String key) {
         String value = environment.getProperty(key);
         if (!DataSourceUtil.isBlank(value))
-            log.info("config:{}={}",key,value);
+            log.info("config:{}={}", key, value);
         return value;
     }
+
     public static final String propertyToField(String property, String separator) {
         if (property == null)
             return "";

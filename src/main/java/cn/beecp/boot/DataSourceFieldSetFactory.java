@@ -13,41 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.beecp.boot.datasource;
+package cn.beecp.boot;
 
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.core.env.Environment;
 
-import java.lang.reflect.Field;
-
 /*
- *  Tomcat-JDBC DataSource Configuration Set Factory
+ *  DataSource field set factory
  *
  *  @author Chris.Liao
  */
-
-public class TomcatJdbcDataSourceSetFactory extends BaseDataSourceSetFactory {
-
-    /**
-     * return config field
-     */
-    public Field[] getConfigFields() {
-        return PoolProperties.class.getDeclaredFields();
-    }
+public interface DataSourceFieldSetFactory {
 
     /**
      * get Properties values from environment and set to dataSource
      *
-     * @param ds           dataSource
+     * @param ds           may be DataSource or XADataSource
      * @param dsName       dataSource name
      * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
      * @throws Exception when fail to set
      */
-    public void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception {
-        PoolProperties p = new PoolProperties();
-        super.setFields(p, dsName, configPrefix, environment);
-        org.apache.tomcat.jdbc.pool.DataSource tds = (org.apache.tomcat.jdbc.pool.DataSource) ds;
-        tds.setPoolProperties(p);
-    }
+    void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception;
 }

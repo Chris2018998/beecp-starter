@@ -160,9 +160,9 @@ public class SqlTracePool {
         Iterator<SqlTraceEntry> itor = traceQueue.descendingIterator();
         while (itor.hasNext()) {
             SqlTraceEntry vo = itor.next();
-           if(vo.isExecInd() &&(!vo.isExecSuccessInd() ||vo.isExecSlowInd())){//failed
-               alertEntryList.add(vo);
-           }
+            if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd())) {//failed
+                alertEntryList.add(vo);
+            }
 
             if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout) {
                 tracedQueueSize.decrementAndGet();

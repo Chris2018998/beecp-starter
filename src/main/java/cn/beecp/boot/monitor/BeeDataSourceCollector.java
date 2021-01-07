@@ -15,8 +15,8 @@
  */
 package cn.beecp.boot.monitor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Collect Bee dataSource
@@ -25,21 +25,29 @@ import java.util.List;
  */
 public class BeeDataSourceCollector {
     private final static BeeDataSourceCollector single = new BeeDataSourceCollector();
-    private List<BeeDataSourceWrapper> dsList = new LinkedList<BeeDataSourceWrapper>();
+    private boolean setted;
+    private Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>();
 
     public final static BeeDataSourceCollector getInstance() {
         return single;
     }
 
-    public void addDataSource(BeeDataSourceWrapper ds) {
-        dsList.add(ds);
+    public void setDataSourceMap(Map<String, BeeDataSourceWrapper> dataSourceMap) {
+        if (!setted) {
+            setted = true;
+            this.dataSourceMap = dataSourceMap;
+        }
     }
 
-    public void removeDataSource(BeeDataSourceWrapper ds) {
-        dsList.remove(ds);
+    void removeDataSource(String dsName) {
+        dataSourceMap.remove(dsName);
     }
 
-    public BeeDataSourceWrapper[] getAllDataSource() {
-        return dsList.toArray(new BeeDataSourceWrapper[dsList.size()]);
+    BeeDataSourceWrapper getDataSource(String dsName) {
+        return dataSourceMap.get(dsName);
+    }
+
+    BeeDataSourceWrapper[] getAllDataSource() {
+        return dataSourceMap.values().toArray(new BeeDataSourceWrapper[dataSourceMap.size()]);
     }
 }

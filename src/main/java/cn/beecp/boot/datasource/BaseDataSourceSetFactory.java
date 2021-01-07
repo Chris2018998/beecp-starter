@@ -15,8 +15,9 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.boot.ConfigException;
+import cn.beecp.boot.DataSourceFieldSetFactory;
 import cn.beecp.boot.DataSourceUtil;
-import cn.beecp.boot.DsPropertySetFactory;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
@@ -28,7 +29,7 @@ import static cn.beecp.boot.DataSourceUtil.getConfigValue;
  *
  *  @author Chris.Liao
  */
-public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
+public abstract class BaseDataSourceSetFactory implements DataSourceFieldSetFactory {
 
     /**
      * @return config fields
@@ -39,11 +40,12 @@ public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
      * get Properties values from environment and set to dataSource
      *
      * @param ds           dataSource
+     * @param dsName       dataSource name
      * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
      * @throws Exception when fail to set
      */
-    public void setAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
+    public void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception {
         Field[] fields = getConfigFields();
         for (Field field : fields) {
             String configVal = getConfigValue(environment, configPrefix, field.getName());
@@ -67,36 +69,40 @@ public abstract class BaseDataSourceSetFactory implements DsPropertySetFactory {
                 } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
                     field.set(ds, Long.valueOf(configVal));
                 } else {
-                    setAttribute(ds, field, configVal, environment);
+                    setField(ds, dsName, field, configVal, environment);
                 }
+            } catch (Exception e) {
+                throw new ConfigException("Failed to inject field(" + field.getName() + ") on dataSource(" + dsName + ")", e);
             } finally {
                 if (ChangedAccessible) field.setAccessible(false);//reset
             }
         }
 
-        afterSetAttributes(ds, configPrefix, environment);
+        afterSetFields(ds, dsName, configPrefix, environment);
     }
 
     /**
      * set complex properties values from environment and set to dataSource
      *
      * @param ds             dataSource
+     * @param dsName         dataSource name
      * @param field          attributeFiled
      * @param attributeValue attributeFiled value
      * @param environment    SpringBoot environment
      * @throws Exception when fail to set
      */
-    protected void setAttribute(Object ds, Field field, String attributeValue, Environment environment) throws Exception {
+    protected void setField(Object ds, String dsName, Field field, String attributeValue, Environment environment) throws Exception {
     }
 
     /**
      * after Set Attributes
      *
      * @param ds           dataSource
+     * @param dsName       dataSource name
      * @param configPrefix configured prefix name
      * @param environment  SpringBoot environment
      * @throws Exception when fail to set
      */
-    protected void afterSetAttributes(Object ds, String configPrefix, Environment environment) throws Exception {
+    protected void afterSetFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception {
     }
 }

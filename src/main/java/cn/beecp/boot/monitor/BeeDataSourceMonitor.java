@@ -54,7 +54,7 @@ public class BeeDataSourceMonitor {
             try {
                 ConnectionPoolMonitorVo vo = ds.getMonitorVo();
                 if (vo.getPoolState() == 3) {//POOL_CLOSED
-                    collector.removeDataSource(ds);
+                    collector.removeDataSource(ds.getDsName());
                 } else {
                     poolInfoList.add(vo);
                 }

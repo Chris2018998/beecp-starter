@@ -34,11 +34,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static cn.beecp.boot.DataSourceUtil.*;
@@ -63,7 +60,7 @@ import static cn.beecp.boot.DataSourceUtil.*;
 public class MultiDataSourceRegister extends SingleDataSourceRegister implements EnvironmentAware, ImportBeanDefinitionRegistrar {
 
     //Spring  DsAttributeSetFactory map
-    private static final Map<Class, DsPropertySetFactory> setFactoryMap = new HashMap<>();
+    private static final Map<Class, DataSourceFieldSetFactory> setFactoryMap = new HashMap<>(1);
 
     static {
         setFactoryMap.put(BeeDataSource.class, new BeeDataSourceSetFactory());
@@ -94,17 +91,32 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
         //store dataSource register Info
-        List<DsRegisterInfo> dataSourceRegisterList = new LinkedList();
         String dataSourceNames = getConfigValue(environment, Spring_DS_Prefix, Spring_DS_KEY_NameList);
+        if (DataSourceUtil.isBlank(dataSourceNames))
+            throw new ConfigException("Missed config item:" + Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
+        String[] dsNames = dataSourceNames.trim().split(",");
+        ArrayList<String> dsNameList = new ArrayList(dsNames.length);
+        for (String name : dsNames) {
+            name = name.trim();
+            if (DataSourceUtil.isBlank(name)) continue;
 
-        if (!DataSourceUtil.isBlank(dataSourceNames)) {
-            String[] dsNames = dataSourceNames.trim().split(",");
-            configSqlTracePool(environment);
-            boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
+            if (dsNameList.contains(name))
+                throw new ConfigException("Duplicated dataSource name:" + name);
+            if(this.existsBeanDefinition(name,registry))
+                throw new ConfigException("Spring bean definition existed with dataSource name:" + name);
 
-            for (String dsName : dsNames) {
-                if (DataSourceUtil.isBlank(dsName)) continue;
-                dsName = dsName.trim();
+            dsNameList.add(name);
+        }
+        if (dsNameList.isEmpty())
+            throw new ConfigException("Missed config item value:" + Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
+
+        configSqlTracePool(environment);////set config properties to sql trace pool
+        boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
+        List<DsRegisterInfo> dsRegisterList = new LinkedList();
+        Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>(dsNameList.size());
+
+        try {
+            for (String dsName : dsNameList) {
                 String dsConfigPrefix = Spring_DS_Prefix + "." + dsName;
 
                 String jndiNameTex = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_Jndi);
@@ -119,9 +131,9 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 }
 
                 if (ds != null) {
-                    if (ds instanceof BeeDataSource) {
-                        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds, isSqlTrace);
-                        BeeDataSourceCollector.getInstance().addDataSource(dsWrapper);
+                    if (ds instanceof BeeDataSource) {//current dataSource type is BeeDataSource
+                        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds,dsName,isSqlTrace);
+                        dataSourceMap.put(dsName, dsWrapper);
                         ds = dsWrapper;
                     }
 
@@ -129,17 +141,24 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                     info.setDataSource(ds);//maybe XA Type
                     info.setPrimary(primaryDataSource);
                     info.setRegisterName(dsName);
-                    dataSourceRegisterList.add(info);
+                    dsRegisterList.add(info);
                 }
             }
-        }
 
-        for (DsRegisterInfo regInfo : dataSourceRegisterList) {
-            registerDataSourceBean(regInfo, registry);
+            //register to bean container
+            for (DsRegisterInfo regInfo : dsRegisterList) {
+                registerDataSourceBean(regInfo, registry);
+            }
+            BeeDataSourceCollector.getInstance().setDataSourceMap(dataSourceMap);
+        } catch (Throwable e) {//failed then close all created dataSource
+            for (DsRegisterInfo regInfo : dsRegisterList) {
+                closeDataSource(regInfo.getDataSource());
+            }
+            throw new RuntimeException("multi-DataSource register failed", e);
         }
     }
 
-    //maybe XADataSource,if failed,then log error info,and return null
+    //lookup a dataSource from middle-container
     private Object lookupJndiDataSource(String jndiName) {
         try {
             if (context == null) context = new InitialContext();
@@ -149,77 +168,67 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             } else if (namingObj instanceof DataSource) {
                 return new JndiDataSourceWrapper((DataSource) namingObj);
             } else {
-                log.error("Jndi name(" + jndiName + ")is a valid dataSource");
-                return null;
+                throw new ConfigException("Jndi Name(" + jndiName + ") is not a dataSource object");
             }
         } catch (NamingException e) {
-            log.error("Jndi DataSource not found：" + jndiName, e);
-            return null;
+            throw new ConfigException("Failed to lookup dataSource by name:" + jndiName);
         }
     }
 
-    //maybe XADataSource,if failed,then log error info,and return null
+    //create dataSource instance by config class name
     private Object createDataSource(String dsName, String dsConfigPrefix, Environment environment) {
+        //1:load dataSource class and instantiate it
         String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_DatasourceType);
-        String dataSourceAttributeSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_PropertySetFactory);
-
         if (DataSourceUtil.isBlank(dataSourceClassName))
             dataSourceClassName = Default_DS_Class_Name;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
-
-        Class dataSourceClass = loadClass(dataSourceClassName, DataSource.class, "DataSource");
-        if (dataSourceClass == null) {
-            log.error("DataSource class load failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
-            return null;
-        }
+        Class dataSourceClass = loadClass(dataSourceClassName.trim(), DataSource.class, "DataSource");
 
         Object ds = null;//may be DataSource or XADataSource
         if (XADataSource.class.isAssignableFrom(dataSourceClass)) {
-            ds = createInstanceByClassName(dataSourceClass, DataSource.class, "XADataSource");
+            ds = createInstanceByClassName(dataSourceClass, XADataSource.class);
         } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
-            ds = createInstanceByClassName(dataSourceClass, DataSource.class, "DataSource");
+            ds = createInstanceByClassName(dataSourceClass, DataSource.class);
         } else {
-            log.error("DataSource class must be extended from DataSource or XADataSource,dataSource name:{},class name:{}", dsName, dataSourceClassName);
-            return null;
+            throw new ConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + Spring_DS_KEY_DatasourceType);
         }
 
-        DsPropertySetFactory dsAttrSetFactory = null;
-        if (!DataSourceUtil.isBlank(dataSourceAttributeSetFactoryClassName)) {
-            dataSourceAttributeSetFactoryClassName = dataSourceAttributeSetFactoryClassName.trim();
-            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceAttributeSetFactoryClassName, DsPropertySetFactory.class, "DsPropertySetFactory");
-            dsAttrSetFactory = (DsPropertySetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DsPropertySetFactory.class, "DsPropertySetFactory");
+        //2:load dataSource class and instantiate it
+        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_FieldSetFactory);
+        if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
+            throw new ConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
+        DataSourceFieldSetFactory dsFieldSetFactory =null;
+        if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
+            dataSourceFieldSetFactoryClassName = dataSourceFieldSetFactoryClassName.trim();
+            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceFieldSetFactory.class, "DataSource properties factory");
+            dsFieldSetFactory = (DataSourceFieldSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceFieldSetFactory.class);
         }
+        if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
+        if (dsFieldSetFactory == null)
+            throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
 
-        if (dsAttrSetFactory == null) dsAttrSetFactory = setFactoryMap.get(dataSourceClass);
-        if (dsAttrSetFactory == null) {
-            log.error("DataSource instance create failed,dataSource name:{},class name:{}", dsName, dataSourceClassName);
-        } else {
-            try {
-                dsAttrSetFactory.setAttributes(ds, dsConfigPrefix, environment);//set properties to dataSource
-            } catch (Exception e) {
-                log.error("Failed to set attribute on dataSource:" + dsName, e);
-            }
+        //3:inject properties to dataSource
+        try {
+            dsFieldSetFactory.setFields(ds, dsName, dsConfigPrefix, environment);//set properties to dataSource
+        } catch (Exception e) {
+            throw new ConfigException("Failed to inject attribute to dataSource(" + dsName + ")", e);
         }
-
         return ds;
     }
 
+    //register dataSource to Spring bean container
     private void registerDataSourceBean(DsRegisterInfo regInfo, BeanDefinitionRegistry registry) {
-        if (!existsBeanDefinition(regInfo.getRegisterName(), registry)) {
-            GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(regInfo.getDataSource().getClass());
-            define.setPrimary(regInfo.isPrimary());
-            define.setInstanceSupplier(new Supplier() {
-                public Object get() {
-                    return regInfo.getDataSource();
-                }
-            });
-            registry.registerBeanDefinition(regInfo.getRegisterName(), define);
-            log.info("Register dataSource({}) with bean name:{}", define.getBeanClassName(), regInfo.getRegisterName());
-        } else {
-            log.error("BeanDefinition with name:{} already exists in spring context", regInfo.getRegisterName());
-        }
+        GenericBeanDefinition define = new GenericBeanDefinition();
+        define.setBeanClass(regInfo.getDataSource().getClass());
+        define.setPrimary(regInfo.isPrimary());
+        define.setInstanceSupplier(new Supplier() {
+            public Object get() {
+                return regInfo.getDataSource();
+            }
+        });
+        registry.registerBeanDefinition(regInfo.getRegisterName(), define);
+        log.info("Registered dataSource({}) with bean name:{}", define.getBeanClassName(), regInfo.getRegisterName());
     }
 
     private boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
@@ -232,30 +241,49 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
     private Class loadClass(String className, Class type, String typeName) {
         try {
-            Class objClass = Class.forName(className);
-            if (!type.isAssignableFrom(objClass)) {
-                log.warn("Target class({}) is not sub class of {}", className, typeName);
-                return null;
-            } else if (Modifier.isAbstract(objClass.getModifiers())) {
-                log.warn("Target class({}) is abstract", className, typeName);
-                return null;
-            }
-            return objClass;
+            return Class.forName(className);
         } catch (Exception e) {
-            log.error("Failed to load class:{}", className, e);
-            return null;
+            throw new ConfigException("Failed to load " + typeName + " class:" + className.trim());
         }
     }
 
-    private Object createInstanceByClassName(Class objClass, Class type, String typeName) {
+    private Object createInstanceByClassName(Class objClass, Class type) {
         try {
             return objClass.newInstance();
         } catch (Exception e) {
-            log.error("Failed to create instance by class name:{}", objClass.getName(), e);
-            return null;
+            throw new ConfigException("Failed to create instance by class:" + objClass.getName(), e);
         }
     }
 
+    private void closeDataSource(Object dataSource) {
+        Method method = null;
+        Class dsClass = dataSource.getClass();
+        try {
+            method = dsClass.getMethod("close", new Class[0]);
+        } catch (Exception e) {
+        }
+
+        if (method == null) {
+            try {
+                method = dsClass.getMethod("destroy", new Class[0]);
+            } catch (Exception e) {
+            }
+        }
+
+        if (method == null) {
+            try {
+                method = dsClass.getMethod("terminate", new Class[0]);
+            } catch (Exception e) {
+            }
+        }
+
+        if (method != null) {
+            try {
+                method.invoke(dataSource, new Object[0]);
+            } catch (Exception e) {
+            }
+        }
+    }
 
     class DsRegisterInfo {
 

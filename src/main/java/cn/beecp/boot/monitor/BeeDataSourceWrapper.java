@@ -32,13 +32,19 @@ import java.util.logging.Logger;
  *  @author Chris.Liao
  */
 public class BeeDataSourceWrapper implements DataSource {
+    private String dsName;
     private String poolName;
     private boolean traceSQL;
     private BeeDataSource delegete;
 
-    public BeeDataSourceWrapper(BeeDataSource delegete, boolean traceSQL) {
+    public BeeDataSourceWrapper(BeeDataSource delegete,String dsName,boolean traceSQL) {
         this.delegete = delegete;
+        this.dsName = dsName;
         this.traceSQL = traceSQL;
+    }
+
+    public String getDsName(){
+        return dsName;
     }
 
     public ConnectionPoolMonitorVo getMonitorVo() throws Exception {
@@ -68,6 +74,10 @@ public class BeeDataSourceWrapper implements DataSource {
 
     public void setLogWriter(java.io.PrintWriter out) throws SQLException {
         delegete.setLogWriter(out);
+    }
+
+    public void close() {
+        delegete.close();
     }
 
     public int getLoginTimeout() throws SQLException {

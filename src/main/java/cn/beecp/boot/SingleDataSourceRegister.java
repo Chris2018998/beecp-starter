@@ -31,16 +31,25 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import static cn.beecp.boot.DataSourceUtil.Spring_DS_Prefix;
 import static cn.beecp.boot.DataSourceUtil.getConfigValue;
 
 /*
- *  SpringBoot dataSource config demo
- *  spring.datasource.type=cn.beecp.BeeDataSource
- *  spring.datasource.*=xx
+ *  config example
  *
- *   @author Chris.Liao
+ * spring.datasource.type=cn.beecp.BeeDataSource
+ * spring.datasource.username=root
+ * spring.datasource.password=
+ * spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
+ * spring.datasource.driverClassName=com.mysql.jdbc.Driver
+ * spring.datasource.fairMode=true
+ * spring.datasource.initialSize=10
+ * spring.datasource.maxActive = 10
+ *
+ * @author Chris.Liao
  */
 @ConditionalOnClass(BeeDataSourceWrapper.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
@@ -49,14 +58,17 @@ public class SingleDataSourceRegister {
 
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        configSqlTracePool(environment);
-        boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
+        configSqlTracePool(environment);//set config properties to sql trace pool
 
+        String dsName="beeDataSource";
         BeeDataSource ds = new BeeDataSource();
         BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
-        dsAttrSetFactory.setAttributes(ds, Spring_DS_Prefix, environment);//set properties to dataSource
-        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper(ds, isSqlTrace);
-        BeeDataSourceCollector.getInstance().addDataSource(dsWrapper);
+        dsAttrSetFactory.setFields(ds,dsName, Spring_DS_Prefix, environment);//set properties to dataSource
+        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper(ds,dsName,SqlTracePool.getInstance().isSqlTrace());
+
+        Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>(1);
+        dataSourceMap.put(dsName,dsWrapper);
+        BeeDataSourceCollector.getInstance().setDataSourceMap(dataSourceMap);
         return dsWrapper;
     }
 
@@ -72,7 +84,7 @@ public class SingleDataSourceRegister {
             }
             SqlTracePool.getInstance().init(config);
         } catch (Exception e) {
-            log.warn("Fail to config sql trace monitor", e);
+            throw new ConfigException("Failed to set config value to sql-trace pool", e);
         }
     }
 
