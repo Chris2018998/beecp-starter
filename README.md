@@ -12,19 +12,14 @@ Maven坐标(Java8)
 
 ##### 标签介绍
 
-| 标签                     | 备注                                                               |
-| ----------------------- | ------------------------------------------------------------------ |
-| @EnableMultiDataSource  | 多数据源启用标签，需要配置在@SpringBootApplication<strong>之前</strong>|
-| @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况               |
- 
+| 标签                     | 备注                                                                 |
+| ----------------------- | ------------------------------------------------------------------   |
+| @EnableMultiDataSource  | 多数据源启用标签，一定要配置在@SpringBootApplication<strong>之前</strong> |
+| @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况                  |
 
+<b>补充说明：</b><i>若不导入@EnableMultiDataSource标签，启动器则自动尝试装载单数据源，前提系统ClassPath中存在小蜜蜂数据源类</i>
 
-
-
-
-
-
-
+---
 
 
 ##### 单数据源范例
