@@ -85,7 +85,7 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 |datasourceType                | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
 |fieldSetFactory               | 数据源配置属性注入工厂类                 | 其他数据源必须提供                        |
 |primary                       | 是否为首要数据源,不配置为false           |                                        |
-|jndiName                      | 中间件数据源Jndi名,若配置则作为首要配置    | 数据源是否来自Jndi                       |
+|jndiName                      | 数据源Jndi名，数据源来自部署容器本身      |  此项配置与datasourceType配置互斥         |
 
 数据源配置工厂如下
 
