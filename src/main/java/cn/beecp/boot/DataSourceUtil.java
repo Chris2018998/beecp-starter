@@ -77,8 +77,10 @@ public class DataSourceUtil {
 
     private static final String readConfig(Environment environment, String key) {
         String value = environment.getProperty(key);
-        if (!DataSourceUtil.isBlank(value))
+        if (!DataSourceUtil.isBlank(value)) {
+            value=value.trim();
             log.info("config:{}={}", key, value);
+        }
         return value;
     }
 

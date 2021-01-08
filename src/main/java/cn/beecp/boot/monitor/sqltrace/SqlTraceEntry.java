@@ -22,7 +22,7 @@ package cn.beecp.boot.monitor.sqltrace;
  */
 public class SqlTraceEntry {
     private String sql;
-    private String poolName;
+    private String dsName;
     private String statementType;
     private String execStartTime;
     private long execStartTimeMs;
@@ -37,9 +37,9 @@ public class SqlTraceEntry {
     private Throwable failCause;
     private String methodName;
 
-    public SqlTraceEntry(String sql, String poolName, String statementType) {
+    public SqlTraceEntry(String sql,String dsName, String statementType) {
         this.sql = sql;
-        this.poolName = poolName;
+        this.dsName = dsName;
         this.statementType = statementType;
         this.execStartTimeMs = System.currentTimeMillis();
     }
@@ -52,12 +52,12 @@ public class SqlTraceEntry {
         this.sql = sql;
     }
 
-    public String getPoolName() {
-        return poolName;
+    public String getDsName() {
+        return dsName;
     }
 
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
+    public void setDsName(String dsName) {
+        this.dsName = dsName;
     }
 
     public String getStatementType() {

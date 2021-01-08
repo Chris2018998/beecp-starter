@@ -17,9 +17,9 @@
         <table class="tablesorter" id="pool-monitorTable">
             <thead>
             <tr>
-                <th>Pool Name</th>
-                <th>Pool Mode</th>
-                <th>Pool State</th>
+                <th>Data Source</th>
+                <th>Mode</th>
+                <th>State</th>
                 <th>Max Active</th>
                 <th>Idle Size</th>
                 <th>Using Size</th>
@@ -42,7 +42,7 @@
             <thead>
             <tr>
                 <th>SQL</th>
-                <th>Pool Name</th>
+                <th>Data Source</th>
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th>Took Time(Ms)</th>
@@ -51,7 +51,7 @@
             </tr>
             </thead>
             <tbody>
-			 
+
             </tbody>
         </table>
         <p></p>
@@ -101,7 +101,7 @@
                                 state = "Resetting";
 
                             var tableHtml = "<tr>" +
-                                "<td>" + element.poolName + "</td>" +
+                                "<td>" + element.dsName + "</td>" +
                                 "<td>" + element.poolMode + "</td>" +
                                 "<td>" + state + "</td>" +
                                 "<td>" + element.maxActive + "</td>" +

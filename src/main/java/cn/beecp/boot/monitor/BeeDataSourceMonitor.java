@@ -22,8 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Restful Controller
@@ -35,10 +37,10 @@ import java.util.List;
 @RequestMapping("/dsMonitor")
 public class BeeDataSourceMonitor {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private List<ConnectionPoolMonitorVo> poolInfoList = new LinkedList<ConnectionPoolMonitorVo>();
+    private List<Map<String,Object>> poolInfoList = new LinkedList<Map<String,Object>>();
 
     @RequestMapping("/getPoolList")
-    public List<ConnectionPoolMonitorVo> getPoolList() {
+    public List<Map<String,Object>> getPoolList() {
         return getPoolInfoList();
     }
 
@@ -47,16 +49,26 @@ public class BeeDataSourceMonitor {
         return SqlTracePool.getInstance().getTraceQueue();
     }
 
-    private List<ConnectionPoolMonitorVo> getPoolInfoList() {
+    private List<Map<String,Object>> getPoolInfoList() {
         poolInfoList.clear();
         BeeDataSourceCollector collector = BeeDataSourceCollector.getInstance();
         for (BeeDataSourceWrapper ds : collector.getAllDataSource()) {
             try {
-                ConnectionPoolMonitorVo vo = ds.getMonitorVo();
+                ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
                 if (vo.getPoolState() == 3) {//POOL_CLOSED
                     collector.removeDataSource(ds.getDsName());
                 } else {
-                    poolInfoList.add(vo);
+                    Map<String,Object>poolMap=new LinkedHashMap<>(9);
+                    poolMap.put("dsName",ds.getDsName());
+                    poolMap.put("poolName",vo.getPoolName());
+                    poolMap.put("poolMode",vo.getPoolMode());
+                    poolMap.put("poolState",vo.getPoolState());
+                    poolMap.put("maxActive",vo.getMaxActive());
+                    poolMap.put("idleSize",vo.getIdleSize());
+                    poolMap.put("usingSize",vo.getUsingSize());
+                    poolMap.put("semaphoreWaiterSize",vo.getSemaphoreWaiterSize());
+                    poolMap.put("transferWaiterSize",vo.getTransferWaiterSize());
+                    poolInfoList.add(poolMap);
                 }
             } catch (Exception e) {
                 log.info("Failed to get dataSource monitor info", e);
@@ -64,5 +76,4 @@ public class BeeDataSourceMonitor {
         }
         return poolInfoList;
     }
-
 }

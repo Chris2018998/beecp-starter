@@ -113,7 +113,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         configSqlTracePool(environment);////set config properties to sql trace pool
         boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
         List<DsRegisterInfo> dsRegisterList = new LinkedList();
-        Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>(dsNameList.size());
+        Map<String, BeeDataSourceWrapper> dataSourceMap = new LinkedHashMap<>(dsNameList.size());
 
         try {
             for (String dsName : dsNameList) {

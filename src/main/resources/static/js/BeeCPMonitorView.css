@@ -1,5 +1,5 @@
 body {
-	margin: 5px;
+    margin: 5px;
     font: 12px Arial, serif;
 }
 
@@ -99,7 +99,7 @@ table.tablesorter {
 }
 
 table.tablesorter thead tr th {
-    font: 12px Arial,serif;
+    font: 12px Arial, serif;
     background-color: #e6EEEE;
     border: 1px solid black;
     padding: 4px;
@@ -123,7 +123,7 @@ table.tablesorter tbody td {
     border-top: none;
     border-left: none;
     border-color: #95B8E7;
-	font: 10px italic Arial,serif;
+    font: 10px italic Arial, serif;
 }
 
 table.tablesorter thead tr .headerSortUp {

@@ -54,17 +54,17 @@ function showSqlTracePage() {//show sql page List
         var element = sqlTraceList[i];
         var bgcolor = "";
 
-        if(element.execInd){
-			if(!element.execSuccessInd) {//fail
+        if (element.execInd) {
+            if (!element.execSuccessInd) {//fail
                 bgcolor = " class='sqlExecFail'";
-			}else if(element.execSlowInd){//slow
+            } else if (element.execSlowInd) {//slow
                 bgcolor = " class='sqlExecSlow'";
-            } 
+            }
         }
 
         var tableHtml = "<tr " + bgcolor + ">" +
             "<td>" + element.sql + "</td>" +
-            "<td>" + element.poolName + "</td>" +
+            "<td>" + element.dsName + "</td>" +
             "<td>" + element.execStartTime + "</td>" +
             "<td>" + element.execEndTime + "</td>" +
             "<td>" + element.execTookTimeMs + "</td>" +

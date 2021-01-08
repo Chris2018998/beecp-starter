@@ -26,21 +26,21 @@ import java.sql.Statement;
  */
 public class StatementHandler implements InvocationHandler {
     private static final String Execute = "execute";
-    private String poolName;
+    private String dsName;
     private Statement statement;
     private String statementType;
     private SqlTraceEntry traceEntry;
 
-    public StatementHandler(Statement statement, String statementType, String poolName) {
-        this(statement, statementType, poolName, null);
+    public StatementHandler(Statement statement, String statementType, String dsName) {
+        this(statement, statementType, dsName, null);
     }
 
-    public StatementHandler(Statement statement, String statementType, String poolName, String sql) {
-        this.poolName = poolName;
+    public StatementHandler(Statement statement, String statementType, String dsName, String sql) {
+        this.dsName = dsName;
         this.statement = statement;
         this.statementType = statementType;
         if (!DataSourceUtil.isBlank(sql)) {
-            traceEntry = new SqlTraceEntry(sql, poolName, statementType);
+            traceEntry = new SqlTraceEntry(sql, dsName, statementType);
         }
     }
 
@@ -48,12 +48,12 @@ public class StatementHandler implements InvocationHandler {
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {
                 if (traceEntry != null) {
-                    return SqlTracePool.getInstance().trace(traceEntry, statement, method, args, poolName);
+                    return SqlTracePool.getInstance().trace(traceEntry, statement, method, args, dsName);
                 } else
                     return method.invoke(statement, args);
             } else {
-                SqlTraceEntry sqlVo = new SqlTraceEntry(poolName, (String) args[0], statementType);
-                return SqlTracePool.getInstance().trace(sqlVo, statement, method, args, poolName);
+                SqlTraceEntry sqlVo = new SqlTraceEntry(dsName, (String) args[0], statementType);
+                return SqlTracePool.getInstance().trace(sqlVo, statement, method, args, dsName);
             }
         } else {
             return method.invoke(statement, args);

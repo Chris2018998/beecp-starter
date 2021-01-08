@@ -33,7 +33,6 @@ import java.util.logging.Logger;
  */
 public class BeeDataSourceWrapper implements DataSource {
     private String dsName;
-    private String poolName;
     private boolean traceSQL;
     private BeeDataSource delegete;
 
@@ -47,18 +46,18 @@ public class BeeDataSourceWrapper implements DataSource {
         return dsName;
     }
 
-    public ConnectionPoolMonitorVo getMonitorVo() throws Exception {
-        return delegete.getPoolMonitorVo();
+    public ConnectionPoolMonitorVo getPoolMonitorVo() throws Exception {
+        ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
+
+
+        return vo;
     }
 
     public Connection getConnection() throws SQLException {
         Connection con = delegete.getConnection();
         if (traceSQL) {
-            if (DataSourceUtil.isBlank(poolName)) {
-                ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
-                poolName = vo.getPoolName();
-            }
-            return ProxyFactory.createConnection(con, poolName);
+            ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
+            return ProxyFactory.createConnection(con, dsName);
         } else {
             return con;
         }
