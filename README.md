@@ -93,22 +93,25 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 public interface DataSourceFieldSetFactory {
 
    //get Properties value from environment and set to dataSource
-   public void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception;;
+   public void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception;
 }
 ```
 ---
 
-**监控界面**
----
+#####  监控界面
 
-在打开监控标签后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
+
+监控标签启用后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
+   
    
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
 
+
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
 
-**SQL监控配置**
 ---
+
+#####  SQL监控配置
 
 ```xml
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
