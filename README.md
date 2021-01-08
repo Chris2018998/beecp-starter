@@ -9,38 +9,23 @@ Maven坐标(Java8)
 </dependency>
 ```
 
-**多源配置**
----
+##### 单数据源范例
 
-| 配置项                        |      说明                            | 必填           |         参考数据                                           |  
-|------------------------------|--------------------------------------|---------------|-----------------------------------------------------------|         
-|nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是                       |spring.datasource.nameList=d1,d2,d3                        |     
-|datasourceType                | 数据源类名,必须含有无参构造函数           | 否(不填默认采用小蜜蜂数据源)|spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce |         
-|fieldSetFactory               | 数据源属性注入工厂类                     | 否(其他数据源必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
-|primary                       | 是否为首要数据源,不配置为false           | 否                   |spring.datasource.d1.primary=true                          |
-|jndiName                      | 中间件数据源Jndi名,若配置则作为首要配置    | 否                   |spring.datasource.d2.jndiName=testDB                      |
-|poolName                      | 数据源地连接池名                         | 否                   |spring.datasource.d1.poolName=BeeCP1                     |
-|username                      | JDBC连接用户名                          | 是                   |spring.datasource.d1.username=root                       |
-|password                      | JDBC连接用密码                          | 是                   |spring.datasource.d1.password=root                       |
-|jdbcUrl                       | JDBC连接URL                            | 是                   |spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test|
-|driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
+```tex 
+spring.datasource.type=cn.beecp.BeeDataSource
+spring.datasource.poolName=BeeCP1
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+```
 
-**单数据源范例**
----
-application.properties
-   
-    #单数据源配置点
-    spring.datasource.type=cn.beecp.BeeDataSource
-    spring.datasource.poolName=BeeCP1
-    spring.datasource.username=root
-    spring.datasource.password=
-    spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
-    spring.datasource.driverClassName=com.mysql.jdbc.Driver
-  
-   下载参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsStarterDemo.zip
 
-**多数据源范例**
----
+下载参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsStarterDemo.zip
+
+#####  多数据源范例
+
+'''xml
 application.properties
 
     #多数据源配置起点
@@ -83,6 +68,26 @@ application.properties
       
 
   下载参考代码 https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsStarterDemo.zip
+  
+  
+  **多源配置**
+---
+
+| 配置项                        |      说明                            | 必填           |         参考数据                                           |  
+|------------------------------|--------------------------------------|---------------|-----------------------------------------------------------|         
+|nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 是                       |spring.datasource.nameList=d1,d2,d3                        |     
+|datasourceType                | 数据源类名,必须含有无参构造函数           | 否(不填默认采用小蜜蜂数据源)|spring.datasource.d1.datasourceType=cn.beecp.BeeDataSoruce |         
+|fieldSetFactory               | 数据源属性注入工厂类                     | 否(其他数据源必填)        |spring.datasource.d1.datasourceAttributeSetFactory=xxxx    |
+|primary                       | 是否为首要数据源,不配置为false           | 否                   |spring.datasource.d1.primary=true                          |
+|jndiName                      | 中间件数据源Jndi名,若配置则作为首要配置    | 否                   |spring.datasource.d2.jndiName=testDB                      |
+|poolName                      | 数据源地连接池名                         | 否                   |spring.datasource.d1.poolName=BeeCP1                     |
+|username                      | JDBC连接用户名                          | 是                   |spring.datasource.d1.username=root                       |
+|password                      | JDBC连接用密码                          | 是                   |spring.datasource.d1.password=root                       |
+|jdbcUrl                       | JDBC连接URL                            | 是                   |spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test|
+|driverClassName               | JDBC连接用驱动                          | 是                   |spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver|
+
+  
+  
 
 **扩展接口**
 ---
