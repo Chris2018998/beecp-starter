@@ -48,36 +48,34 @@ spring.datasource.xxx=value
 application.properties文件配置
 
 ```tex
-
-    #按单加载的列表，为数据源的名字清单
-    spring.datasource.nameList=ds1,ds2,ds3 
+#按单加载的列表，为数据源的名字清单
+spring.datasource.nameList=ds1,ds2,ds3 
     
-    #第1数据源
-    spring.datasource.ds1.primary=true  
-    spring.datasource.ds1.poolName=BeeCP1
-    spring.datasource.ds1.username=root
-    spring.datasource.ds1.password=root
-    spring.datasource.ds1.jdbcUrl=jdbc:mysql://localhost:3306/test
-    spring.datasource.ds1.driverClassName=com.mysql.cj.jdbc.Driver
+#第1数据源
+spring.datasource.ds1.primary=true  
+spring.datasource.ds1.poolName=BeeCP1
+spring.datasource.ds1.username=root
+spring.datasource.ds1.password=root
+spring.datasource.ds1.jdbcUrl=jdbc:mysql://localhost:3306/test
+spring.datasource.ds1.driverClassName=com.mysql.cj.jdbc.Driver
      
-    #第2数据源（容器jndi数据源）
-    spring.datasource.ds2.jndiName=testDB 
+#第2数据源（容器jndi数据源,不加入监控）
+spring.datasource.ds2.jndiName=testDB 
       
-    #第3数据源(其他类型数据源）
-    spring.datasource.ds3.poolName=Hikari
-    #其他数据源类名，类型必须配置
-    spring.datasource.ds3.datasourceType=com.zaxxer.hikari.HikariDataSource 
-    #其他数据源类的配置属性注入工厂实现类
-    spring.datasource.ds3.fieldSetFactory=cn.beecp.boot.setFactory.HikariDataSourceSetFactory
-    spring.datasource.ds3.username=root
-    spring.datasource.ds3.password=root
-    spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
-    spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
-   ```
-   
-   完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsStarterDemo.zip
-  
-  ---
+#第3数据源(其他类型数据源,不加入监控）
+spring.datasource.ds3.poolName=Hikari
+#其他数据源类名，类型必须配置
+spring.datasource.ds3.datasourceType=com.zaxxer.hikari.HikariDataSource 
+#其他数据源类的配置属性注入工厂实现类
+spring.datasource.ds3.fieldSetFactory=cn.beecp.boot.setFactory.HikariDataSourceSetFactory
+spring.datasource.ds3.username=root
+spring.datasource.ds3.password=root
+spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
+spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
+```
+完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsStarterDemo.zip
+
+---
   
   
   
