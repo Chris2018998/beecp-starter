@@ -1,28 +1,6 @@
-BeeCP-Starter是小蜜蜂连接池在Springboot上的启动器
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，支持配置一个或多个数据源，同时提供监控界面。
 
-
-**相关功能**
----
-1：文件方式配置数据源信息
-
-2：支持一个或多数据源配置
-
-3：支持配置Jndi数据源
-
-4：扩展支持其他数据源
-
-5: 连接池监控
-
-
-**运行依赖**
----
-1：Java版本：JDK1.8
-
-2：Springboot版本：2.0.9.RELEASE
-
-
-**版本下载**
----
+Maven坐标(Java8)
 ```xml
 <dependency>
    <groupId>com.github.chris2018998</groupId>
