@@ -109,6 +109,8 @@ public interface DataSourceFieldSetFactory {
 
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
 
+<i>黄色为执行时间比较长的SQL,红色部分为执行错误的SQL</i>
+
 ---
 
 #####  SQL监控配置
