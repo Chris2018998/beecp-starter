@@ -9,14 +9,12 @@ Maven坐标(Java8)
 </dependency>
 ```
 
-##### 应用标签
+##### 标签介绍
 
-标签 + 文件配置
-
-| 标签                    | 备注                                                     |
-| -----------------------| ------------------------------------------------------   |
-| @EnableMultiDataSource  | 多数据源启用标签，需要配置在@SpringBootApplication之前       |
-| @EnableDataSourceMonitor| 监控启用标签                                              |
+| 标签                     | 备注                                                               |
+| ----------------------- | ------------------------------------------------------------------ |
+| @EnableMultiDataSource  | 多数据源启用标签，需要配置在@SpringBootApplication<strong>之前</strong>|
+| @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况               |
  
 
 
