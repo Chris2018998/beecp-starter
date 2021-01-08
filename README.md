@@ -1,4 +1,4 @@
-BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，支持配置一个或多个数据源，同时提供监控界面。
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，通过<strong>标签+配置文件</strong>的方式启动一个或多个数据源，同时提供监控界面。
 
 Maven坐标(Java8)
 ```xml
@@ -9,7 +9,28 @@ Maven坐标(Java8)
 </dependency>
 ```
 
+##### 应用标签
+
+标签 + 文件配置
+
+| 标签                    | 备注                                                     |
+| -----------------------| ------------------------------------------------------   |
+| @EnableMultiDataSource  | 多数据源启用标签，需要配置在@SpringBootApplication之前       |
+| @EnableDataSourceMonitor| 监控启用标签                                              |
+ 
+
+
+
+
+
+
+
+
+
+
 ##### 单数据源范例
+
+
 
 ```tex 
 spring.datasource.type=cn.beecp.BeeDataSource
@@ -18,7 +39,16 @@ spring.datasource.username=root
 spring.datasource.password=
 spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
 spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.datasource.fairMode=true
+spring.datasource.initialSize=10
+spring.datasource.maxActive=10
+spring.datasource.xxx=value
 ```
+xxx代指数据源的属性名,更多属性请参照小蜜蜂连接属性列表
+
+
+
+
 
 
 下载参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsStarterDemo.zip
