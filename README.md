@@ -23,7 +23,7 @@ Maven坐标(Java8)
 
 若不启用@EnableMultiDataSource标签，启动器则自动尝试装载单源，前提系统ClassPath中存在小蜜蜂数据源类，适用于单一数据源的情况,参考配置如下
 
-```tex 
+```xml
 spring.datasource.type=cn.beecp.BeeDataSource
 spring.datasource.poolName=BeeCP1
 spring.datasource.username=root
@@ -35,6 +35,7 @@ spring.datasource.initialSize=10
 spring.datasource.maxActive=10
 spring.datasource.xxx=value
 ```
+	
 <i>xxx代指数据源的配置属性名,更多属性请参照小蜜蜂连接属性列表</i>
  
 完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsStarterDemo.zip
