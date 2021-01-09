@@ -16,7 +16,6 @@
 package cn.beecp.boot.monitor;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.DataSourceUtil;
 import cn.beecp.boot.monitor.sqltrace.ProxyFactory;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 
@@ -36,21 +35,18 @@ public class BeeDataSourceWrapper implements DataSource {
     private boolean traceSQL;
     private BeeDataSource delegete;
 
-    public BeeDataSourceWrapper(BeeDataSource delegete,String dsName,boolean traceSQL) {
+    public BeeDataSourceWrapper(BeeDataSource delegete, String dsName, boolean traceSQL) {
         this.delegete = delegete;
         this.dsName = dsName;
         this.traceSQL = traceSQL;
     }
 
-    public String getDsName(){
+    public String getDsName() {
         return dsName;
     }
 
     public ConnectionPoolMonitorVo getPoolMonitorVo() throws Exception {
-        ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
-
-
-        return vo;
+        return delegete.getPoolMonitorVo();
     }
 
     public Connection getConnection() throws SQLException {
@@ -61,6 +57,10 @@ public class BeeDataSourceWrapper implements DataSource {
         } else {
             return con;
         }
+    }
+
+    public void resetPool() throws SQLException {
+        delegete.resetPool(false);
     }
 
     public Connection getConnection(String username, String password) throws SQLException {

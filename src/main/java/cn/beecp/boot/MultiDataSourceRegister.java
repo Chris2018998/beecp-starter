@@ -97,12 +97,12 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         String[] dsNames = dataSourceNames.trim().split(",");
         ArrayList<String> dsNameList = new ArrayList(dsNames.length);
         for (String name : dsNames) {
-            name = name.trim();
             if (DataSourceUtil.isBlank(name)) continue;
 
+            name = name.trim();
             if (dsNameList.contains(name))
                 throw new ConfigException("Duplicated dataSource name:" + name);
-            if(this.existsBeanDefinition(name,registry))
+            if (this.existsBeanDefinition(name, registry))
                 throw new ConfigException("Spring bean definition existed with dataSource name:" + name);
 
             dsNameList.add(name);
@@ -132,7 +132,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
                 if (ds != null) {
                     if (ds instanceof BeeDataSource) {//current dataSource type is BeeDataSource
-                        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds,dsName,isSqlTrace);
+                        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds, dsName, isSqlTrace);
                         dataSourceMap.put(dsName, dsWrapper);
                         ds = dsWrapper;
                     }
@@ -198,7 +198,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_FieldSetFactory);
         if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
             throw new ConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
-        DataSourceFieldSetFactory dsFieldSetFactory =null;
+        DataSourceFieldSetFactory dsFieldSetFactory = null;
         if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
             dataSourceFieldSetFactoryClassName = dataSourceFieldSetFactoryClassName.trim();
             Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceFieldSetFactory.class, "DataSource properties factory");

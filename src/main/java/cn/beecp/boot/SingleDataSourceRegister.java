@@ -60,14 +60,14 @@ public class SingleDataSourceRegister {
     public DataSource beeDataSource(Environment environment) throws Exception {
         configSqlTracePool(environment);//set config properties to sql trace pool
 
-        String dsName="beeDataSource";
+        String dsName = "beeDataSource";
         BeeDataSource ds = new BeeDataSource();
         BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
-        dsAttrSetFactory.setFields(ds,dsName, Spring_DS_Prefix, environment);//set properties to dataSource
-        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper(ds,dsName,SqlTracePool.getInstance().isSqlTrace());
+        dsAttrSetFactory.setFields(ds, dsName, Spring_DS_Prefix, environment);//set properties to dataSource
+        BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper(ds, dsName, SqlTracePool.getInstance().isSqlTrace());
 
         Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>(1);
-        dataSourceMap.put(dsName,dsWrapper);
+        dataSourceMap.put(dsName, dsWrapper);
         BeeDataSourceCollector.getInstance().setDataSourceMap(dataSourceMap);
         return dsWrapper;
     }
