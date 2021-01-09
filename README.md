@@ -23,7 +23,7 @@ Maven坐标(Java8)
 
 若不启用@EnableMultiDataSource标签，启动器则自动尝试装载单源，前提系统ClassPath中存在小蜜蜂数据源类，适用于单一数据源的情况,参考配置如下
 
-```xml
+```yml
 spring.datasource.type=cn.beecp.BeeDataSource
 spring.datasource.poolName=BeeCP1
 spring.datasource.username=root
@@ -48,7 +48,7 @@ spring.datasource.xxx=value
 
 application.properties文件配置
 
-```tex
+```yml
 #按单加载的列表，为数据源的名字清单
 spring.datasource.nameList=ds1,ds2,ds3 
     
@@ -116,7 +116,7 @@ public interface DataSourceFieldSetFactory {
 
 #####  SQL监控配置
 
-```xml
+```yml
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
 spring.datasource.sql-show=true                       #是否打印SQL
 spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
