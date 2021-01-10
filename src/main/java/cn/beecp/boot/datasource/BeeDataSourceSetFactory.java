@@ -15,10 +15,16 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -36,7 +42,8 @@ import java.util.Properties;
  */
 
 public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
-
+    //logger
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     /**
      * return config field
      */
@@ -75,6 +82,55 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
                     connectProperties.put(pairs[0].trim(), pairs[1].trim());
             }
             field.set(ds, new Object[]{connectProperties});
+        }
+    }
+
+    /**
+     * after Set Attributes
+     *
+     * @param ds           dataSource
+     * @param dsName       dataSource name
+     * @param configPrefix configured prefix name
+     * @param environment  SpringBoot environment
+     * @throws Exception when fail to set
+     */
+    protected void afterSetFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception {
+        if (ds instanceof BeeDataSource) {//current dataSource type is BeeDataSource
+            Method method =null;
+            boolean accessibleChanged=false;
+            try {
+                BeeDataSource beeDs = (BeeDataSource) ds;
+                method=BeeDataSourceConfig.class.getDeclaredMethod("check", new Class[0]);
+                if(!method.isAccessible()){
+                    method.setAccessible(true);
+                    accessibleChanged=true;
+                }
+                method.invoke(ds, new Object[0]);
+            } catch (NoSuchMethodException e) {
+                log.error("Failed to check dataSource configuration",e);
+                throw e;
+            } catch (SecurityException e) {
+                log.error("Failed to check dataSource configuration",e);
+                throw e;
+            } catch (IllegalAccessException e) {
+                log.error("Failed to check dataSource configuration",e);
+                throw e;
+            } catch (IllegalArgumentException e) {
+                log.error("Failed to check dataSource configuration",e);
+                throw e;
+            } catch (InvocationTargetException e) {
+              Throwable cause=e.getTargetException();
+              if(cause!=null){
+                  log.error("Failed to check dataSource configuration",cause);
+                  throw new SQLException(cause);
+              }else{
+                  throw new SQLException("Failed to check dataSource configuration:"+e.getMessage());
+              }
+            }finally{
+                if(method!=null&&accessibleChanged){
+                    method.setAccessible(false);
+                }
+            }
         }
     }
 }

@@ -68,6 +68,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
     //logger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     //springboot
     private Environment environment;
     //jndi name context
@@ -94,6 +95,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         String dataSourceNames = getConfigValue(environment, Spring_DS_Prefix, Spring_DS_KEY_NameList);
         if (DataSourceUtil.isBlank(dataSourceNames))
             throw new ConfigException("Missed config item:" + Spring_DS_Prefix + "." + Spring_DS_KEY_NameList);
+
         String[] dsNames = dataSourceNames.trim().split(",");
         ArrayList<String> dsNameList = new ArrayList(dsNames.length);
         for (String name : dsNames) {
@@ -213,11 +215,8 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         try {
             dsFieldSetFactory.setFields(ds, dsName, dsConfigPrefix, environment);//set properties to dataSource
         } catch (Exception e) {
-            throw new ConfigException("Failed to inject attribute to dataSource(" + dsName + ")", e);
+            throw new ConfigException("Failed to inject config value to dataSource(" + dsName + ")", e);
         }
-
-//        if(fieldSetSize==0)
-//            throw new ConfigException("Failed to inject attribute to dataSource(" + dsName + ")");
 
         return ds;
     }
@@ -265,27 +264,27 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         Class dsClass = dataSource.getClass();
         try {
             method = dsClass.getMethod("close", new Class[0]);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
 
         if (method == null) {
             try {
                 method = dsClass.getMethod("destroy", new Class[0]);
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
 
         if (method == null) {
             try {
                 method = dsClass.getMethod("terminate", new Class[0]);
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
 
         if (method != null) {
             try {
                 method.invoke(dataSource, new Object[0]);
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
     }
