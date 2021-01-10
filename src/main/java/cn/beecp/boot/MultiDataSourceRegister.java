@@ -209,11 +209,16 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
 
         //3:inject properties to dataSource
+        //int fieldSetSize=0;
         try {
             dsFieldSetFactory.setFields(ds, dsName, dsConfigPrefix, environment);//set properties to dataSource
         } catch (Exception e) {
             throw new ConfigException("Failed to inject attribute to dataSource(" + dsName + ")", e);
         }
+
+//        if(fieldSetSize==0)
+//            throw new ConfigException("Failed to inject attribute to dataSource(" + dsName + ")");
+
         return ds;
     }
 

@@ -160,7 +160,8 @@ public class SqlTracePool {
         Iterator<SqlTraceEntry> itor = traceQueue.descendingIterator();
         while (itor.hasNext()) {
             SqlTraceEntry vo = itor.next();
-            if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd())) {//failed
+            if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd()) && !vo.isAlertInd()) {//failed
+                vo.setAlertInd(true);
                 alertEntryList.add(vo);
             }
 

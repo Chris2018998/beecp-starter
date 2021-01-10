@@ -34,6 +34,7 @@ public class SqlTraceEntry {
     private boolean execInd;
     private boolean execSlowInd;
     private boolean execSuccessInd;
+    private boolean alertInd;
     private Throwable failCause;
     private String methodName;
 
@@ -131,6 +132,10 @@ public class SqlTraceEntry {
     public void setExecSlowInd(boolean execSlowInd) {
         this.execSlowInd = execSlowInd;
     }
+
+    public boolean isAlertInd() { return alertInd; }
+
+    public void setAlertInd(boolean alertInd) { this.alertInd = alertInd; }
 
     public Throwable getFailCause() {
         return failCause;
