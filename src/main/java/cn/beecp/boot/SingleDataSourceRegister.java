@@ -51,7 +51,7 @@ import static cn.beecp.boot.DataSourceUtil.getConfigValue;
  *
  * @author Chris.Liao
  */
-@ConditionalOnClass(BeeDataSourceWrapper.class)
+@ConditionalOnClass(BeeDataSource.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
