@@ -17,7 +17,6 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
-import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -25,7 +24,6 @@ import org.springframework.core.env.Environment;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,10 +102,10 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
             BeeDataSource beeDs = (BeeDataSource) ds;
 
             try {//test config check
-                checkMethod= BeeDataSourceConfig.class.getDeclaredMethod("check", new Class[0]);
-                if(!checkMethod.isAccessible()){
+                checkMethod = BeeDataSourceConfig.class.getDeclaredMethod("check", new Class[0]);
+                if (!checkMethod.isAccessible()) {
                     checkMethod.setAccessible(true);
-                    accessibleChanged=true;
+                    accessibleChanged = true;
                 }
                 checkMethod.invoke(ds, new Object[0]);
             } catch (NoSuchMethodException e) {
@@ -133,18 +131,6 @@ public class BeeDataSourceSetFactory extends BaseDataSourceSetFactory {
             } finally {
                 if (checkMethod != null && accessibleChanged) {
                     checkMethod.setAccessible(false);
-                }
-            }
-
-            //try to init DataSource pool
-            Connection con =null;
-            try {
-                con = beeDs.getConnection();
-            }catch(SQLException e){//may network error
-                log.error("Failed to get Connection:",e);
-            }finally{
-                if(con!=null){
-                    PoolStaticCenter.oclose(con);
                 }
             }
         }

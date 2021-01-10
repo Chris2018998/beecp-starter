@@ -26,28 +26,28 @@ import java.util.Map;
 public class BeeDataSourceCollector {
     private final static BeeDataSourceCollector single = new BeeDataSourceCollector();
     private boolean setted;
-    private Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>();
+    private Map<String, BeeDataSourceWrapper> dsMap = new HashMap<>();
 
     public final static BeeDataSourceCollector getInstance() {
         return single;
     }
 
-    public void setDataSourceMap(Map<String, BeeDataSourceWrapper> dataSourceMap) {
+    public void setDataSourceMap(Map<String, BeeDataSourceWrapper> dsMap) {
         if (!setted) {
             setted = true;
-            this.dataSourceMap = dataSourceMap;
+            this.dsMap = dsMap;
         }
     }
 
     void removeDataSource(String dsName) {
-        dataSourceMap.remove(dsName);
+        dsMap.remove(dsName);
     }
 
     BeeDataSourceWrapper getDataSource(String dsName) {
-        return dataSourceMap.get(dsName);
+        return dsMap.get(dsName);
     }
 
     BeeDataSourceWrapper[] getAllDataSource() {
-        return dataSourceMap.values().toArray(new BeeDataSourceWrapper[dataSourceMap.size()]);
+        return dsMap.values().toArray(new BeeDataSourceWrapper[dsMap.size()]);
     }
 }

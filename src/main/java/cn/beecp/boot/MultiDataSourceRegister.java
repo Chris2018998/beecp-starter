@@ -115,7 +115,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         configSqlTracePool(environment);////set config properties to sql trace pool
         boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
         List<DsRegisterInfo> dsRegisterList = new LinkedList();
-        Map<String,BeeDataSourceWrapper> beeDsMap = new LinkedHashMap<>(dsNameList.size());
+        Map<String, BeeDataSourceWrapper> beeDsMap = new LinkedHashMap<>(dsNameList.size());
 
         try {
             for (String dsName : dsNameList) {
@@ -134,6 +134,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
                 if (ds != null) {
                     if (ds instanceof BeeDataSource) {//current dataSource type is BeeDataSource
+                        tryGetConnection(ds, dsName);
                         BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds, dsName, isSqlTrace);
                         beeDsMap.put(dsName, dsWrapper);
                         ds = dsWrapper;

@@ -84,11 +84,11 @@ li a {
 }
 
 .sqlExecSlow {
-    background-color: yellow;
+    background-color: #CCFF66;
 }
 
 .sqlExecFail {
-    background-color: red;
+    background-color: #FFCC00;
 }
 
 /* tables */

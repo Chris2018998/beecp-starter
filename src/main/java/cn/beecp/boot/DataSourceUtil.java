@@ -19,6 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /*
  *  Util
  *
@@ -98,5 +104,40 @@ public class DataSourceUtil {
             }
         }
         return sb.toString();
+    }
+
+    static final void tryGetConnection(Object ds, String dsName) {
+        //try to init DataSource pool
+        if (ds instanceof DataSource) {
+            Connection con = null;
+            DataSource dds = (DataSource) ds;
+            try {
+                con = dds.getConnection();
+            } catch (SQLException e) {//may network error
+                log.error("Failed to get Connection from dataSource({}):", dsName, e);
+            } finally {
+                if (con != null) {
+                    try {
+                        con.close();
+                    } catch (Throwable e) {
+                    }
+                }
+            }
+        } else if (ds instanceof XADataSource) {
+            XAConnection con = null;
+            XADataSource xds = (XADataSource) ds;
+            try {
+                con = xds.getXAConnection();
+            } catch (SQLException e) {//may network error
+                log.error("Failed to get Connection from dataSource({}):", dsName, e);
+            } finally {
+                if (con != null) {
+                    try {
+                        con.close();
+                    } catch (Throwable e) {
+                    }
+                }
+            }
+        }
     }
 }

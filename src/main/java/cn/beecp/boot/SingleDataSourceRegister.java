@@ -34,8 +34,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cn.beecp.boot.DataSourceUtil.Spring_DS_Prefix;
-import static cn.beecp.boot.DataSourceUtil.getConfigValue;
+import static cn.beecp.boot.DataSourceUtil.*;
 
 /*
  *  config example
@@ -66,6 +65,7 @@ public class SingleDataSourceRegister {
         dsAttrSetFactory.setFields(ds, dsName, Spring_DS_Prefix, environment);//set properties to dataSource
         BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper(ds, dsName, SqlTracePool.getInstance().isSqlTrace());
 
+        tryGetConnection(ds, dsName);
         Map<String, BeeDataSourceWrapper> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put(dsName, dsWrapper);
         BeeDataSourceCollector.getInstance().setDataSourceMap(dataSourceMap);
