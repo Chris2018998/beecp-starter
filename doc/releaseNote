@@ -1,3 +1,14 @@
 beecp-spring-boot-starter-1.3.5
 1: 后端增加监视Monitor类
 2：增加Monitor页面
+
+
+beecp-spring-boot-starter-1.4.2
+1: SQL监控界面以颜色区分低效SQL，错误SQL
+2：SQL监控增加分页展示，以及支持排序
+3：后端增加SQL执行警告类
+
+beecp-spring-boot-starter-1.4.3
+1: 调整SQL监控界面的低效SQL，错误SQL区分颜色
+2：修复“数据源未初始化”后端异常
+3：SQL监控界面默认加载SQL执行信息
