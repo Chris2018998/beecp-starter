@@ -117,7 +117,6 @@
                 }
             });
         });
-        $("#pool_Refresh").trigger("click");
 
         $("#sql-refresh").click(function () {
             $.ajax({
@@ -173,6 +172,10 @@
         }, function () {
             $(this).parent().removeClass("hoverItem");
         });
+
+
+        $("#pool_Refresh").trigger("click");
+        $("#sql-refresh").trigger("click");
     });
 </script>
 　　
