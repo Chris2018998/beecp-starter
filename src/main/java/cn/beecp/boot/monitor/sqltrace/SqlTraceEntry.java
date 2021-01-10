@@ -133,9 +133,13 @@ public class SqlTraceEntry {
         this.execSlowInd = execSlowInd;
     }
 
-    public boolean isAlertInd() { return alertInd; }
+    public boolean isAlertInd() {
+        return alertInd;
+    }
 
-    public void setAlertInd(boolean alertInd) { this.alertInd = alertInd; }
+    public void setAlertInd(boolean alertInd) {
+        this.alertInd = alertInd;
+    }
 
     public Throwable getFailCause() {
         return failCause;

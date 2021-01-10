@@ -33,10 +33,10 @@ import java.util.logging.Logger;
 public class BeeDataSourceWrapper implements DataSource {
     private String dsName;
     private boolean traceSQL;
-    private BeeDataSource delegete;
+    private BeeDataSource delegate;
 
-    public BeeDataSourceWrapper(BeeDataSource delegete, String dsName, boolean traceSQL) {
-        this.delegete = delegete;
+    public BeeDataSourceWrapper(BeeDataSource delegate, String dsName, boolean traceSQL) {
+        this.delegate = delegate;
         this.dsName = dsName;
         this.traceSQL = traceSQL;
     }
@@ -45,57 +45,57 @@ public class BeeDataSourceWrapper implements DataSource {
         return dsName;
     }
 
-    public ConnectionPoolMonitorVo getPoolMonitorVo() throws Exception {
-        return delegete.getPoolMonitorVo();
+    public boolean isTraceSQL() {
+        return traceSQL;
     }
 
-    public Connection getConnection() throws SQLException {
-        Connection con = delegete.getConnection();
-        if (traceSQL) {
-            ConnectionPoolMonitorVo vo = delegete.getPoolMonitorVo();
-            return ProxyFactory.createConnection(con, dsName);
-        } else {
-            return con;
-        }
+    public ConnectionPoolMonitorVo getPoolMonitorVo() throws Exception {
+        return delegate.getPoolMonitorVo();
     }
 
     public void resetPool() throws SQLException {
-        delegete.resetPool(false);
+        delegate.resetPool(false);
+    }
+
+    public Connection getConnection() throws SQLException {
+        Connection con = delegate.getConnection();
+        return traceSQL ? ProxyFactory.createConnection(con, dsName) : con;
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        return delegete.getConnection(username, password);
+        Connection con = delegate.getConnection(username, password);
+        return traceSQL ? ProxyFactory.createConnection(con, dsName) : con;
     }
 
     public java.io.PrintWriter getLogWriter() throws SQLException {
-        return delegete.getLogWriter();
+        return delegate.getLogWriter();
     }
 
     public void setLogWriter(java.io.PrintWriter out) throws SQLException {
-        delegete.setLogWriter(out);
+        delegate.setLogWriter(out);
     }
 
     public void close() {
-        delegete.close();
+        delegate.close();
     }
 
     public int getLoginTimeout() throws SQLException {
-        return delegete.getLoginTimeout();
+        return delegate.getLoginTimeout();
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        delegete.setLoginTimeout(seconds);
+        delegate.setLoginTimeout(seconds);
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return delegete.getParentLogger();
+        return delegate.getParentLogger();
     }
 
     public <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
-        return delegete.unwrap(iface);
+        return delegate.unwrap(iface);
     }
 
     public boolean isWrapperFor(java.lang.Class<?> iface) throws java.sql.SQLException {
-        return delegete.isWrapperFor(iface);
+        return delegate.isWrapperFor(iface);
     }
 }

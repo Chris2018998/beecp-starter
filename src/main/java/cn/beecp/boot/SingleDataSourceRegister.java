@@ -60,7 +60,7 @@ public class SingleDataSourceRegister {
     public DataSource beeDataSource(Environment environment) throws Exception {
         configSqlTracePool(environment);//set config properties to sql trace pool
 
-        String dsName = "beeDataSource";
+        String dsName = "beeDs";
         BeeDataSource ds = new BeeDataSource();
         BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
         dsAttrSetFactory.setFields(ds, dsName, Spring_DS_Prefix, environment);//set properties to dataSource

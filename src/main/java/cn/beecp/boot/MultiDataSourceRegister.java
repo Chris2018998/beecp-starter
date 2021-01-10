@@ -115,7 +115,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         configSqlTracePool(environment);////set config properties to sql trace pool
         boolean isSqlTrace = SqlTracePool.getInstance().isSqlTrace();
         List<DsRegisterInfo> dsRegisterList = new LinkedList();
-        Map<String, BeeDataSourceWrapper> dataSourceMap = new LinkedHashMap<>(dsNameList.size());
+        Map<String,BeeDataSourceWrapper> beeDsMap = new LinkedHashMap<>(dsNameList.size());
 
         try {
             for (String dsName : dsNameList) {
@@ -135,7 +135,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 if (ds != null) {
                     if (ds instanceof BeeDataSource) {//current dataSource type is BeeDataSource
                         BeeDataSourceWrapper dsWrapper = new BeeDataSourceWrapper((BeeDataSource) ds, dsName, isSqlTrace);
-                        dataSourceMap.put(dsName, dsWrapper);
+                        beeDsMap.put(dsName, dsWrapper);
                         ds = dsWrapper;
                     }
 
@@ -151,7 +151,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             for (DsRegisterInfo regInfo : dsRegisterList) {
                 registerDataSourceBean(regInfo, registry);
             }
-            BeeDataSourceCollector.getInstance().setDataSourceMap(dataSourceMap);
+            BeeDataSourceCollector.getInstance().setDataSourceMap(beeDsMap);
         } catch (Throwable e) {//failed then close all created dataSource
             for (DsRegisterInfo regInfo : dsRegisterList) {
                 closeDataSource(regInfo.getDataSource());
@@ -206,12 +206,11 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceFieldSetFactory.class, "DataSource properties factory");
             dsFieldSetFactory = (DataSourceFieldSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceFieldSetFactory.class);
         }
+
         if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
         if (dsFieldSetFactory == null)
             throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
 
-        //3:inject properties to dataSource
-        //int fieldSetSize=0;
         try {
             dsFieldSetFactory.setFields(ds, dsName, dsConfigPrefix, environment);//set properties to dataSource
         } catch (Exception e) {
