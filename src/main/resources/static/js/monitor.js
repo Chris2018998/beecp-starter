@@ -64,7 +64,7 @@ function showSqlTracePage() {//show sql page List
 
         var tableHtml = "<tr " + bgcolor + ">" +
             "<td>" + element.sql + "</td>" +
-            "<td>" + element.dsName + "</td>" +
+            "<td>" + element.dsId + "</td>" +
             "<td>" + element.execStartTime + "</td>" +
             "<td>" + element.execEndTime + "</td>" +
             "<td>" + element.execTookTimeMs + "</td>" +
