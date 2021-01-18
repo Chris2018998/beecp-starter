@@ -44,10 +44,6 @@ public class CombineDataSource implements DataSource {
         this.isClosed = true;
     }
 
-    private final void checkClosed() throws SQLException {
-        if (isClosed) throw new SQLException("No operations allowed after connection closed.");
-    }
-
     public Connection getConnection() throws SQLException {
         return getTraceDataSource().getConnection();
     }
@@ -57,7 +53,6 @@ public class CombineDataSource implements DataSource {
     }
 
     private TraceDataSource getTraceDataSource() throws SQLException {
-        checkClosed();
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
         dsId = !DataSourceUtil.isBlank(dsId) ? dsId : defaultId;
