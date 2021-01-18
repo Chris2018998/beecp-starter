@@ -53,7 +53,7 @@ class DataSourceBuilder {
      * @return a dataSource
      */
     public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment) {
-        String jndiNameTex = getConfigValue(environment, dsPrefix, Spring_DS_KEY_Jndi);
+        String jndiNameTex = getConfigValue(environment, dsPrefix, SP_Multi_DS_Jndi);
         if (!DataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
             return lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
@@ -85,9 +85,9 @@ class DataSourceBuilder {
     //create dataSource instance by config class name
     private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment) {
         //1:load dataSource class and instantiate it
-        String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_DatasourceType);
+        String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_Type);
         if (DataSourceUtil.isBlank(dataSourceClassName))
-            dataSourceClassName = Default_DS_Class_Name;//BeeDataSource is default
+            dataSourceClassName = SP_Multi_DS_Default_Type;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
         Class dataSourceClass = loadClass(dataSourceClassName.trim(), DataSource.class, "DataSource");
@@ -98,13 +98,13 @@ class DataSourceBuilder {
         } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
             ds = createInstanceByClassName(dataSourceClass, DataSource.class);
         } else {
-            throw new ConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + Spring_DS_KEY_DatasourceType);
+            throw new ConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + SP_Multi_DS_Type);
         }
 
         //2:load dataSource class and instantiate it
-        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, Spring_DS_KEY_FieldSetFactory);
+        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_FieldSetFactory);
         if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
-            throw new ConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
+            throw new ConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
         DataSourceFieldSetFactory dsFieldSetFactory = null;
         if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
             dataSourceFieldSetFactoryClassName = dataSourceFieldSetFactoryClassName.trim();
@@ -114,7 +114,7 @@ class DataSourceBuilder {
 
         if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
         if (dsFieldSetFactory == null)
-            throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + Spring_DS_KEY_FieldSetFactory);
+            throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
 
         try {
             dsFieldSetFactory.setFields(ds, dsId, dsConfigPrefix, environment);//set properties to dataSource
@@ -140,3 +140,4 @@ class DataSourceBuilder {
         }
     }
 }
+

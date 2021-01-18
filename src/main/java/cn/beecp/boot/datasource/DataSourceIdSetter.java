@@ -32,4 +32,8 @@ public class DataSourceIdSetter {
             TraceDataSourceMap.getInstance().setCurDsId(dsId.trim());
         }
     }
+
+    public void removeDataSourceId() {
+        TraceDataSourceMap.getInstance().removeCurDsId();
+    }
 }

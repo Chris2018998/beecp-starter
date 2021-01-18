@@ -111,7 +111,7 @@ public class TraceDataSource implements DataSource {
         if (!jndiDs) {
             Class[] paramTypes = new Class[0];
             Class dsClass = delegate.getClass();
-            String[] methodNames = new String[]{"close", "shutdown", "terminate"};
+            String[] methodNames = new String[]{"close", "shutdown", "terminate", "destroy"};
             for (String name : methodNames) {
                 try {
                     Method method = dsClass.getMethod(name, paramTypes);

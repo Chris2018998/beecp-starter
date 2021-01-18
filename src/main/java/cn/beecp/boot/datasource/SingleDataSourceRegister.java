@@ -29,7 +29,7 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.Spring_DS_Prefix;
+import static cn.beecp.boot.datasource.DataSourceUtil.SP_DS_Prefix;
 import static cn.beecp.boot.datasource.DataSourceUtil.getConfigValue;
 
 /*
@@ -51,13 +51,12 @@ import static cn.beecp.boot.datasource.DataSourceUtil.getConfigValue;
 public class SingleDataSourceRegister {
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        configSqlTracePool(environment);//set config properties to sql trace pool
 
         String dsId = "beeDs";
         BeeDataSource ds = new BeeDataSource();
+        boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
-        dsAttrSetFactory.setFields(ds, dsId, Spring_DS_Prefix, environment);//set properties to dataSource
-        boolean traceSQL = SqlTracePool.getInstance().isSqlTrace();
+        dsAttrSetFactory.setFields(ds, dsId, SP_DS_Prefix, environment);
         TraceDataSource dsWrapper = new TraceDataSource(dsId, ds, traceSQL, false);
         TraceDataSourceMap.getInstance().addDataSource(dsWrapper);
         return dsWrapper;
@@ -74,7 +73,7 @@ public class SingleDataSourceRegister {
             SqlTraceConfig config = new SqlTraceConfig();
             Field[] configFields = config.getClass().getDeclaredFields();
             for (Field field : configFields) {
-                String configVal = getConfigValue(environment, Spring_DS_Prefix, field.getName());
+                String configVal = getConfigValue(environment, SP_DS_Prefix, field.getName());
                 if (!DataSourceUtil.isBlank(configVal))
                     setSqlTraceConfig(field, configVal, config);
             }

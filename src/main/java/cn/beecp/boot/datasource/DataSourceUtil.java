@@ -32,37 +32,37 @@ import java.security.PrivilegedAction;
 public class DataSourceUtil {
 
     //Spring dataSource configuration prefix-key name
-    public static final String Spring_DS_Prefix = "spring.datasource";
+    public static final String SP_DS_Prefix = "spring.datasource";
 
-    //Spring dataSource configuration key name
-    public static final String Spring_DS_KEY_idList = "dsList";
+    //Multi-DataSource config id list on springboot
+    public static final String SP_Multi_DS_idList = "dsList";
 
     //Spring jndi dataSource configuration key name
-    public static final String Spring_DS_KEY_Jndi = "jndiName";
+    public static final String SP_Multi_DS_Jndi = "jndiName";
 
     //indicator:Spring dataSource register as primary datasource
-    public static final String Spring_DS_KEY_Primary = "primary";
+    public static final String SP_Multi_DS_Primary = "primary";
 
     //Datasource class name
-    public static final String Spring_DS_KEY_DatasourceType = "datasourceType";
+    public static final String SP_Multi_DS_Type = "type";
 
     //Datasource attribute set factory
-    public static final String Spring_DS_KEY_FieldSetFactory = "fieldSetFactory";
+    public static final String SP_Multi_DS_FieldSetFactory = "fieldSetFactory";
 
     //Default DataSourceName
-    public static final String Default_DS_Class_Name = "cn.beecp.BeeDataSource";
-
-    //Separator MiddleLine
-    public static final String Separator_MiddleLine = "-";
-
-    //Separator UnderLine
-    public static final String Separator_UnderLine = "_";
+    public static final String SP_Multi_DS_Default_Type = "cn.beecp.BeeDataSource";
 
     //combineId
-    public static final String MultiDataSource_CombineId = "combineId";
+    public static final String SP_Multi_DS_CombineId = "combineId";
 
-    //primaryDs
-    public static final String MultiDataSource_PrimaryDs = "combineDefaultDs";
+    //combineDefaultDs
+    public static final String SP_Multi_DS_PrimaryDs = "combineDefaultDs";
+
+    //Separator MiddleLine
+    public static final String SP_Multi_DS_Separator_MiddleLine = "-";
+
+    //Separator UnderLine
+    public static final String SP_Multi_DS_Separator_UnderLine = "_";
 
     private static final Logger log = LoggerFactory.getLogger(DataSourceUtil.class);
 
@@ -80,9 +80,9 @@ public class DataSourceUtil {
     public static final String getConfigValue(Environment environment, String configPrefix, String key) {
         String value = readConfig(environment, configPrefix + "." + key);
         if (DataSourceUtil.isBlank(value))
-            value = readConfig(environment, configPrefix + "." + propertyToField(key, Separator_MiddleLine));
+            value = readConfig(environment, configPrefix + "." + propertyToField(key, SP_Multi_DS_Separator_MiddleLine));
         if (DataSourceUtil.isBlank(value))
-            value = readConfig(environment, configPrefix + "." + propertyToField(key, Separator_UnderLine));
+            value = readConfig(environment, configPrefix + "." + propertyToField(key, SP_Multi_DS_Separator_UnderLine));
         return value;
     }
 

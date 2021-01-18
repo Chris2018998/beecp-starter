@@ -46,6 +46,11 @@ class TraceDataSourceMap {
         dsIdeLocal.set(dsId);
     }
 
+    public void removeCurDsId() {
+        dsIdeLocal.remove();
+    }
+
+
     public TraceDataSource getDataSource(String dsIde) {
         return dsMap.get(dsIde);
     }
