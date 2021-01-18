@@ -32,22 +32,22 @@ class TraceDataSourceMap {
     private final static TraceDataSourceMap instance = new TraceDataSourceMap();
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private Map<String, TraceDataSource> dsMap = new LinkedHashMap<>();
-    private ThreadLocal<String> dsIdeLocal = new ThreadLocal();
+    private ThreadLocal<String> dsIdLocal = new ThreadLocal();
 
     public final static TraceDataSourceMap getInstance() {
         return instance;
     }
 
     public String getCurDsId() {
-        return dsIdeLocal.get();
+        return dsIdLocal.get();
     }
 
     public void setCurDsId(String dsId) {
-        dsIdeLocal.set(dsId);
+        dsIdLocal.set(dsId);
     }
 
     public void removeCurDsId() {
-        dsIdeLocal.remove();
+        dsIdLocal.remove();
     }
 
 
