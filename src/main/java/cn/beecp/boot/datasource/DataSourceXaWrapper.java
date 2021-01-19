@@ -32,8 +32,8 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class DataSourceXaWrapper implements XADataSource {
-    protected String dsId;
-    protected boolean traceSQL;
+    private String dsId;
+    private boolean traceSQL;
     private boolean jndiDs;
     private XADataSource delegate;
 
