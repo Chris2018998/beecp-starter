@@ -214,7 +214,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         } else if (ds instanceof DataSource) {
             dsw = new TraceDataSource(regInfo.getDsId(), (DataSource) ds, traceSQL, regInfo.isJndiDs());
         } else if (ds instanceof XADataSource) {
-            dsw = new DataSourceXaWrapper((XADataSource) ds);
+            dsw = new DataSourceXaWrapper(regInfo.getDsId(), (XADataSource) ds, traceSQL, regInfo.isJndiDs());
         }
 
         if (dsw != null) {

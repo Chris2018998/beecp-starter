@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.datasource.sqltrace;
 
+import javax.sql.XAConnection;
 import java.lang.reflect.Proxy;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -26,25 +27,34 @@ import java.sql.Statement;
 public class ProxyFactory {
     private static final ClassLoader classLoader = ProxyFactory.class.getClassLoader();
     private static final Class[] INTF_Connection = new Class[]{Connection.class};
+    private static final Class[] INTF_XAConnection = new Class[]{XAConnection.class};
     private static final Class[] INTF_CallableStatement = new Class[]{CallableStatement.class};
 
-    public static final Connection createConnection(Connection delegete, String poolName) {
+    public static final Connection createConnection(Connection delegate, String dsId) {
         return (Connection) Proxy.newProxyInstance(
                 classLoader,
                 INTF_Connection,
-                new ConnectionHandler(delegete, poolName)
+                new ConnectionHandler(delegate, dsId)
         );
     }
 
-    public static final Statement createStatementProxy(Statement delegete, String statementType, String poolName) {
-        return createStatementProxy(delegete, statementType, poolName, null);
+    public static final XAConnection createXAConnection(XAConnection delegate, String dsId) {
+        return (XAConnection) Proxy.newProxyInstance(
+                classLoader,
+                INTF_XAConnection,
+                new XAConnectionHandler(delegate, dsId)
+        );
     }
 
-    public static final Statement createStatementProxy(Statement delegete, String statementType, String dsId, String SQL) {
+    public static final Statement createStatementProxy(Statement delegate, String statementType, String poolName) {
+        return createStatementProxy(delegate, statementType, poolName, null);
+    }
+
+    public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId, String SQL) {
         return (Statement) Proxy.newProxyInstance(
                 classLoader,
                 INTF_CallableStatement,
-                new StatementHandler(delegete, statementType, dsId, SQL)
+                new StatementHandler(delegate, statementType, dsId, SQL)
         );
     }
 }

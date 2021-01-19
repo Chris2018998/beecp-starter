@@ -15,6 +15,8 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
+
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -34,11 +36,13 @@ public class TraceXDataSource extends TraceDataSource implements XADataSource {
     }
 
     public XAConnection getXAConnection() throws SQLException {
-        return delegate.getXAConnection();
+        XAConnection con = delegate.getXAConnection();
+        return traceSQL ? ProxyFactory.createXAConnection(con, dsId) : con;
     }
 
-    public XAConnection getXAConnection(String user, String password) throws SQLException {
-        return delegate.getXAConnection(user, password);
+    public XAConnection getXAConnection(String username, String password) throws SQLException {
+        XAConnection con = delegate.getXAConnection(username, password);
+        return traceSQL ? ProxyFactory.createXAConnection(con, dsId) : con;
     }
 }
 

@@ -33,9 +33,9 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class TraceDataSource implements DataSource {
-    private String dsId;
+    protected String dsId;
+    protected boolean traceSQL;
     private boolean jndiDs;
-    private boolean traceSQL;
     private boolean beeType;
     private DataSource delegate;
 

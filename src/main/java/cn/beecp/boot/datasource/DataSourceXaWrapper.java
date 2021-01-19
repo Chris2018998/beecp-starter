@@ -15,8 +15,11 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
+
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
@@ -29,18 +32,26 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class DataSourceXaWrapper implements XADataSource {
+    protected String dsId;
+    protected boolean traceSQL;
+    private boolean jndiDs;
     private XADataSource delegate;
 
-    public DataSourceXaWrapper(XADataSource delegate) {
+    public DataSourceXaWrapper(String dsId, XADataSource delegate, boolean traceSQL, boolean jndiDs) {
+        this.dsId = dsId;
         this.delegate = delegate;
+        this.traceSQL = traceSQL;
+        this.jndiDs = jndiDs;
     }
 
     public XAConnection getXAConnection() throws SQLException {
-        return delegate.getXAConnection();
+        XAConnection con = delegate.getXAConnection();
+        return traceSQL ? ProxyFactory.createXAConnection(con, dsId) : con;
     }
 
     public XAConnection getXAConnection(String username, String password) throws SQLException {
-        return delegate.getXAConnection(username, password);
+        XAConnection con = delegate.getXAConnection(username, password);
+        return traceSQL ? ProxyFactory.createXAConnection(con, dsId) : con;
     }
 
     public java.io.PrintWriter getLogWriter() throws SQLException {
@@ -61,5 +72,22 @@ public class DataSourceXaWrapper implements XADataSource {
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return delegate.getParentLogger();
+    }
+
+    public void close() {
+        if (!jndiDs) {
+            Class[] paramTypes = new Class[0];
+            Object[] paramValues = new Object[0];
+            Class dsClass = delegate.getClass();
+            String[] methodNames = new String[]{"close", "shutdown", "terminate", "destroy"};
+            for (String name : methodNames) {
+                try {
+                    Method method = dsClass.getMethod(name, paramTypes);
+                    method.invoke(delegate, paramValues);
+                    break;
+                } catch (Throwable e) {
+                }
+            }
+        }
     }
 }

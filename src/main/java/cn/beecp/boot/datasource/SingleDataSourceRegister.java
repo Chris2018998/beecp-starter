@@ -57,7 +57,7 @@ public class SingleDataSourceRegister {
         boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
         dsAttrSetFactory.setFields(ds, dsId, SP_DS_Prefix, environment);
-        TraceDataSource dsWrapper = new TraceDataSource(dsId, ds, traceSQL, false);
+        TraceDataSource dsWrapper = new TraceXDataSource(dsId, ds, traceSQL, false);
         TraceDataSourceMap.getInstance().addDataSource(dsWrapper);
         return dsWrapper;
     }
