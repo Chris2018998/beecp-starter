@@ -27,7 +27,7 @@ import java.sql.Connection;
  */
 public class XAConnectionHandler implements InvocationHandler {
     private static final String Type_GetConnection = "getConnection";
-    ;
+    
     private String dsId;
     private XAConnection xaConnection;
 
