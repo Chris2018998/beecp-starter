@@ -18,7 +18,7 @@ package cn.beecp.boot;
 import java.lang.annotation.*;
 
 /*
- *  dyn-dataSourceId
+ *  dyn-dataSourceId annotation
  *
  *  @author Chris.Liao
  */

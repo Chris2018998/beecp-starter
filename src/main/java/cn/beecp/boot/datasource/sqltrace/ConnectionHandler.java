@@ -27,6 +27,10 @@ public class ConnectionHandler implements InvocationHandler {
     private static final String Type_Statement = "Statement";
     private static final String Type_PreparedStatement = "PreparedStatement";
     private static final String Type_CallableStatement = "CallableStatement";
+    private static final String Method_Statement = "createStatement";
+    private static final String Method_PreparedStatement = "prepareStatement";
+    private static final String Method_CallableStatement = "prepareCall";
+
     private String dsId;
     private Connection connection;
 
@@ -38,11 +42,11 @@ public class ConnectionHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
         Object re = method.invoke(connection, args);
-        if ("createStatement".equals(name)) {
+        if (Method_Statement.equals(name)) {
             return ProxyFactory.createStatementProxy((Statement) re, Type_Statement, dsId, null);
-        } else if ("prepareStatement".equals(name)) {
+        } else if (Method_PreparedStatement.equals(name)) {
             return ProxyFactory.createStatementProxy((Statement) re, Type_PreparedStatement, dsId, (String) args[0]);
-        } else if ("prepareCall".equals(name)) {
+        } else if (Method_CallableStatement.equals(name)) {
             return ProxyFactory.createStatementProxy((Statement) re, Type_CallableStatement, dsId, (String) args[0]);
         } else {
             return re;

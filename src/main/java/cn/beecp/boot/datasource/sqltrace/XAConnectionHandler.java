@@ -26,8 +26,7 @@ import java.sql.Connection;
  * @author Chris.Liao
  */
 public class XAConnectionHandler implements InvocationHandler {
-    private static final String Type_GetConnection = "getConnection";
-    
+    private static final String Method_GetConnection = "getConnection";
     private String dsId;
     private XAConnection xaConnection;
 
@@ -39,7 +38,7 @@ public class XAConnectionHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
         Object re = method.invoke(xaConnection, args);
-        if (Type_GetConnection.equals(name)) {
+        if (Method_GetConnection.equals(name)) {
             return ProxyFactory.createConnection((Connection) re, dsId);
         } else {
             return re;

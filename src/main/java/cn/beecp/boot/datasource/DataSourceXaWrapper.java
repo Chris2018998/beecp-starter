@@ -19,10 +19,11 @@ import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
+
+import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
 
 /**
  * Jndi XADataSource wrapper.
@@ -75,19 +76,7 @@ public class DataSourceXaWrapper implements XADataSource {
     }
 
     public void close() {
-        if (!jndiDs) {
-            Class[] paramTypes = new Class[0];
-            Object[] paramValues = new Object[0];
-            Class dsClass = delegate.getClass();
-            String[] methodNames = new String[]{"close", "shutdown", "terminate", "destroy"};
-            for (String name : methodNames) {
-                try {
-                    Method method = dsClass.getMethod(name, paramTypes);
-                    method.invoke(delegate, paramValues);
-                    break;
-                } catch (Throwable e) {
-                }
-            }
-        }
+        if (!jndiDs)
+            tryToCloseDataSource(delegate);
     }
 }

@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.boot.datasource.config.ConfigException;
+import cn.beecp.boot.datasource.config.DataSourceConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -54,7 +54,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
     //logger
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    //springboot
+    //springboot environment
     private Environment environment;
 
     /**
@@ -101,7 +101,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
     private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
         String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_idList);
         if (DataSourceUtil.isBlank(dsIdsText))
-            throw new ConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
+            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
 
         String[] dsIds = dsIdsText.trim().split(",");
         ArrayList<String> dsIdList = new ArrayList(dsIds.length);
@@ -110,14 +110,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
             id = id.trim();
             if (dsIdList.contains(id))
-                throw new ConfigException("Duplicated id(" + id + ")in multi-datasource id list");
+                throw new DataSourceConfigException("Duplicated id(" + id + ")in multi-datasource id list");
             if (this.existsBeanDefinition(id, registry))
-                throw new ConfigException("DataSource id(" + id + ")has been registered by another bean");
+                throw new DataSourceConfigException("DataSource id(" + id + ")has been registered by another bean");
 
             dsIdList.add(id);
         }
         if (dsIdList.isEmpty())
-            throw new ConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
+            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
 
         return dsIdList;
     }
@@ -138,14 +138,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
         if (!DataSourceUtil.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
-                throw new ConfigException("Combine-dataSource id (" + combineId + ")can't be in multi-datasource id list");
+                throw new DataSourceConfigException("Combine-dataSource id (" + combineId + ")can't be in multi-datasource id list");
             if (this.existsBeanDefinition(combineId, registry))
-                throw new ConfigException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
+                throw new DataSourceConfigException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
             if (DataSourceUtil.isBlank(primaryDs))
-                throw new ConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_PrimaryDs);
+                throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
-                throw new ConfigException("Combine-primaryDs(" + primaryDs + "not found in combine-ds id list");
+                throw new DataSourceConfigException("Combine-primaryDs(" + primaryDs + "not found in combine-ds id list");
         }
 
         Properties combineProperties = new Properties();

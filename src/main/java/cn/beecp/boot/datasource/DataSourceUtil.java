@@ -19,10 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
+import static cn.beecp.pool.PoolStaticCenter.*;
 
 /*
  *  Util
@@ -58,12 +59,6 @@ public class DataSourceUtil {
     //combineDefaultDs
     public static final String SP_Multi_DS_PrimaryDs = "combineDefaultDs";
 
-    //Separator MiddleLine
-    public static final String SP_Multi_DS_Separator_MiddleLine = "-";
-
-    //Separator UnderLine
-    public static final String SP_Multi_DS_Separator_UnderLine = "_";
-
     private static final Logger log = LoggerFactory.getLogger(DataSourceUtil.class);
 
     public static final boolean isBlank(String str) {
@@ -80,9 +75,9 @@ public class DataSourceUtil {
     public static final String getConfigValue(Environment environment, String configPrefix, String key) {
         String value = readConfig(environment, configPrefix + "." + key);
         if (DataSourceUtil.isBlank(value))
-            value = readConfig(environment, configPrefix + "." + propertyToField(key, SP_Multi_DS_Separator_MiddleLine));
+            value = readConfig(environment, configPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_MiddleLine));
         if (DataSourceUtil.isBlank(value))
-            value = readConfig(environment, configPrefix + "." + propertyToField(key, SP_Multi_DS_Separator_UnderLine));
+            value = readConfig(environment, configPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_UnderLine));
         return value;
     }
 
@@ -95,31 +90,6 @@ public class DataSourceUtil {
         return value;
     }
 
-    public static final String propertyToField(String property, String separator) {
-        if (property == null)
-            return "";
-
-        char[] chars = property.toCharArray();
-        StringBuilder sb = new StringBuilder();
-        for (char c : chars) {
-            if (Character.isUpperCase(c)) {
-                sb.append(separator + Character.toLowerCase(c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    public static final void setFieldAccessible(Field field, boolean accessible) {
-        AccessController.doPrivileged(new PrivilegedAction<String>() {
-            public String run() {
-                field.setAccessible(accessible);
-                return field.getName();
-            }
-        });
-    }
-
     public static final void setMethodAccessible(Method method, boolean accessible) {
         AccessController.doPrivileged(new PrivilegedAction<String>() {
             public String run() {
@@ -127,5 +97,20 @@ public class DataSourceUtil {
                 return method.getName();
             }
         });
+    }
+
+    public static final void tryToCloseDataSource(Object ds) {
+        Class[] paramTypes = new Class[0];
+        Object[] paramValues = new Object[0];
+        Class dsClass = ds.getClass();
+        String[] methodNames = new String[]{"close", "shutdown", "terminate"};
+        for (String name : methodNames) {
+            try {
+                Method method = dsClass.getMethod(name, paramTypes);
+                method.invoke(ds, paramValues);
+                break;
+            } catch (Throwable e) {
+            }
+        }
     }
 }

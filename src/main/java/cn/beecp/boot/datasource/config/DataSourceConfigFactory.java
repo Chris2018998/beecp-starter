@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.beecp.boot;
+package cn.beecp.boot.datasource.config;
 
-import cn.beecp.boot.datasource.MultiDataSourceRegister;
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.*;
+import org.springframework.core.env.Environment;
 
 /*
- *  Multi-DataSource annotation
+ *  DataSource field set factory
  *
  *  @author Chris.Liao
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(ElementType.TYPE)
-@Import(value = {MultiDataSourceRegister.class})
-public @interface EnableMultiDataSource {
+public interface DataSourceConfigFactory {
 
+    /**
+     * get Properties values from environment and set to dataSource
+     *
+     * @param ds           may be DataSource or XADataSource
+     * @param dsId         dataSource id
+     * @param configPrefix configured prefix name
+     * @param environment  SpringBoot environment
+     * @throws Exception when fail to set
+     */
+    void config(Object ds, String dsId, String configPrefix, Environment environment) throws Exception;
 }

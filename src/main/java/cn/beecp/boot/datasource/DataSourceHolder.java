@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource;
 
-import java.lang.reflect.Method;
+import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
 
 /*
  *  DataSource holder
@@ -63,19 +63,7 @@ class DataSourceHolder {
     }
 
     public void close() {
-        if (!jndiDs) {
-            Class[] paramTypes = new Class[0];
-            Object[] paramValues = new Object[0];
-            Class dsClass = ds.getClass();
-            String[] methodNames = new String[]{"close", "shutdown", "terminate"};
-            for (String name : methodNames) {
-                try {
-                    Method method = dsClass.getMethod(name, paramTypes);
-                    method.invoke(ds, paramValues);
-                    break;
-                } catch (Throwable e) {
-                }
-            }
-        }
+        if (!jndiDs)
+            tryToCloseDataSource(ds);
     }
 }

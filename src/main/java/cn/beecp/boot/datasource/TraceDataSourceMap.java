@@ -50,7 +50,6 @@ class TraceDataSourceMap {
         dsIdLocal.remove();
     }
 
-
     public TraceDataSource getDataSource(String dsIde) {
         return dsMap.get(dsIde);
     }

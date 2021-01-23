@@ -16,9 +16,9 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.config.BeeDataSourceSetFactory;
-import cn.beecp.boot.datasource.config.ConfigException;
-import cn.beecp.boot.datasource.config.DataSourceFieldSetFactory;
+import cn.beecp.boot.datasource.config.BeeDataSourceConfigFactory;
+import cn.beecp.boot.datasource.config.DataSourceConfigException;
+import cn.beecp.boot.datasource.config.DataSourceConfigFactory;
 import org.springframework.core.env.Environment;
 
 import javax.naming.InitialContext;
@@ -31,17 +31,17 @@ import java.util.Map;
 import static cn.beecp.boot.datasource.DataSourceUtil.*;
 
 /**
- * DataSource builder by springboot Environment
+ * DataSource builder from springboot Environment
  *
  * @author Chris.Liao
  */
 class DataSourceBuilder {
 
     //Spring  DsAttributeSetFactory map
-    private static final Map<Class, DataSourceFieldSetFactory> setFactoryMap = new HashMap<>(1);
+    private static final Map<Class, DataSourceConfigFactory> setFactoryMap = new HashMap<>(1);
 
     static {
-        setFactoryMap.put(BeeDataSource.class, new BeeDataSourceSetFactory());
+        setFactoryMap.put(BeeDataSource.class, new BeeDataSourceConfigFactory());
     }
 
     /**
@@ -66,7 +66,7 @@ class DataSourceBuilder {
      *
      * @param dsId     dataSource config Name to register to Spring container
      * @param jndiName dataSource jndi name on middle-container
-     * @return jndi DataSource
+     * @return a jndi DataSource
      */
     private DataSourceHolder lookupJndiDataSource(String dsId, String jndiName) {
         try {
@@ -75,10 +75,10 @@ class DataSourceBuilder {
             if (namingObj instanceof DataSource || namingObj instanceof XADataSource) {
                 return new DataSourceHolder(dsId, namingObj, true);
             } else {
-                throw new ConfigException("Jndi Name(" + jndiName + ") is not a dataSource object");
+                throw new DataSourceConfigException("Jndi Name(" + jndiName + ") is not a dataSource object");
             }
         } catch (NamingException e) {
-            throw new ConfigException("Failed to lookup dataSource by name:" + jndiName);
+            throw new DataSourceConfigException("Failed to lookup dataSource by name:" + jndiName);
         }
     }
 
@@ -98,28 +98,29 @@ class DataSourceBuilder {
         } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
             ds = createInstanceByClassName(dataSourceClass, DataSource.class);
         } else {
-            throw new ConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + SP_Multi_DS_Type);
+            throw new DataSourceConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + SP_Multi_DS_Type);
         }
 
         //2:load dataSource class and instantiate it
         String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_FieldSetFactory);
         if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
-            throw new ConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
-        DataSourceFieldSetFactory dsFieldSetFactory = null;
+            throw new DataSourceConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
+
+        DataSourceConfigFactory dsFieldSetFactory = null;
         if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
             dataSourceFieldSetFactoryClassName = dataSourceFieldSetFactoryClassName.trim();
-            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceFieldSetFactory.class, "DataSource properties factory");
-            dsFieldSetFactory = (DataSourceFieldSetFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceFieldSetFactory.class);
+            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceConfigFactory.class, "DataSource properties factory");
+            dsFieldSetFactory = (DataSourceConfigFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceConfigFactory.class);
         }
 
         if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
         if (dsFieldSetFactory == null)
-            throw new ConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
+            throw new DataSourceConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
 
         try {
-            dsFieldSetFactory.setFields(ds, dsId, dsConfigPrefix, environment);//set properties to dataSource
+            dsFieldSetFactory.config(ds, dsId, dsConfigPrefix, environment);//set properties to dataSource
         } catch (Exception e) {
-            throw new ConfigException("Failed to inject config value to dataSource(" + dsId + ")", e);
+            throw new DataSourceConfigException("Failed to inject config value to dataSource(" + dsId + ")", e);
         }
         return new DataSourceHolder(dsId, ds);
     }
@@ -128,7 +129,7 @@ class DataSourceBuilder {
         try {
             return Class.forName(className);
         } catch (Exception e) {
-            throw new ConfigException("Failed to load " + typeName + " class:" + className.trim());
+            throw new DataSourceConfigException("Failed to load " + typeName + " class:" + className.trim());
         }
     }
 
@@ -136,7 +137,7 @@ class DataSourceBuilder {
         try {
             return objClass.newInstance();
         } catch (Exception e) {
-            throw new ConfigException("Failed to create instance by class:" + objClass.getName(), e);
+            throw new DataSourceConfigException("Failed to create instance by class:" + objClass.getName(), e);
         }
     }
 }

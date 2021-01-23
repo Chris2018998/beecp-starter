@@ -16,9 +16,8 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.config.BeeDataSourceSetFactory;
-import cn.beecp.boot.datasource.config.ConfigException;
-import cn.beecp.boot.datasource.sqltrace.SqlTraceAlert;
+import cn.beecp.boot.datasource.config.BeeDataSourceConfigFactory;
+import cn.beecp.boot.datasource.config.DataSourceConfigException;
 import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,10 +26,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static cn.beecp.boot.datasource.DataSourceUtil.SP_DS_Prefix;
 import static cn.beecp.boot.datasource.DataSourceUtil.getConfigValue;
+import static cn.beecp.pool.PoolStaticCenter.getSetMethodMap;
+import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 
 /*
  *  config example
@@ -55,8 +59,8 @@ public class SingleDataSourceRegister {
         String dsId = "beeDs";
         BeeDataSource ds = new BeeDataSource();
         boolean traceSQL = configSqlTracePool(environment);
-        BeeDataSourceSetFactory dsAttrSetFactory = new BeeDataSourceSetFactory();
-        dsAttrSetFactory.setFields(ds, dsId, SP_DS_Prefix, environment);
+        BeeDataSourceConfigFactory dsFieldSetFactory = new BeeDataSourceConfigFactory();
+        dsFieldSetFactory.config(ds, dsId, SP_DS_Prefix, environment);
         TraceDataSource dsWrapper = new TraceXDataSource(dsId, ds, traceSQL, false);
         TraceDataSourceMap.getInstance().addDataSource(dsWrapper);
         return dsWrapper;
@@ -70,46 +74,29 @@ public class SingleDataSourceRegister {
      */
     protected boolean configSqlTracePool(Environment environment) {
         try {
+            //1:create sql trace config instance
             SqlTraceConfig config = new SqlTraceConfig();
-            Field[] configFields = config.getClass().getDeclaredFields();
-            for (Field field : configFields) {
-                String configVal = getConfigValue(environment, SP_DS_Prefix, field.getName());
-                if (!DataSourceUtil.isBlank(configVal))
-                    setSqlTraceConfig(field, configVal, config);
+            //2:create properties to collect config value
+            Map<String, Object> setValueMap = new LinkedHashMap<String, Object>();
+            //3:get all properties set methods
+            Map<String, Method> setMethodMap = getSetMethodMap(config.getClass());
+            //4:loop to find config value by properties map
+            Iterator<String> iterator = setMethodMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                String propertyName = iterator.next();
+                String configVal = getConfigValue(environment, SP_DS_Prefix, propertyName);
+                if (DataSourceUtil.isBlank(configVal)) continue;
+                setValueMap.put(propertyName, configVal.trim());
             }
+            //5:inject found config value to ds config object
+            setPropertiesValue(config, setMethodMap, setValueMap);
 
+            //6:create sql-trace pool
             SqlTracePool tracePool = SqlTracePool.getInstance();
             tracePool.init(config);
             return tracePool.isSqlTrace();
         } catch (Exception e) {
-            throw new ConfigException("Failed to set config value to sql-trace pool", e);
-        }
-    }
-
-    //set one config value to sql trace config
-    private void setSqlTraceConfig(Field field, String configVal, SqlTraceConfig config) throws Exception {
-        Class fieldType = field.getType();
-        boolean ChangedAccessible = false;
-        try {
-            if (!field.isAccessible()) {
-                field.setAccessible(true);
-                ChangedAccessible = true;
-            }
-            if (fieldType.equals(String.class)) {
-                field.set(config, configVal);
-            } else if (fieldType.equals(Boolean.class) || fieldType.equals(Boolean.TYPE)) {
-                field.set(config, Boolean.valueOf(configVal));
-            } else if (fieldType.equals(Integer.class) || fieldType.equals(Integer.TYPE)) {
-                field.set(config, Integer.valueOf(configVal));
-            } else if (fieldType.equals(Long.class) || fieldType.equals(Long.TYPE)) {
-                field.set(config, Long.valueOf(configVal));
-            } else if (fieldType.equals(SqlTraceAlert.class)) {
-                Class actionClass = Class.forName(configVal);
-                SqlTraceAlert alert = (SqlTraceAlert) actionClass.newInstance();
-                field.set(config, alert);
-            }
-        } finally {
-            if (ChangedAccessible) field.setAccessible(false);//reset field Accessible
+            throw new DataSourceConfigException("Failed to set config value to sql-trace pool", e);
         }
     }
 }

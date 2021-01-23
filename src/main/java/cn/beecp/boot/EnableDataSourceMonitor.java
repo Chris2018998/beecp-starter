@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /*
- *  Bee Data Source Monitor
+ *  Bee DataSource Monitor annotation
  *
  *  @author Chris.Liao
  */

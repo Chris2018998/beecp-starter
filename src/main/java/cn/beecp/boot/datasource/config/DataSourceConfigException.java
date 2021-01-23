@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.beecp.boot;
-
-import cn.beecp.boot.datasource.MultiDataSourceRegister;
-import org.springframework.context.annotation.Import;
-
-import java.lang.annotation.*;
+package cn.beecp.boot.datasource.config;
 
 /*
- *  Multi-DataSource annotation
+ *  Config Exception
  *
  *  @author Chris.Liao
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Target(ElementType.TYPE)
-@Import(value = {MultiDataSourceRegister.class})
-public @interface EnableMultiDataSource {
+public class DataSourceConfigException extends RuntimeException {
+    public DataSourceConfigException(String message) {
+        super(message);
+    }
 
+    public DataSourceConfigException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

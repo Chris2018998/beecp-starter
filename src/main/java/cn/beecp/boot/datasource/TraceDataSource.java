@@ -27,6 +27,8 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
+import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
+
 /**
  * trace datasource
  *
@@ -39,7 +41,8 @@ public class TraceDataSource implements DataSource {
     private boolean beeType;
     private DataSource delegate;
 
-    private Method resetMethod;
+
+    private Method resetPoolMethod;
     private Object[] resetParamValues = new Object[]{false};
     private Method getPoolMonitorVoMethod;
     private Object[] emptyParamValues = new Object[0];
@@ -108,34 +111,23 @@ public class TraceDataSource implements DataSource {
     }
 
     public void close() {
-        if (!jndiDs) {
-            Class[] paramTypes = new Class[0];
-            Class dsClass = delegate.getClass();
-            String[] methodNames = new String[]{"close", "shutdown", "terminate", "destroy"};
-            for (String name : methodNames) {
-                try {
-                    Method method = dsClass.getMethod(name, paramTypes);
-                    method.invoke(delegate, emptyParamValues);
-                    break;
-                } catch (Throwable e) {
-                }
-            }
-        }
+        if (!jndiDs)
+            tryToCloseDataSource(delegate);
     }
 
     public void resetPool() throws SQLException {
         if (beeType) {
-            if (resetMethod == null) {
+            if (resetPoolMethod == null) {
                 try {
                     Class dsClass = delegate.getClass();
-                    resetMethod = dsClass.getMethod("resetPool", new Class[]{Boolean.TYPE});
+                    resetPoolMethod = dsClass.getMethod("resetPool", new Class[]{Boolean.TYPE});
                 } catch (Throwable e) {
                 }
             }
 
-            if (resetMethod != null) {
+            if (resetPoolMethod != null) {
                 try {
-                    resetMethod.invoke(delegate, resetParamValues);
+                    resetPoolMethod.invoke(delegate, resetParamValues);
                 } catch (Throwable e) {
                 }
             }

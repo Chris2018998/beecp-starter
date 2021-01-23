@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-
 /**
  * Combine DataSource for Multi-DataSource
  *

@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 public class DataSourceIdSetter {
     public void setDataSourceId(Method method) {
         DataSourceId annotation = (DataSourceId) method.getAnnotation(DataSourceId.class);
+        if (annotation == null) return;
         String dsId = annotation.value();
         if (!DataSourceUtil.isBlank(dsId)) {
             TraceDataSourceMap.getInstance().setCurDsId(dsId.trim());
