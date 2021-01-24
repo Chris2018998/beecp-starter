@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /dsDemo
+spring:
+  datasource:
+    sql-trace: true
+    sql-show: true
+    sql-trace-max-size: 100
+    sql-trace-timeout: 60000
+    sql-exec-alert-time: 1
+    sql-trace-timeout-scan-period: 6000
+    sql-exec-alert-action: cn.beecp.boot.test.util.TestAlert
+    ds-list: ds1,ds2
+    #combineId: BeeCombineDs
+    #combineDefaultDs: ds1
+    ds1:
+      primary: true
+      username: root
+      password: ''
+      jdbcUrl: jdbc:mysql://localhost:3306/test
+      type: cn.beecp.BeeDataSource
+      driverClassName: com.mysql.jdbc.Driver
+    ds2:
+      driver-class-name: com.mysql.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/test
+      password: ''
+      username: root
+      type: cn.beecp.BeeDataSource
