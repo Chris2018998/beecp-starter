@@ -16,25 +16,41 @@
 package cn.beecp.boot.test;
 
 import cn.beecp.boot.test.controller.MultiDsController;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import static cn.beecp.boot.test.util.TestUtil.testGetConnection;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MultiDsController.class)
 @ActiveProfiles("yml_conf")
 @WebAppConfiguration
-public class TestYmlConfig extends TestPropConfig {
+public class TestYmlConfig {
+    private MockMvc mockMvc;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Before
+    public void setUp() throws Exception {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
     @Test
     public void testDs1GetConnection() throws Exception {
-        testGetConnection("GetConnectionFrom", "ds1");
+        testGetConnection("ds1", mockMvc);
     }
 
     @Test
     public void testDs2GetConnection() throws Exception {
-        testGetConnection("GetConnectionFrom", "ds2");
+        testGetConnection("ds2", mockMvc);
     }
 }

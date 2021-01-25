@@ -15,6 +15,15 @@
  */
 package cn.beecp.boot.test.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import javax.sql.DataSource;
 import java.sql.*;
 
@@ -24,6 +33,8 @@ import java.sql.*;
  *  @author Chris.Liao
  */
 public class TestUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
 
     public static String testGetConnection(DataSource ds) throws Exception {
         Connection con = null;
@@ -86,6 +97,25 @@ public class TestUtil {
                     con.close();
                 } catch (SQLException e) {
                 }
+        }
+    }
+
+    public static final void testGetConnection(String dsId, MockMvc mockMvc) throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/testGetConnection")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("dsId", dsId);
+
+        MvcResult mvcResult = mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        mvcResult.getResponse().setCharacterEncoding("utf8");
+        String reponse = mvcResult.getResponse().getContentAsString();
+        if (!"OK".equals(reponse)) {
+            log.info("testGetConnection");
+            throw new Exception("Failed to get Connection from (" + dsId + ")");
+        } else {
+            log.info("testGetConnection");
         }
     }
 }
