@@ -202,6 +202,13 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
             registry.registerBeanDefinition(combineId, define);
             log.info("Registered combine-dataSource({}) with bean id:{}", define.getBeanClassName(), combineId);
+
+            String dsIdSetterId = DataSourceIdSetter.class.getName();
+            GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
+            dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
+            dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
+            registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
+            log.info("Registered dataSource setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 

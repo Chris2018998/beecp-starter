@@ -16,25 +16,42 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.DataSourceId;
-
-import java.lang.reflect.Method;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 
 /*
  *  dyn-dataSourceId setter
  *
  *  @author Chris.Liao
  */
+
+@Aspect
+@Order(1)
 public class DataSourceIdSetter {
-    public void setDataSourceId(Method method) {
-        DataSourceId annotation = (DataSourceId) method.getAnnotation(DataSourceId.class);
-        if (annotation == null) return;
-        String dsId = annotation.value();
-        if (!DataSourceUtil.isBlank(dsId)) {
-            TraceDataSourceMap.getInstance().setCurDsId(dsId.trim());
-        }
+
+    @Pointcut("@annotation(cn.beecp.boot.DataSourceId)")
+    public void pointcut() {
     }
 
-    public void removeDataSourceId() {
-        TraceDataSourceMap.getInstance().removeCurDsId();
+    @Around("pointcut()")
+    public Object setDataSourceId(ProceedingJoinPoint joinPoint) throws Throwable {
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        DataSourceId annotation = (DataSourceId) methodSignature.getMethod().getAnnotation(DataSourceId.class);
+        TraceDataSourceMap dsMap = TraceDataSourceMap.getInstance();
+
+        String dsId = annotation.value();
+        if (!DataSourceUtil.isBlank(dsId))
+            dsMap.setCurDsId(dsId.trim());
+
+        try {
+            return joinPoint.proceed();
+        } finally {
+            if (!DataSourceUtil.isBlank(dsId))
+                dsMap.removeCurDsId();
+        }
     }
 }
