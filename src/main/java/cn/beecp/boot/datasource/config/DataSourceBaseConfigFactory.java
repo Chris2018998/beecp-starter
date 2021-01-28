@@ -26,7 +26,6 @@ import java.util.Map;
 import static cn.beecp.boot.datasource.DataSourceUtil.SP_DS_Prefix;
 import static cn.beecp.boot.datasource.DataSourceUtil.getConfigValue;
 import static cn.beecp.pool.PoolStaticCenter.*;
-import static cn.beecp.pool.PoolStaticCenter.DS_Config_Prop_Separator_UnderLine;
 
 /*
  *  Data Source Base Set Factory

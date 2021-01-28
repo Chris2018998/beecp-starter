@@ -199,7 +199,6 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
             define.setInstanceSupplier(new DsSupplier(combineDataSource));
-
             registry.registerBeanDefinition(combineId, define);
             log.info("Registered combine-dataSource({}) with bean id:{}", define.getBeanClassName(), combineId);
 
@@ -208,11 +207,11 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
             dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            log.info("Registered dataSource setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
+            log.info("Registered dataSourceId setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 
-    //4.2:register dataSource to Spring bean container
+    //4.1:register dataSource to Spring bean container
     private void registerDataSourceBean(DataSourceHolder regInfo, boolean traceSQL, String combineId, BeanDefinitionRegistry registry) {
         Object dsw = null;
         Object ds = regInfo.getDs();
