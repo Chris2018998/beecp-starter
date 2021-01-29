@@ -46,8 +46,8 @@ public class ProxyFactory {
         );
     }
 
-    public static final Statement createStatementProxy(Statement delegate, String statementType, String poolName) {
-        return createStatementProxy(delegate, statementType, poolName, null);
+    public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId) {
+        return createStatementProxy(delegate, statementType, dsId, null);
     }
 
     public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId, String SQL) {

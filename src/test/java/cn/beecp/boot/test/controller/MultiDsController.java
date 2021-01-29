@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.test.controller;
 
+import cn.beecp.boot.EnableDataSourceMonitor;
 import cn.beecp.boot.EnableMultiDataSource;
 import cn.beecp.boot.datasource.DataSourceUtil;
 import cn.beecp.boot.test.util.TestUtil;
@@ -34,6 +35,7 @@ import javax.sql.DataSource;
  */
 
 @EnableMultiDataSource
+@EnableDataSourceMonitor
 @SpringBootApplication
 @RestController
 public class MultiDsController {

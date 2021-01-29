@@ -18,8 +18,6 @@ package cn.beecp.boot.datasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,21 +58,6 @@ class TraceDataSourceMap {
 
     public void addDataSource(TraceDataSource ds) {
         dsMap.put(ds.getId(), ds);
-        if (ds.isBeeType()) {
-            Connection con = null;
-            try {
-                con = ds.getConnection();
-            } catch (SQLException e) {
-                log.warn("Failed to get connection from datasource({})", ds.getId());
-            } finally {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable e) {
-                    }
-                }
-            }
-        }
     }
 
     public TraceDataSource[] getAllDataSource() {

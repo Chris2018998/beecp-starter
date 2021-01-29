@@ -117,7 +117,7 @@ public class SqlTracePool {
         return tempList;
     }
 
-    Object trace(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String poolName) throws Throwable {
+    Object trace(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String dsId) throws Throwable {
         vo.setMethodName(method.getName());
         traceQueue.offerFirst(vo);
         vo.setTraceStartTime(System.currentTimeMillis());

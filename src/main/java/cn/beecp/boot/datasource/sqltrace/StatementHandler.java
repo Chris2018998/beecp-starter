@@ -40,7 +40,7 @@ public class StatementHandler implements InvocationHandler {
         this.statement = statement;
         this.statementType = statementType;
         if (!DataSourceUtil.isBlank(sql)) {
-            traceEntry = new SqlTraceEntry(sql, dsId, statementType);
+            traceEntry = new SqlTraceEntry(dsId,sql,statementType);
         }
     }
 

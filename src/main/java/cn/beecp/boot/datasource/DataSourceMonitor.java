@@ -72,7 +72,6 @@ public class DataSourceMonitor {
             try {
                 ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
                 if (vo == null) continue;
-
                 if (vo.getPoolState() == 3) {//POOL_CLOSED
                     collector.removeDataSource(ds.getId());
                 } else {
@@ -88,9 +87,7 @@ public class DataSourceMonitor {
                     poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
                     poolInfoList.add(poolMap);
                 }
-            } catch (Exception e) {
-                log.info("Failed to get dataSource monitor info", e);
-            }
+            } catch (Exception e) {}
         }
         return poolInfoList;
     }

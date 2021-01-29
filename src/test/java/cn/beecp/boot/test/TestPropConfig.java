@@ -17,8 +17,12 @@ package cn.beecp.boot.test;
 
 import cn.beecp.boot.test.controller.MultiDsController;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,13 +32,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static cn.beecp.boot.test.util.TestUtil.testExecuteSQL;
 import static cn.beecp.boot.test.util.TestUtil.testGetConnection;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MultiDsController.class)
 @ActiveProfiles("prop_conf")
 @WebAppConfiguration
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestPropConfig {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -45,12 +52,34 @@ public class TestPropConfig {
     }
 
     @Test
-    public void testDs1GetConnection() throws Exception {
+    public void test1() throws Exception {
         testGetConnection("ds1", mockMvc);
     }
 
     @Test
-    public void testDs2GetConnection() throws Exception {
+    public void test2() throws Exception {
         testGetConnection("ds2", mockMvc);
     }
+
+    @Test
+    public void test3() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc);
+    }
+
+    @Test
+    public void test4() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc);
+    }
+
+    @Test
+    public void test5() throws Exception {
+        testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc);
+    }
+
+    @Test
+    //ERROR SQL
+    public void test6() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc);
+    }
+
 }
