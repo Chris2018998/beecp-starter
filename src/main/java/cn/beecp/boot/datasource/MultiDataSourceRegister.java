@@ -99,9 +99,9 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      * @return datasource name list
      */
     private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
-        String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_idList);
+        String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_Ids);
         if (DataSourceUtil.isBlank(dsIdsText))
-            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
+            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
 
         String[] dsIds = dsIdsText.trim().split(",");
         ArrayList<String> dsIdList = new ArrayList(dsIds.length);
@@ -117,7 +117,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             dsIdList.add(id);
         }
         if (dsIdList.isEmpty())
-            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_idList);
+            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
 
         return dsIdList;
     }

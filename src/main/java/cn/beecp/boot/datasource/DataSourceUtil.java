@@ -38,7 +38,7 @@ public class DataSourceUtil {
     public static final String SP_DS_Prefix = "spring.datasource";
 
     //Multi-DataSource config id list on springboot
-    public static final String SP_Multi_DS_idList = "dsList";
+    public static final String SP_Multi_DS_Ids = "dsIds";
 
     //Spring jndi dataSource configuration key name
     public static final String SP_Multi_DS_Jndi = "jndiName";
