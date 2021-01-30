@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -31,6 +30,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static cn.beecp.boot.datasource.DataSourceUtil.formatDate;
 
 /*
  *  Sql trace pool
@@ -44,15 +45,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  *  spring.datasource.sql-trace=true
  *  spring.datasource.sql-show=true
  *  spring.datasource.sql-trace-max-size=100
+ *  spring.datasource.sql-exec-slow-time=5000
  *  spring.datasource.sql-trace-timeout=60000
- *  spring.datasource.sql-exec-alert-time=5000
  *  spring.datasource.sql-exec-alert-action=xxxxx
  *  spring.datasource.sql-trace-timeout-scan-period=18000
  */
 public class SqlTracePool {
     private static final SqlTracePool instance = new SqlTracePool();
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+
     private final LinkedList<SqlTraceEntry> alertEntryList = new LinkedList();
     private final AtomicInteger tracedQueueSize = new AtomicInteger(0);
     private final ConcurrentLinkedDeque<SqlTraceEntry> traceQueue = new ConcurrentLinkedDeque<SqlTraceEntry>();
@@ -62,8 +63,8 @@ public class SqlTracePool {
     private boolean sqlTrace = true;
     private boolean sqlShow = false;
     private int sqlTraceMaxSize = 100;
+    private long sqlExecSlowTime = TimeUnit.SECONDS.toMillis(6);
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
-    private long sqlExecAlertTime = TimeUnit.SECONDS.toMillis(6);
     private SqlTraceAlert sqlTraceAlert = new SqlTraceAlert();
     private LinkedList<SqlTraceEntry> tempList = new LinkedList();
 
@@ -75,7 +76,7 @@ public class SqlTracePool {
         if (!inited) {
             int sqlTraceMaxSize = config.getSqlTraceMaxSize();
             long sqlTraceTimeout = config.getSqlTraceTimeout();
-            long sqlExecAlertTime = config.getSqlExecAlertTime();
+            long sqlExecSlowTime = config.getSqlExecSlowTime();
             SqlTraceAlert sqlTraceAlert = config.getSqlExecAlertAction();
 
             this.sqlTrace = config.isSqlTrace();
@@ -84,8 +85,8 @@ public class SqlTracePool {
                 this.sqlTraceMaxSize = sqlTraceMaxSize;
             if (sqlTraceTimeout > 0)
                 this.sqlTraceTimeout = sqlTraceTimeout;
-            if (sqlExecAlertTime > 0)
-                this.sqlExecAlertTime = sqlExecAlertTime;
+            if (sqlExecSlowTime > 0)
+                this.sqlExecSlowTime = sqlExecSlowTime;
             if (sqlTraceAlert != null)
                 this.sqlTraceAlert = sqlTraceAlert;
             this.inited = true;
@@ -128,9 +129,6 @@ public class SqlTracePool {
         }
 
         try {
-            Date startDate = new Date();
-            vo.setExecStartTime(formatter.format(startDate));
-            vo.setExecStartTimeMs(startDate.getTime());
             Object re = method.invoke(statement, args);
             vo.setExecSuccessInd(true);
             return re;
@@ -147,9 +145,9 @@ public class SqlTracePool {
         } finally {
             vo.setExecInd(true);
             Date endDate = new Date();
-            vo.setExecEndTime(formatter.format(endDate));
+            vo.setExecEndTime(formatDate(endDate));
             vo.setExecTookTimeMs(endDate.getTime() - vo.getExecStartTimeMs());
-            if (vo.getExecTookTimeMs() >= sqlExecAlertTime)//alert
+            if (vo.getExecTookTimeMs() >= sqlExecSlowTime)//alert
                 vo.setExecSlowInd(true);
         }
     }

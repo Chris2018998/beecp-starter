@@ -138,14 +138,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
         if (!DataSourceUtil.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
-                throw new DataSourceConfigException("Combine-dataSource id (" + combineId + ")can't be in multi-datasource id list");
+                throw new DataSourceConfigException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
             if (this.existsBeanDefinition(combineId, registry))
                 throw new DataSourceConfigException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
             if (DataSourceUtil.isBlank(primaryDs))
                 throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
-                throw new DataSourceConfigException("Combine-primaryDs(" + primaryDs + "not found in combine-ds id list");
+                throw new DataSourceConfigException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
         }
 
         Properties combineProperties = new Properties();
@@ -200,14 +200,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             define.setBeanClass(combineDataSource.getClass());
             define.setInstanceSupplier(new DsSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
-            log.info("Registered combine-dataSource({}) with bean id:{}", define.getBeanClassName(), combineId);
+            log.info("Registered Combine-DataSource({}) with bean id:{}", define.getBeanClassName(), combineId);
 
             String dsIdSetterId = DataSourceIdSetter.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
             dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            log.info("Registered dataSourceId setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
+            log.info("Registered DataSourceId-setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 

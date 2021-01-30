@@ -22,6 +22,8 @@ import org.springframework.core.env.Environment;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static cn.beecp.pool.PoolStaticCenter.*;
 
@@ -60,6 +62,12 @@ public class DataSourceUtil {
     public static final String SP_Multi_DS_PrimaryDs = "combineDefaultDs";
 
     private static final Logger log = LoggerFactory.getLogger(DataSourceUtil.class);
+
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+
+    public static final String formatDate(Date date) {
+        return formatter.format(date);
+    }
 
     public static final boolean isBlank(String str) {
         if (str == null) return true;

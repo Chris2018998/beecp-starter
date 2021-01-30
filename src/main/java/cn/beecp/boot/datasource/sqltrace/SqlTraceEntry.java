@@ -15,6 +15,10 @@
  */
 package cn.beecp.boot.datasource.sqltrace;
 
+import java.util.Date;
+
+import static cn.beecp.boot.datasource.DataSourceUtil.formatDate;
+
 /*
  *  SQL Execute Trace entry
  *
@@ -38,11 +42,15 @@ public class SqlTraceEntry {
     private Throwable failCause;
     private String methodName;
 
+
     public SqlTraceEntry(String dsId, String sql, String statementType) {
         this.sql = sql;
         this.dsId = dsId;
         this.statementType = statementType;
-        this.execStartTimeMs = System.currentTimeMillis();
+
+        Date startTime = new Date();
+        this.execStartTimeMs = startTime.getTime();
+        this.execStartTime = formatDate(startTime);
     }
 
     public String getSql() {

@@ -87,7 +87,8 @@ public class DataSourceMonitor {
                     poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
                     poolInfoList.add(poolMap);
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         return poolInfoList;
     }

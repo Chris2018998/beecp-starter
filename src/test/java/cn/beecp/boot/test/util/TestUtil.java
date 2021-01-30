@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import static cn.beecp.boot.datasource.DataSourceUtil.isBlank;
 
@@ -67,7 +69,7 @@ public class TestUtil {
         }
     }
 
-    public static String testSQL(DataSource ds, String sql, String type) throws Exception {
+    public static String testSQL(DataSource ds, String sql, String type, String slowInd) throws Exception {
         Statement st = null;
         PreparedStatement pst = null;
         CallableStatement cst = null;
@@ -80,14 +82,16 @@ public class TestUtil {
                 st.execute(sql);
             } else if ("PreparedStatement".equalsIgnoreCase(type)) {
                 pst = con.prepareStatement(sql);
+                if ("true".equals(slowInd)) LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(2));
                 pst.execute();
             } else if ("CallableStatement".equalsIgnoreCase(type)) {
                 cst = con.prepareCall(sql);
+                if ("true".equals(slowInd)) LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(2));
                 cst.execute();
             }
             return "OK";
         } catch (SQLException e) {
-           // e.printStackTrace();
+            // e.printStackTrace();
             return "Failed";
         } finally {
             if (st != null)
@@ -166,41 +170,83 @@ public class TestUtil {
         }
     }
 
-    public static final void testGetConnection(String dsId, MockMvc mockMvc) throws Exception {
-        String testGetConUrl = "/testGetConnection";
+    public static final void testGetConnection(String dsId, MockMvc mockMvc, String url) throws Exception {
+        //1:Try to get connection
         Map<String, String> paramMap = new HashMap<String, String>(1);
         paramMap.put("dsId", dsId);
-        String getConResult = getRest(mockMvc, testGetConUrl, paramMap, "get");
-        log.info("test GetConn result:" + getConResult);
-        if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from " + dsId);
+        String getConResult = getRest(mockMvc, url, paramMap, "get");
+        log.info("GetConn result:" + getConResult);
+        if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from dataSource(" + dsId + ")");
 
-        String getPoolListUrl = "/dsMonitor/getPoolList";
-        String response = getRest(mockMvc, getPoolListUrl, null, "post");
-        log.info("getPoolList result:" + response);
+        //2:Get pool list to check ds pool whether exist in list
+        String poolInfoListURL = "/dsMonitor/getPoolList";
+        String response = getRest(mockMvc, poolInfoListURL, null, "post");
         List<Map<String, Object>> poolList = string2Obj(response, List.class, Map.class);
-        for (Map map : poolList)
-            if (dsId.equals(map.get("dsId"))) return;
-
-        throw new Exception(dsId + " not in server pool list");
+        boolean exists = false;
+        for (Map map : poolList) {
+            String pDsId = map.get("dsId").toString();
+            String idleSize = map.get("idleSize").toString();
+            log.info("{}-idleSize:{}", pDsId, idleSize);
+            if (pDsId.equals(dsId)) exists = true;
+        }
+        if (!exists) throw new Exception("Not found dataSource(" + dsId + ")pool in trace list)");
     }
 
-    public static final void testExecuteSQL(String dsId, String sql, String type, MockMvc mockMvc) throws Exception {
-        String testGetConUrl = "/testSQL";
-        Map<String, String> paramMap = new HashMap<String, String>(1);
+
+    public static final void testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
+        Map<String, String> paramMap = new HashMap<String, String>(3);
         paramMap.put("dsId", dsId);
         paramMap.put("sql", sql);
-        paramMap.put("type", type);
-        String getConResult = getRest(mockMvc, testGetConUrl, paramMap, "get");
-        log.info("test SQL result:" + getConResult);
-       // if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from " + dsId);
+        paramMap.put("type", sqlType);
+        paramMap.put("slowInd", (testType == 2) ? "true" : "false");
+        String getConResult = getRest(mockMvc, url, paramMap, "get");
 
         String getSqlListUrl = "/dsMonitor/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
-        log.info("getSqlTraceList result:" + response);
         List<Map<String, Object>> sqlList = string2Obj(response, List.class, Map.class);
-        for (Map map : sqlList) {
-            if (dsId.equals(map.get("dsId")) && sql.equals(map.get("sql"))) return;
+        if (testType == 0) {//normal
+            boolean exists = false;
+            for (Map map : sqlList) {
+                String pDsId = map.get("dsId").toString();
+                String exeSql = map.get("sql").toString();
+                if (dsId.equals(pDsId) && sql.equals(exeSql)) {
+                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) throw new Exception("target sql not in trace list");
+        } else if (testType == 1) {//error test
+            boolean exists = false;
+            for (Map map : sqlList) {
+                String pDsId = map.get("dsId").toString();
+                String exeSql = map.get("sql").toString();
+                boolean execInd = (boolean) map.get("execInd");
+                boolean execSuccessInd = (boolean) map.get("execSuccessInd");
+                if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && !execSuccessInd) {
+                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) throw new Exception("target sql not in trace list");
+        } else if (testType == 2) {//slow test
+            boolean exists = false;
+            for (Map map : sqlList) {
+                String pDsId = map.get("dsId").toString();
+                String exeSql = map.get("sql").toString();
+                boolean execInd = (boolean) map.get("execInd");
+                boolean execSlowInd = (boolean) map.get("execSlowInd");
+                if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
+                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) throw new Exception("target sql not in trace list");
         }
-        throw new Exception("target sql not in trace list");
     }
 }

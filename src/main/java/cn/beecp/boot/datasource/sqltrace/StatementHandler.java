@@ -40,18 +40,18 @@ public class StatementHandler implements InvocationHandler {
         this.statement = statement;
         this.statementType = statementType;
         if (!DataSourceUtil.isBlank(sql)) {
-            traceEntry = new SqlTraceEntry(dsId,sql,statementType);
+            traceEntry = new SqlTraceEntry(dsId, sql, statementType);
         }
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getName().startsWith(Execute)) {//execute method
-            if (args == null || args.length == 0) {
+            if (args == null || args.length == 0) {//PreparedStatement.executeXXX();
                 if (traceEntry != null) {
                     return SqlTracePool.getInstance().trace(traceEntry, statement, method, args, dsId);
                 } else
                     return method.invoke(statement, args);
-            } else {
+            } else {//Statement.executeXXXX(sql)
                 SqlTraceEntry sqlVo = new SqlTraceEntry(dsId, (String) args[0], statementType);
                 return SqlTracePool.getInstance().trace(sqlVo, statement, method, args, dsId);
             }

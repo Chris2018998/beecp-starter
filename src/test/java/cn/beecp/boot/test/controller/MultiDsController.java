@@ -15,13 +15,13 @@
  */
 package cn.beecp.boot.test.controller;
 
+import cn.beecp.boot.DataSourceId;
 import cn.beecp.boot.EnableDataSourceMonitor;
 import cn.beecp.boot.EnableMultiDataSource;
 import cn.beecp.boot.datasource.DataSourceUtil;
 import cn.beecp.boot.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +33,6 @@ import javax.sql.DataSource;
  *
  *  @author Chris.Liao
  */
-
 @EnableMultiDataSource
 @EnableDataSourceMonitor
 @SpringBootApplication
@@ -45,10 +44,9 @@ public class MultiDsController {
     @Autowired
     @Qualifier("ds2")
     private DataSource ds2;
-
-    public static void main(String[] args) {
-        SpringApplication.run(MultiDsController.class, args);
-    }
+    @Autowired
+    @Qualifier("combineDs")
+    private DataSource combineDs;
 
     @GetMapping("/testGetConnection")
     public String testGetConnection(String dsId) throws Exception {
@@ -60,8 +58,9 @@ public class MultiDsController {
         return TestUtil.testGetConnection(ds);
     }
 
+
     @GetMapping("/testSQL")
-    public String testSQL(String dsId, String sql, String type) throws Exception {
+    public String testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
         if (DataSourceUtil.isBlank(dsId)) throw new Exception("DataSource Id cant't be null or empty");
         if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
             throw new Exception("DataSource Id must be one of list(ds1,ds2)");
@@ -71,6 +70,30 @@ public class MultiDsController {
             throw new Exception("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
 
         DataSource ds = (dsId == "ds1") ? ds1 : ds2;
-        return TestUtil.testSQL(ds, sql, type);
+        return TestUtil.testSQL(ds, sql, type, slowInd);
+    }
+
+    @GetMapping("/testGetConnection1")
+    @DataSourceId("ds1")
+    public String testCombineDs1() throws Exception {
+        return TestUtil.testGetConnection(combineDs);
+    }
+
+    @GetMapping("/testGetConnection2")
+    @DataSourceId("ds2")
+    public String testCombineDs2() throws Exception {
+        return TestUtil.testGetConnection(combineDs);
+    }
+
+    @GetMapping("/testExecSQL1")
+    @DataSourceId("ds1")
+    public String testExecSQL1(String sql, String type, String slowInd) throws Exception {
+        return TestUtil.testSQL(combineDs, sql, type, slowInd);
+    }
+
+    @GetMapping("/testExecSQL2")
+    @DataSourceId("ds2")
+    public String testExecSQL2(String sql, String type, String slowInd) throws Exception {
+        return TestUtil.testSQL(combineDs, sql, type, slowInd);
     }
 }

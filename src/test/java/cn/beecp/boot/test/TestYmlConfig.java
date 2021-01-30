@@ -42,6 +42,8 @@ public class TestYmlConfig {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    private String connTakeTestURL = "/testGetConnection";
+    private String executeSQLUrl = "/testSQL";
 
     @Before
     public void setUp() throws Exception {
@@ -49,33 +51,37 @@ public class TestYmlConfig {
     }
 
     @Test
-    public void test1() throws Exception {
-        testGetConnection("ds1", mockMvc);
+    public void test1_GetDs1Conn() throws Exception {
+        testGetConnection("ds1", mockMvc, connTakeTestURL);
     }
 
     @Test
-    public void test2() throws Exception {
-        testGetConnection("ds2", mockMvc);
+    public void test2_GetDs2Conn() throws Exception {
+        testGetConnection("ds2", mockMvc, connTakeTestURL);
     }
 
     @Test
-    public void test3() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc);
+    public void test3_Sql_Statement() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    public void test4() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc);
+    public void test4_Sql_PreparedStatement() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    public void test5() throws Exception {
-        testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc);
+    public void test5_Sql_CallableStatement() throws Exception {
+        testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    //ERROR SQL
-    public void test6() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc);
+    public void test6_Sql_Error() throws Exception {
+        testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc, 1, executeSQLUrl);
+    }
+
+    @Test
+    public void test7_Sql_Slow() throws Exception {
+        testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", mockMvc, 2, executeSQLUrl);
     }
 }
