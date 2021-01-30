@@ -5,7 +5,7 @@ Maven坐标(Java8)
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.4.3</version>
+   <version>1.5.0</version>
 </dependency>
 ```
 ---
@@ -16,6 +16,7 @@ Maven坐标(Java8)
 | ----------------------- | ------------------------------------------------------------------   |
 | @EnableMultiDataSource  | 多数据源启用标签，一定要配置在@SpringBootApplication<strong>之前</strong> |
 | @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况                  |
+| @DataSourceId           | 数据源动态切换标签                                                      |
 
 ---
 
@@ -50,7 +51,7 @@ application.properties文件配置
 
 ```yml
 #按单加载的列表，为数据源的名字清单
-spring.datasource.nameList=ds1,ds2,ds3 
+spring.datasource.ds-ids=ds1,ds2,ds3 
     
 #第1数据源
 spring.datasource.ds1.primary=true  
@@ -82,7 +83,7 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
  
 | 配置项                        |      说明                             | 备注                                  |
 |------------------------------|-------------------------------------- |---------------------------------------|    
-|nameList                      | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
+|dsIds                         | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
 |datasourceType                | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
 |fieldSetFactory               | 数据源配置属性注入工厂类                 | 其他数据源必须提供                        |
 |primary                       | 是否为首要数据源,不配置为false           |                                        |
@@ -91,10 +92,9 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 数据源配置工厂如下
 
 ```java
-public interface DataSourceFieldSetFactory {
+public interface DataSourceConfigFactory {
 
-   //get Properties value from environment and set to dataSource
-   public void setFields(Object ds, String dsName, String configPrefix, Environment environment) throws Exception;
+   void config(Object ds, String dsId, String configPrefix, Environment environment) throws Exception;
 }
 ```
 ---
