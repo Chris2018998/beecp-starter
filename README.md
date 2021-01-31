@@ -67,7 +67,7 @@ spring.datasource.ds2.jndiName=testDB
 #第3数据源(其他类型数据源,不加入监控）
 spring.datasource.ds3.poolName=Hikari
 #其他数据源类名，类型必须配置
-spring.datasource.ds3.datasourceType=com.zaxxer.hikari.HikariDataSource 
+spring.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource 
 #其他数据源类的配置属性注入工厂实现类
 spring.datasource.ds3.fieldSetFactory=cn.beecp.boot.setFactory.HikariDataSourceSetFactory
 spring.datasource.ds3.username=root
@@ -92,9 +92,9 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 数据源配置工厂如下
 
 ```java
-public interface DataSourceConfigFactory {
+public interface SpringBootDataSourceFactory {
 
-   void config(Object ds, String dsId, String configPrefix, Environment environment) throws Exception;
+    Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception;
 }
 ```
 ---
