@@ -68,8 +68,6 @@ spring.datasource.ds2.jndiName=testDB
 spring.datasource.ds3.poolName=Hikari
 #其他数据源类名，类型必须配置
 spring.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource 
-#其他数据源类的配置属性注入工厂实现类
-spring.datasource.ds3.fieldSetFactory=cn.beecp.boot.setFactory.HikariDataSourceSetFactory
 spring.datasource.ds3.username=root
 spring.datasource.ds3.password=root
 spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
