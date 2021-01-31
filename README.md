@@ -39,7 +39,7 @@ spring.datasource.xxx=value
 	
 <i>xxx代指数据源的配置属性名,更多属性请参照小蜜蜂连接属性列表</i>
  
-完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsStarterDemo.zip
+完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsDemo_JPA.rar
 
 ---
 
@@ -73,7 +73,7 @@ spring.datasource.ds3.password=root
 spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
 spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 ```
-完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsStarterDemo.zip
+完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsDemo_JPA.rar
 
 ---
  
