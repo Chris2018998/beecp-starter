@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSource;
 
 /**
  * XADataSource wrapper.

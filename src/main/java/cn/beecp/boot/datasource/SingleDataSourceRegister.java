@@ -16,8 +16,8 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.config.BeeDataSourceConfigFactory;
-import cn.beecp.boot.datasource.config.DataSourceConfigException;
+import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,13 +26,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.SP_DS_Prefix;
-import static cn.beecp.boot.datasource.DataSourceUtil.getConfigValue;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.SP_DS_Prefix;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
 import static cn.beecp.pool.PoolStaticCenter.getSetMethodMap;
 import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 
@@ -55,12 +56,11 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 public class SingleDataSourceRegister {
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-
         String dsId = "beeDs";
-        BeeDataSource ds = new BeeDataSource();
         boolean traceSQL = configSqlTracePool(environment);
-        BeeDataSourceConfigFactory dsFieldSetFactory = new BeeDataSourceConfigFactory();
-        dsFieldSetFactory.config(ds, dsId, SP_DS_Prefix, environment);
+        BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();
+        XADataSource ds = (XADataSource) dsFactory.getObjectInstance(environment, dsId, SP_DS_Prefix);
+
         TraceDataSource dsWrapper = new TraceXDataSource(dsId, ds, traceSQL, false);
         TraceDataSourceMap.getInstance().addDataSource(dsWrapper);
         return dsWrapper;
@@ -85,7 +85,7 @@ public class SingleDataSourceRegister {
             while (iterator.hasNext()) {
                 String propertyName = iterator.next();
                 String configVal = getConfigValue(environment, SP_DS_Prefix, propertyName);
-                if (DataSourceUtil.isBlank(configVal)) continue;
+                if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
             //5:inject found config value to ds config object
@@ -96,7 +96,7 @@ public class SingleDataSourceRegister {
             tracePool.init(config);
             return tracePool.isSqlTrace();
         } catch (Exception e) {
-            throw new DataSourceConfigException("Failed to set config value to sql-trace pool", e);
+            throw new SpringBootDataSourceException("Failed to set config value to sql-trace pool", e);
         }
     }
 }

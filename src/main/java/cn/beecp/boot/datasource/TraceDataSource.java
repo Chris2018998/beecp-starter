@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSource;
 
 /**
  * trace datasource
@@ -40,7 +40,6 @@ public class TraceDataSource implements DataSource {
     private boolean jndiDs;
     private boolean beeType;
     private DataSource delegate;
-
 
     private Method resetPoolMethod;
     private Object[] resetParamValues = new Object[]{false};

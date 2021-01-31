@@ -44,13 +44,13 @@ public class DataSourceIdSetter {
         TraceDataSourceMap dsMap = TraceDataSourceMap.getInstance();
 
         String dsId = annotation.value();
-        if (!DataSourceUtil.isBlank(dsId))
+        if (!SpringBootDataSourceUtil.isBlank(dsId))
             dsMap.setCurDsId(dsId.trim());
 
         try {
             return joinPoint.proceed();
         } finally {
-            if (!DataSourceUtil.isBlank(dsId))
+            if (!SpringBootDataSourceUtil.isBlank(dsId))
                 dsMap.removeCurDsId();
         }
     }

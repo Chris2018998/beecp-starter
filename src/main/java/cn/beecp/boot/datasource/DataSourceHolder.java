@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSource;
 
 /*
  *  DataSource holder

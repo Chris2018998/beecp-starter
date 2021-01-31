@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource.sqltrace;
 
-import cn.beecp.boot.datasource.DataSourceUtil;
+import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -39,7 +39,7 @@ public class StatementHandler implements InvocationHandler {
         this.dsId = dsId;
         this.statement = statement;
         this.statementType = statementType;
-        if (!DataSourceUtil.isBlank(sql)) {
+        if (!SpringBootDataSourceUtil.isBlank(sql)) {
             traceEntry = new SqlTraceEntry(dsId, sql, statementType);
         }
     }

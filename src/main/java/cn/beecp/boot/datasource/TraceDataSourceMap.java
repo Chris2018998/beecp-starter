@@ -48,12 +48,12 @@ class TraceDataSourceMap {
         dsIdLocal.remove();
     }
 
-    public TraceDataSource getDataSource(String dsIde) {
-        return dsMap.get(dsIde);
+    public TraceDataSource getDataSource(String dsId) {
+        return dsMap.get(dsId);
     }
 
-    public void removeDataSource(String dsIde) {
-        dsMap.remove(dsIde);
+    public void removeDataSource(String dsId) {
+        dsMap.remove(dsId);
     }
 
     public void addDataSource(TraceDataSource ds) {

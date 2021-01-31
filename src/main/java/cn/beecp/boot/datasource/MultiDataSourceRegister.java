@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.boot.datasource.config.DataSourceConfigException;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -31,7 +31,7 @@ import javax.sql.XADataSource;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.*;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
 /*
  *  SpringBoot dataSource config demo
@@ -100,24 +100,24 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      */
     private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
         String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_Ids);
-        if (DataSourceUtil.isBlank(dsIdsText))
-            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
+        if (SpringBootDataSourceUtil.isBlank(dsIdsText))
+            throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
 
         String[] dsIds = dsIdsText.trim().split(",");
         ArrayList<String> dsIdList = new ArrayList(dsIds.length);
         for (String id : dsIds) {
-            if (DataSourceUtil.isBlank(id)) continue;
+            if (SpringBootDataSourceUtil.isBlank(id)) continue;
 
             id = id.trim();
             if (dsIdList.contains(id))
-                throw new DataSourceConfigException("Duplicated id(" + id + ")in multi-datasource id list");
+                throw new SpringBootDataSourceException("Duplicated id(" + id + ")in multi-datasource id list");
             if (this.existsBeanDefinition(id, registry))
-                throw new DataSourceConfigException("DataSource id(" + id + ")has been registered by another bean");
+                throw new SpringBootDataSourceException("DataSource id(" + id + ")has been registered by another bean");
 
             dsIdList.add(id);
         }
         if (dsIdList.isEmpty())
-            throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
+            throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Ids);
 
         return dsIdList;
     }
@@ -136,16 +136,16 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
 
-        if (!DataSourceUtil.isBlank(combineId)) {
+        if (!SpringBootDataSourceUtil.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
-                throw new DataSourceConfigException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
+                throw new SpringBootDataSourceException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
             if (this.existsBeanDefinition(combineId, registry))
-                throw new DataSourceConfigException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
+                throw new SpringBootDataSourceException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
-            if (DataSourceUtil.isBlank(primaryDs))
-                throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Combine_PrimaryDs);
+            if (SpringBootDataSourceUtil.isBlank(primaryDs))
+                throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Combine_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
-                throw new DataSourceConfigException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
+                throw new SpringBootDataSourceException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
         }
 
         Properties combineProperties = new Properties();
@@ -168,7 +168,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             for (String dsId : dsIdList) {
                 String dsPrefix = SP_DS_Prefix + "." + dsId;
                 String primaryText = getConfigValue(environment, dsPrefix, SP_Multi_DS_Primary);
-                boolean primary = DataSourceUtil.isBlank(primaryText) ? false : Boolean.valueOf(primaryText);
+                boolean primary = SpringBootDataSourceUtil.isBlank(primaryText) ? false : Boolean.valueOf(primaryText);
                 DataSourceHolder ds = dsBuilder.createDataSource(dsId, dsPrefix, environment);//create datasource instanc
                 ds.setPrimary(primary);
                 dsMap.put(dsId, ds);

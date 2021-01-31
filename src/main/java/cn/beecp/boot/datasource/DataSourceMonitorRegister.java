@@ -49,7 +49,7 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             registry.registerBeanDefinition(registerName, define);
             log.info("Register DataSource-monitor({}) with id:{}", define.getBeanClassName(), registerName);
         } else {
-            log.error("BeanDefinition with name:{} already exists in spring context", registerName);
+            log.error("BeanDefinition id {} already exists in spring context", registerName);
         }
     }
 

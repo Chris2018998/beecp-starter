@@ -16,9 +16,9 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.config.BeeDataSourceConfigFactory;
-import cn.beecp.boot.datasource.config.DataSourceConfigException;
-import cn.beecp.boot.datasource.config.DataSourceConfigFactory;
+import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
 import org.springframework.core.env.Environment;
 
 import javax.naming.InitialContext;
@@ -28,7 +28,7 @@ import javax.sql.XADataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.*;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
 /**
  * DataSource builder from springboot Environment
@@ -38,10 +38,13 @@ import static cn.beecp.boot.datasource.DataSourceUtil.*;
 class DataSourceBuilder {
 
     //Spring  DsAttributeSetFactory map
-    private static final Map<Class, DataSourceConfigFactory> setFactoryMap = new HashMap<>(1);
+    private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
 
     static {
-        setFactoryMap.put(BeeDataSource.class, new BeeDataSourceConfigFactory());
+        factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
+//        factoryMap.put(DruidDataSource.class, new DruidDataSourceFactory());
+//        factoryMap.put(HikariDataSource.class, new HikariDataSourceFactory());
+//        factoryMap.put(org.apache.tomcat.jdbc.pool.DataSource.class, new TomcatJdbcDataSourceFactory());
     }
 
     /**
@@ -54,7 +57,7 @@ class DataSourceBuilder {
      */
     public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment) {
         String jndiNameTex = getConfigValue(environment, dsPrefix, SP_Multi_DS_Jndi);
-        if (!DataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
+        if (!SpringBootDataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
             return lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
             return createDataSourceByDsType(dsId, dsPrefix, environment);
@@ -75,69 +78,61 @@ class DataSourceBuilder {
             if (namingObj instanceof DataSource || namingObj instanceof XADataSource) {
                 return new DataSourceHolder(dsId, namingObj, true);
             } else {
-                throw new DataSourceConfigException("Jndi Name(" + jndiName + ") is not a dataSource object");
+                throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Jndi Name(" + jndiName + ") is not a data source object");
             }
         } catch (NamingException e) {
-            throw new DataSourceConfigException("Failed to lookup dataSource by name:" + jndiName);
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to lookup data source by jndi-name:" + jndiName);
         }
     }
 
-    //create dataSource instance by config class name
+    //create raw dataSource instance by config class name
     private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment) {
-        //1:load dataSource class and instantiate it
+        //1:load dataSource class
         String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_Type);
-        if (DataSourceUtil.isBlank(dataSourceClassName))
+        if (SpringBootDataSourceUtil.isBlank(dataSourceClassName))
             dataSourceClassName = SP_Multi_DS_Default_Type;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
-        Class dataSourceClass = loadClass(dataSourceClassName.trim(), DataSource.class, "DataSource");
 
-        Object ds = null;//may be DataSource or XADataSource
-        if (XADataSource.class.isAssignableFrom(dataSourceClass)) {
-            ds = createInstanceByClassName(dataSourceClass, XADataSource.class);
-        } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
-            ds = createInstanceByClassName(dataSourceClass, DataSource.class);
+        //2:create dataSource
+        Object ds = null;
+        Class dataSourceClass = loadClass(dsId, dataSourceClassName);
+        SpringBootDataSourceFactory dsFactory = factoryMap.get(dataSourceClass);
+        if (dsFactory == null && SpringBootDataSourceFactory.class.isAssignableFrom(dataSourceClass))
+            dsFactory = (SpringBootDataSourceFactory) createInstanceByClassName(dsId, dataSourceClass);
+        if (dsFactory != null) {//create by factory
+            try {
+                ds = dsFactory.getObjectInstance(environment, dsId, dsConfigPrefix);
+                if (!(ds instanceof DataSource) && !(ds instanceof XADataSource))
+                    throw new SpringBootDataSourceException("DataSource(" + dsId + ")-instance from data source factory is not a valid data source object");
+            } catch (SpringBootDataSourceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to get instance from dataSource factory", e);
+            }
+        } else if (DataSource.class.isAssignableFrom(dataSourceClass) || XADataSource.class.isAssignableFrom(dataSourceClass)) {
+            ds = createInstanceByClassName(dsId, dataSourceClass);
+            configDataSource(ds, environment, dsId, dsConfigPrefix);
         } else {
-            throw new DataSourceConfigException("Config value was not a valid datasource with key:" + dsConfigPrefix + "." + SP_Multi_DS_Type);
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-target type is not a valid data source type");
         }
 
-        //2:load dataSource class and instantiate it
-        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_ConfigFactory);
-        if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
-            throw new DataSourceConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_ConfigFactory);
-
-        DataSourceConfigFactory dsFieldSetFactory = null;
-        if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
-            dataSourceFieldSetFactoryClassName = dataSourceFieldSetFactoryClassName.trim();
-            Class dataSourceAttributeSetFactoryClass = loadClass(dataSourceFieldSetFactoryClassName, DataSourceConfigFactory.class, "DataSource properties factory");
-            dsFieldSetFactory = (DataSourceConfigFactory) createInstanceByClassName(dataSourceAttributeSetFactoryClass, DataSourceConfigFactory.class);
-        }
-
-        if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
-        if (dsFieldSetFactory == null)
-            throw new DataSourceConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_ConfigFactory);
-
-        try {
-            dsFieldSetFactory.config(ds, dsId, dsConfigPrefix, environment);//set properties to dataSource
-        } catch (Exception e) {
-            throw new DataSourceConfigException("Failed to inject config value to dataSource(" + dsId + ")", e);
-        }
         return new DataSourceHolder(dsId, ds);
     }
 
-    private Class loadClass(String className, Class type, String typeName) {
+    private Class loadClass(String dsId, String className) {
         try {
             return Class.forName(className);
-        } catch (Exception e) {
-            throw new DataSourceConfigException("Failed to load " + typeName + " class:" + className.trim());
+        } catch (ClassNotFoundException e) {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Not found class:" + className);
         }
     }
 
-    private Object createInstanceByClassName(Class objClass, Class type) {
+    private Object createInstanceByClassName(String dsId, Class objClass) {
         try {
             return objClass.newInstance();
         } catch (Exception e) {
-            throw new DataSourceConfigException("Failed to create instance by class:" + objClass.getName(), e);
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to instantiated the class:" + objClass.getName(), e);
         }
     }
 }

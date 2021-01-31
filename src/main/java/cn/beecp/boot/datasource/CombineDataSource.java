@@ -54,7 +54,7 @@ public class CombineDataSource implements DataSource {
     private TraceDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
-        dsId = !DataSourceUtil.isBlank(dsId) ? dsId : primaryId;
+        dsId = !SpringBootDataSourceUtil.isBlank(dsId) ? dsId : primaryId;
         TraceDataSource ds = dataSourceMap.getDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;

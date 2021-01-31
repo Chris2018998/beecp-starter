@@ -17,7 +17,7 @@ package cn.beecp.boot.datasource.sqltrace;
 
 import java.util.Date;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.formatDate;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 
 /*
  *  SQL Execute Trace entry
