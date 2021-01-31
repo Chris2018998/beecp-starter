@@ -118,7 +118,7 @@ spring.datasource.sql-trace=true                      #开启动SQL监控(默认
 spring.datasource.sql-show=true                       #是否打印SQL
 spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
 spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
-spring.datasource.sql-exec-alert-time=5000            #SQL执行时间警告值（毫秒） 
+spring.datasource.sql-exec-slow-time=5000            #SQL执行时间警告值（毫秒） 
 spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
 spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.monitor.sqltrace.SqlTraceAlert)
 
