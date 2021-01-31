@@ -27,12 +27,12 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class CombineDataSource implements DataSource {
-    private String defaultId;
+    private String primaryId;
     private boolean isClosed = false;
     private TraceDataSourceMap dataSourceMap = TraceDataSourceMap.getInstance();
 
-    public CombineDataSource(String defaultId) {
-        this.defaultId = defaultId;
+    public CombineDataSource(String primaryId) {
+        this.primaryId = primaryId;
     }
 
     public boolean isClosed() {
@@ -54,7 +54,7 @@ public class CombineDataSource implements DataSource {
     private TraceDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
-        dsId = !DataSourceUtil.isBlank(dsId) ? dsId : defaultId;
+        dsId = !DataSourceUtil.isBlank(dsId) ? dsId : primaryId;
         TraceDataSource ds = dataSourceMap.getDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;

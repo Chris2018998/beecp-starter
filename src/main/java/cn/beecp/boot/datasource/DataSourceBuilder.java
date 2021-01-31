@@ -102,9 +102,9 @@ class DataSourceBuilder {
         }
 
         //2:load dataSource class and instantiate it
-        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_FieldSetFactory);
+        String dataSourceFieldSetFactoryClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_ConfigFactory);
         if (!(ds instanceof BeeDataSource) && DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName))
-            throw new DataSourceConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
+            throw new DataSourceConfigException("Missed dataSource field set factory with key:" + dsConfigPrefix + "." + SP_Multi_DS_ConfigFactory);
 
         DataSourceConfigFactory dsFieldSetFactory = null;
         if (!DataSourceUtil.isBlank(dataSourceFieldSetFactoryClassName)) {
@@ -115,7 +115,7 @@ class DataSourceBuilder {
 
         if (dsFieldSetFactory == null) dsFieldSetFactory = setFactoryMap.get(dataSourceClass);
         if (dsFieldSetFactory == null)
-            throw new DataSourceConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_FieldSetFactory);
+            throw new DataSourceConfigException("Not found dataSource properties inject factory,please check config key:" + dsConfigPrefix + "." + SP_Multi_DS_ConfigFactory);
 
         try {
             dsFieldSetFactory.config(ds, dsId, dsConfigPrefix, environment);//set properties to dataSource

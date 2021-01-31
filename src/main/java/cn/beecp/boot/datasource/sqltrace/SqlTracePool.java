@@ -120,15 +120,15 @@ public class SqlTracePool {
 
     Object trace(SqlTraceEntry vo, Statement statement, Method method, Object[] args, String dsId) throws Throwable {
         vo.setMethodName(method.getName());
-        traceQueue.offerFirst(vo);
         vo.setTraceStartTime(System.currentTimeMillis());
-        if (sqlShow) log.info("Begin running sql:{}", vo.getSql());
+        traceQueue.offerFirst(vo);
         if (tracedQueueSize.incrementAndGet() > sqlTraceMaxSize) {
             traceQueue.pollLast();
             tracedQueueSize.decrementAndGet();
         }
 
         try {
+            if (sqlShow) log.info("Executing sql:{}", vo.getSql());
             Object re = method.invoke(statement, args);
             vo.setExecSuccessInd(true);
             return re;
@@ -154,9 +154,9 @@ public class SqlTracePool {
 
     private void removeTimeoutTrace() {
         alertEntryList.clear();
-        Iterator<SqlTraceEntry> itor = traceQueue.descendingIterator();
-        while (itor.hasNext()) {
-            SqlTraceEntry vo = itor.next();
+        Iterator<SqlTraceEntry> iterator = traceQueue.descendingIterator();
+        while (iterator.hasNext()) {
+            SqlTraceEntry vo = iterator.next();
             if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd()) && !vo.isAlertInd()) {//failed
                 vo.setAlertInd(true);
                 alertEntryList.add(vo);

@@ -49,8 +49,8 @@ public class DataSourceUtil {
     //Datasource class name
     public static final String SP_Multi_DS_Type = "type";
 
-    //Datasource attribute set factory
-    public static final String SP_Multi_DS_FieldSetFactory = "fieldSetFactory";
+    //Datasource config factory
+    public static final String SP_Multi_DS_ConfigFactory = "configFactory";
 
     //Default DataSourceName
     public static final String SP_Multi_DS_Default_Type = "cn.beecp.BeeDataSource";
@@ -59,7 +59,7 @@ public class DataSourceUtil {
     public static final String SP_Multi_DS_CombineId = "combineId";
 
     //combineDefaultDs
-    public static final String SP_Multi_DS_PrimaryDs = "combineDefaultDs";
+    public static final String SP_Multi_DS_Combine_PrimaryDs = "combinePrimaryId";
 
     private static final Logger log = LoggerFactory.getLogger(DataSourceUtil.class);
 

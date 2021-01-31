@@ -26,9 +26,7 @@ import java.util.logging.Logger;
 import static cn.beecp.boot.datasource.DataSourceUtil.tryToCloseDataSource;
 
 /**
- * Jndi XADataSource wrapper.
- * When SpringBoot project redeploy,referred Jndi dataSource from middleware will be closed,
- * add wrapper around jndi data Source,which can avoid being closed.
+ * XADataSource wrapper.
  *
  * @author Chris.Liao
  */

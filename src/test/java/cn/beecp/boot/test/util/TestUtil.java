@@ -44,13 +44,11 @@ import static cn.beecp.boot.datasource.DataSourceUtil.isBlank;
  *  @author Chris.Liao
  */
 public class TestUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
-    /**
-     * string转object
-     */
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
+    /***********************************************************************************
+     *
+     *  Util methods for service side
+     *
+     ***********************************************************************************/
     public static String testGetConnection(DataSource ds) throws Exception {
         Connection con = null;
         try {
@@ -68,7 +66,6 @@ public class TestUtil {
             }
         }
     }
-
     public static String testSQL(DataSource ds, String sql, String type, String slowInd) throws Exception {
         Statement st = null;
         PreparedStatement pst = null;
@@ -117,7 +114,14 @@ public class TestUtil {
         }
     }
 
-    //
+
+    /***********************************************************************************
+     *
+     *  Util methods for client side
+     *
+     ***********************************************************************************/
+    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final String getRest(MockMvc mockMvc, String url, Map<String, String> paramMap, String callType) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = null;
         if ("get".equals(callType))

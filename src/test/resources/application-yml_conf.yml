@@ -13,7 +13,7 @@ spring:
     sql-exec-alert-action: cn.beecp.boot.test.util.TestAlert
     ds-ids: ds1,ds2
     combineId: combineDs
-    combineDefaultDs: ds1
+    combinePrimaryId: ds1
     ds1:
       primary: true
       username: root

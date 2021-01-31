@@ -131,7 +131,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      */
     private Properties getCombineInfo(List<String> dsIdList, Environment environment, BeanDefinitionRegistry registry) {
         String combineId = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_CombineId);
-        String primaryDs = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_PrimaryDs);
+        String primaryDs = getConfigValue(environment, SP_DS_Prefix, SP_Multi_DS_Combine_PrimaryDs);
 
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
@@ -143,14 +143,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 throw new DataSourceConfigException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
             if (DataSourceUtil.isBlank(primaryDs))
-                throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_PrimaryDs);
+                throw new DataSourceConfigException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_Multi_DS_Combine_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
                 throw new DataSourceConfigException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
         }
 
         Properties combineProperties = new Properties();
         combineProperties.put(SP_Multi_DS_CombineId, combineId);
-        combineProperties.put(SP_Multi_DS_PrimaryDs, primaryDs);
+        combineProperties.put(SP_Multi_DS_Combine_PrimaryDs, primaryDs);
         return combineProperties;
     }
 
@@ -188,26 +188,26 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      */
     private void registerDataSources(Map<String, DataSourceHolder> dsMap, Properties combineProperties, boolean isSqlTrace, BeanDefinitionRegistry registry) {
         String combineId = combineProperties.getProperty(SP_Multi_DS_CombineId);
-        String primaryDs = combineProperties.getProperty(SP_Multi_DS_PrimaryDs);
+        String primaryDsId = combineProperties.getProperty(SP_Multi_DS_Combine_PrimaryDs);
 
         for (DataSourceHolder regInfo : dsMap.values())
             registerDataSourceBean(regInfo, isSqlTrace, combineId, registry);
 
         //register combine DataSource
-        if (!isBlank(combineId) && !isBlank(primaryDs)) {
-            CombineDataSource combineDataSource = new CombineDataSource(primaryDs);
+        if (!isBlank(combineId) && !isBlank(primaryDsId)) {
+            CombineDataSource combineDataSource = new CombineDataSource(primaryDsId);
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
             define.setInstanceSupplier(new DsSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
-            log.info("Registered Combine-DataSource({}) with bean id:{}", define.getBeanClassName(), combineId);
+            log.info("Registered Combine-DataSource({}) with id:{}", define.getBeanClassName(), combineId);
 
             String dsIdSetterId = DataSourceIdSetter.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
             dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            log.info("Registered DataSourceId-setter({}) with bean id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
+            log.info("Registered DataSourceId-setter({}) with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 
@@ -230,14 +230,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 define.setBeanClass(dsw.getClass());
                 define.setInstanceSupplier(new DsSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
-                log.info("Registered XADataSource({}) with bean id:{}", define.getBeanClassName(), regInfo.getDsId());
+                log.info("Registered XADataSource({}) with id:{}", define.getBeanClassName(), regInfo.getDsId());
             } else if (dsw instanceof TraceDataSource) {
                 GenericBeanDefinition define = new GenericBeanDefinition();
                 define.setPrimary(regInfo.isPrimary());
                 define.setBeanClass(dsw.getClass());
                 define.setInstanceSupplier(new DsSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
-                log.info("Registered DataSource({}) with bean id:{}", define.getBeanClassName(), regInfo.getDsId());
+                log.info("Registered DataSource({}) with id:{}", define.getBeanClassName(), regInfo.getDsId());
                 TraceDataSourceMap.getInstance().addDataSource((TraceDataSource) dsw);
             }
         }
