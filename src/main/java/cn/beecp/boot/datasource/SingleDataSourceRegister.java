@@ -28,8 +28,8 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.SP_DS_Prefix;
@@ -76,10 +76,10 @@ public class SingleDataSourceRegister {
         try {
             //1:create sql trace config instance
             SqlTraceConfig config = new SqlTraceConfig();
-            //2:create properties to collect config value
-            Map<String, Object> setValueMap = new LinkedHashMap<String, Object>();
-            //3:get all properties set methods
+            //2:get all properties set methods
             Map<String, Method> setMethodMap = getSetMethodMap(config.getClass());
+            //3:create properties to collect config value
+            Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
             //4:loop to find config value by properties map
             Iterator<String> iterator = setMethodMap.keySet().iterator();
             while (iterator.hasNext()) {
