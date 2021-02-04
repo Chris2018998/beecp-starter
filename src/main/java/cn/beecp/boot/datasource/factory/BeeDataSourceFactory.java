@@ -53,7 +53,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
             configVal = getConfigValue(environment, dsConfigPrefix, propertyNameToFieldId(connectPropName, DS_Config_Prop_Separator_UnderLine));
         if (!SpringBootDataSourceUtil.isBlank(configVal)) {
             configVal = configVal.trim();
-            String[] attributeArray = configVal.split(";");
+            String[] attributeArray = configVal.split("&");
             for (String attribute : attributeArray) {
                 String[] pairs = attribute.split("=");
                 if (pairs.length == 2)
