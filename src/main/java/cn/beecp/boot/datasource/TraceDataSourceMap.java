@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Collect Bee dataSource
+ * Collect dataSource
  *
  * @author Chris.Liao
  */

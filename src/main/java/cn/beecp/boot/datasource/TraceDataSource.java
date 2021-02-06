@@ -114,12 +114,12 @@ public class TraceDataSource implements DataSource {
             tryToCloseDataSource(delegate);
     }
 
-    public void resetPool() throws SQLException {
+    public void clearAllConnections() throws SQLException {
         if (beeType) {
             if (resetPoolMethod == null) {
                 try {
                     Class dsClass = delegate.getClass();
-                    resetPoolMethod = dsClass.getMethod("resetPool", new Class[]{Boolean.TYPE});
+                    resetPoolMethod = dsClass.getMethod("clearAllConnections", new Class[]{Boolean.TYPE});
                 } catch (Throwable e) {
                 }
             }

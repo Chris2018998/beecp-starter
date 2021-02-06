@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
-import static cn.beecp.boot.datasource.DataSourceUtil.isBlank;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 /*
  *  Util
@@ -44,6 +44,14 @@ import static cn.beecp.boot.datasource.DataSourceUtil.isBlank;
  *  @author Chris.Liao
  */
 public class TestUtil {
+    /***********************************************************************************
+     *
+     *  Util methods for client side
+     *
+     ***********************************************************************************/
+    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     /***********************************************************************************
      *
      *  Util methods for service side
@@ -66,6 +74,7 @@ public class TestUtil {
             }
         }
     }
+
     public static String testSQL(DataSource ds, String sql, String type, String slowInd) throws Exception {
         Statement st = null;
         PreparedStatement pst = null;
@@ -114,14 +123,6 @@ public class TestUtil {
         }
     }
 
-
-    /***********************************************************************************
-     *
-     *  Util methods for client side
-     *
-     ***********************************************************************************/
-    private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final String getRest(MockMvc mockMvc, String url, Map<String, String> paramMap, String callType) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = null;
         if ("get".equals(callType))
@@ -215,7 +216,7 @@ public class TestUtil {
                 String exeSql = map.get("sql").toString();
                 if (dsId.equals(pDsId) && sql.equals(exeSql)) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
-                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     exists = true;
                     break;
                 }
@@ -230,7 +231,7 @@ public class TestUtil {
                 boolean execSuccessInd = (boolean) map.get("execSuccessInd");
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && !execSuccessInd) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
-                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     exists = true;
                     break;
                 }
@@ -245,7 +246,7 @@ public class TestUtil {
                 boolean execSlowInd = (boolean) map.get("execSlowInd");
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
-                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId,tookTimeMs,exeSql);
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     exists = true;
                     break;
                 }

@@ -39,7 +39,7 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
  *  spring.datasource.sqlExecutionTrace=true
  *  spring.datasource.sqlExecutionTraceTimeout=18000
  *
- *  spring.datasource.dsList=ds1,ds2
+ *  spring.datasource.ds-ids=ds1,ds2
  *  spring.datasource.ds1.datasourceType=cn.beecp.BeeDataSoruce
  *  spring.datasource.ds1.propertySetFactory=cn.beecp.boot.BeeDsAttributeSetFactory
  *  spring.datasource.ds1.primary=true

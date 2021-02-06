@@ -52,13 +52,13 @@ public class DataSourceMonitor {
         return SqlTracePool.getInstance().getTraceQueue();
     }
 
-    @RequestMapping("/resetPool")
-    public void resetDsPool(@RequestBody Map<String, String> parameterMap) {
+    @RequestMapping("/clearAllConnections")
+    public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
         if (parameterMap != null) {
             TraceDataSource ds = collector.getDataSource(parameterMap.get("dsId"));
             if (ds != null) {
                 try {
-                    ds.resetPool();
+                    ds.clearAllConnections();
                 } catch (SQLException e) {
                     log.error("Failed to reset datasource({}) connection pool", ds.getId());
                 }

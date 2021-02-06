@@ -95,7 +95,7 @@ public class SpringBootDataSourceUtil {
                 String propertyName = iterator.next();
 
                 String configVal = getConfigValue(environment, dsConfigPrefix, propertyName);
-                if (isBlank(configVal)) continue;
+                if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
 
@@ -108,9 +108,9 @@ public class SpringBootDataSourceUtil {
 
     public static final String getConfigValue(Environment environment, String dsConfigPrefix, String key) {
         String value = readConfig(environment, dsConfigPrefix + "." + key);
-        if (isBlank(value))
+        if (SpringBootDataSourceUtil.isBlank(value))
             value = readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_MiddleLine));
-        if (isBlank(value))
+        if (SpringBootDataSourceUtil.isBlank(value))
             value = readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_UnderLine));
         return value;
     }
