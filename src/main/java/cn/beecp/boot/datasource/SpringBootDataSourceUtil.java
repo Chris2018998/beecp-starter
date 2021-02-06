@@ -119,7 +119,7 @@ public class SpringBootDataSourceUtil {
         String value = environment.getProperty(key);
         if (!SpringBootDataSourceUtil.isBlank(value)) {
             value = value.trim();
-            log.info("config:{}={}", key, value);
+            log.info("{}={}", key, value);
         }
         return value;
     }

@@ -18,6 +18,8 @@ package cn.beecp.boot.datasource.factory;
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.configDataSource;
@@ -36,6 +38,8 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  *  @author Chris.Liao
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     public Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception {
         BeeDataSourceConfig config = new BeeDataSourceConfig();
         configDataSource(config, environment, dsId, dsConfigPrefix);
@@ -56,8 +60,10 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
             String[] attributeArray = configVal.split("&");
             for (String attribute : attributeArray) {
                 String[] pairs = attribute.split("=");
-                if (pairs.length == 2)
+                if (pairs.length == 2) {
                     config.addConnectProperty(pairs[0].trim(), pairs[1].trim());
+                    log.info("{}.connectProperties.{}={}", dsConfigPrefix, pairs[0].trim(), pairs[1].trim());
+                }
             }
         }
     }
