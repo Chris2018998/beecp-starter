@@ -200,14 +200,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             define.setBeanClass(combineDataSource.getClass());
             define.setInstanceSupplier(new DsSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
-            log.info("Registered Combine-DataSource({}) with id:{}", define.getBeanClassName(), combineId);
+            log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineId);
 
             String dsIdSetterId = DataSourceIdSetter.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
             dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            log.info("Registered DataSourceId-setter({}) with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
+            log.info("Registered DataSourceId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 
@@ -230,14 +230,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 define.setBeanClass(dsw.getClass());
                 define.setInstanceSupplier(new DsSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
-                log.info("Registered XADataSource({}) with id:{}", define.getBeanClassName(), regInfo.getDsId());
+                log.info("Registered XADataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
             } else if (dsw instanceof TraceDataSource) {
                 GenericBeanDefinition define = new GenericBeanDefinition();
                 define.setPrimary(regInfo.isPrimary());
                 define.setBeanClass(dsw.getClass());
                 define.setInstanceSupplier(new DsSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
-                log.info("Registered DataSource({}) with id:{}", define.getBeanClassName(), regInfo.getDsId());
+                log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
                 TraceDataSourceMap.getInstance().addDataSource((TraceDataSource) dsw);
             }
         }
