@@ -64,10 +64,8 @@ public class SpringBootDataSourceUtil {
 
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
 
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-
     public static final String formatDate(Date date) {
-        return formatter.format(date);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
     public static final boolean isBlank(String str) {

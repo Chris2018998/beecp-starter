@@ -133,35 +133,19 @@ public class TraceDataSource implements DataSource {
         }
     }
 
-    public ConnectionPoolMonitorVo getPoolMonitorVo() throws Exception {
+    public ConnectionPoolMonitorVo getPoolMonitorVo()  {
         if (beeType) {
             if (getPoolMonitorVoMethod == null) {
                 try {
                     Class dsClass = delegate.getClass();
                     getPoolMonitorVoMethod = dsClass.getMethod("getPoolMonitorVo", new Class[0]);
-                } catch (Throwable e) {
-                }
+                } catch (Throwable e) { }
             }
 
             if (getPoolMonitorVoMethod != null) {
                 try {
                     return (ConnectionPoolMonitorVo) getPoolMonitorVoMethod.invoke(delegate, emptyParamValues);
-                } catch (IllegalAccessException e) {
-                    throw e;
-                } catch (IllegalArgumentException e) {
-                    throw e;
-                } catch (InvocationTargetException e) {
-                    Throwable cause = e.getTargetException();
-                    if (cause != null) {
-                        if (cause instanceof Exception) {
-                            throw (Exception) cause;
-                        } else if (cause instanceof Error) {
-                            throw (Error) cause;
-                        }
-                    } else {
-                        throw new Exception(e.getMessage());
-                    }
-                }
+                } catch (Throwable e) { }
             }
         }
         return null;

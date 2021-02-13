@@ -28,7 +28,6 @@ import java.util.Map;
  */
 class TraceDataSourceMap {
     private final static TraceDataSourceMap instance = new TraceDataSourceMap();
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private Map<String, TraceDataSource> dsMap = new LinkedHashMap<>();
     private ThreadLocal<String> dsIdLocal = new ThreadLocal();
 

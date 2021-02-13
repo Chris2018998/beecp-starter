@@ -69,25 +69,22 @@ public class DataSourceMonitor {
     private List<Map<String, Object>> getPoolInfoList() {
         poolInfoList.clear();
         for (TraceDataSource ds : collector.getAllDataSource()) {
-            try {
-                ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
-                if (vo == null) continue;
-                if (vo.getPoolState() == 3) {//POOL_CLOSED
-                    collector.removeDataSource(ds.getId());
-                } else {
-                    Map<String, Object> poolMap = new LinkedHashMap<>(9);
-                    poolMap.put("dsId", ds.getId());
-                    poolMap.put("poolName", vo.getPoolName());
-                    poolMap.put("poolMode", vo.getPoolMode());
-                    poolMap.put("poolState", vo.getPoolState());
-                    poolMap.put("maxActive", vo.getMaxActive());
-                    poolMap.put("idleSize", vo.getIdleSize());
-                    poolMap.put("usingSize", vo.getUsingSize());
-                    poolMap.put("semaphoreWaiterSize", vo.getSemaphoreWaiterSize());
-                    poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
-                    poolInfoList.add(poolMap);
-                }
-            } catch (Exception e) {
+            ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
+            if (vo == null) continue;
+            if (vo.getPoolState() == 3) {//POOL_CLOSED
+                collector.removeDataSource(ds.getId());
+            } else {
+                Map<String, Object> poolMap = new LinkedHashMap<>(9);
+                poolMap.put("dsId", ds.getId());
+                poolMap.put("poolName", vo.getPoolName());
+                poolMap.put("poolMode", vo.getPoolMode());
+                poolMap.put("poolState", vo.getPoolState());
+                poolMap.put("maxActive", vo.getMaxActive());
+                poolMap.put("idleSize", vo.getIdleSize());
+                poolMap.put("usingSize", vo.getUsingSize());
+                poolMap.put("semaphoreWaiterSize", vo.getSemaphoreWaiterSize());
+                poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
+                poolInfoList.add(poolMap);
             }
         }
         return poolInfoList;

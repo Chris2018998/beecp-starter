@@ -41,11 +41,7 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(new Supplier() {
-                public Object get() {
-                    return new DataSourceMonitor();
-                }
-            });
+            define.setInstanceSupplier(new RegSupplier(new DataSourceMonitor()));
             registry.registerBeanDefinition(registerName, define);
             log.info("Register DataSource-monitor({}) with id:{}", define.getBeanClassName(), registerName);
         } else {
@@ -58,6 +54,16 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             return registry.getBeanDefinition(beanName) != null;
         } catch (NoSuchBeanDefinitionException e) {
             return false;
+        }
+    }
+
+    private static final class RegSupplier implements Supplier {
+        private Object ds;
+        public RegSupplier(Object ds) {
+            this.ds = ds;
+        }
+        public Object get() {
+            return ds;
         }
     }
 }
