@@ -23,7 +23,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
-import java.util.function.Supplier;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.createSupplier;
 
 /**
  * Register Monitor to springboot
@@ -41,7 +41,7 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(new RegSupplier(new DataSourceMonitor()));
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitor()));
             registry.registerBeanDefinition(registerName, define);
             log.info("Register DataSource-monitor({}) with id:{}", define.getBeanClassName(), registerName);
         } else {
@@ -54,16 +54,6 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             return registry.getBeanDefinition(beanName) != null;
         } catch (NoSuchBeanDefinitionException e) {
             return false;
-        }
-    }
-
-    private static final class RegSupplier implements Supplier {
-        private Object ds;
-        public RegSupplier(Object ds) {
-            this.ds = ds;
-        }
-        public Object get() {
-            return ds;
         }
     }
 }

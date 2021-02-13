@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static cn.beecp.pool.PoolStaticCenter.*;
 
@@ -143,6 +144,22 @@ public class SpringBootDataSourceUtil {
                 break;
             } catch (Throwable e) {
             }
+        }
+    }
+
+    static final Supplier createSupplier(Object bean) {
+        return new RegSupplier(bean);
+    }
+
+    private static final class RegSupplier implements Supplier {
+        private Object ds;
+
+        public RegSupplier(Object ds) {
+            this.ds = ds;
+        }
+
+        public Object get() {
+            return ds;
         }
     }
 }

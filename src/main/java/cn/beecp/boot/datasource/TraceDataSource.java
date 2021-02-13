@@ -20,7 +20,6 @@ import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -133,19 +132,21 @@ public class TraceDataSource implements DataSource {
         }
     }
 
-    public ConnectionPoolMonitorVo getPoolMonitorVo()  {
+    public ConnectionPoolMonitorVo getPoolMonitorVo() {
         if (beeType) {
             if (getPoolMonitorVoMethod == null) {
                 try {
                     Class dsClass = delegate.getClass();
                     getPoolMonitorVoMethod = dsClass.getMethod("getPoolMonitorVo", new Class[0]);
-                } catch (Throwable e) { }
+                } catch (Throwable e) {
+                }
             }
 
             if (getPoolMonitorVoMethod != null) {
                 try {
                     return (ConnectionPoolMonitorVo) getPoolMonitorVoMethod.invoke(delegate, emptyParamValues);
-                } catch (Throwable e) { }
+                } catch (Throwable e) {
+                }
             }
         }
         return null;

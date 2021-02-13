@@ -29,7 +29,6 @@ import org.springframework.core.type.AnnotationMetadata;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.util.*;
-import java.util.function.Supplier;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
@@ -198,14 +197,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             CombineDataSource combineDataSource = new CombineDataSource(primaryDsId);
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
-            define.setInstanceSupplier(new DsSupplier(combineDataSource));
+            define.setInstanceSupplier(createSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
             log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineId);
 
             String dsIdSetterId = DataSourceIdSetter.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
-            dsIdSetDefine.setInstanceSupplier(new DsSupplier(new DataSourceIdSetter()));
+            dsIdSetDefine.setInstanceSupplier(createSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
             log.info("Registered DataSourceId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
@@ -228,14 +227,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 GenericBeanDefinition define = new GenericBeanDefinition();
                 define.setPrimary(regInfo.isPrimary());
                 define.setBeanClass(dsw.getClass());
-                define.setInstanceSupplier(new DsSupplier(dsw));
+                define.setInstanceSupplier(createSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
                 log.info("Registered XADataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
             } else if (dsw instanceof TraceDataSource) {
                 GenericBeanDefinition define = new GenericBeanDefinition();
                 define.setPrimary(regInfo.isPrimary());
                 define.setBeanClass(dsw.getClass());
-                define.setInstanceSupplier(new DsSupplier(dsw));
+                define.setInstanceSupplier(createSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
                 log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
                 TraceDataSourceMap.getInstance().addDataSource((TraceDataSource) dsw);
@@ -248,18 +247,6 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             return registry.getBeanDefinition(beanName) != null;
         } catch (NoSuchBeanDefinitionException e) {
             return false;
-        }
-    }
-
-    private static final class DsSupplier implements Supplier {
-        private Object ds;
-
-        public DsSupplier(Object ds) {
-            this.ds = ds;
-        }
-
-        public Object get() {
-            return ds;
         }
     }
 }
