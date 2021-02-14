@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * @author Chris.Liao
  */
 public class TraceXDataSource extends TraceDataSource implements XADataSource {
-    private javax.sql.XADataSource delegate;
+    private XADataSource delegate;
 
     public TraceXDataSource(String dsId, XADataSource delegate, boolean traceSQL, boolean jndiDs) {
         super(dsId, (DataSource) delegate, traceSQL, jndiDs);
