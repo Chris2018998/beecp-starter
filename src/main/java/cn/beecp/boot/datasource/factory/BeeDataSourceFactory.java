@@ -49,12 +49,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
     }
 
     private void addConnectProperty(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
-        String connectPropName = "connectProperties";
-        String configVal = getConfigValue(environment, dsConfigPrefix, connectPropName);
-        if (SpringBootDataSourceUtil.isBlank(configVal))
-            configVal = getConfigValue(environment, dsConfigPrefix, propertyNameToFieldId(connectPropName, DS_Config_Prop_Separator_MiddleLine));
-        if (SpringBootDataSourceUtil.isBlank(configVal))
-            configVal = getConfigValue(environment, dsConfigPrefix, propertyNameToFieldId(connectPropName, DS_Config_Prop_Separator_UnderLine));
+        String configVal = getConfigValue(environment, dsConfigPrefix, "connectProperties");
         if (!SpringBootDataSourceUtil.isBlank(configVal)) {
             configVal = configVal.trim();
             String[] attributeArray = configVal.split("&");
