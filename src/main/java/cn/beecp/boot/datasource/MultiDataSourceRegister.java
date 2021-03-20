@@ -162,7 +162,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      */
     private Map<String, DataSourceHolder> createDataSources(List<String> dsIdList, Environment environment) {
         DataSourceBuilder dsBuilder = new DataSourceBuilder();
-        Map<String, DataSourceHolder> dsMap = new LinkedHashMap<String, DataSourceHolder>();
+        Map<String, DataSourceHolder> dsMap = new LinkedHashMap<String, DataSourceHolder>(dsIdList.size());
         try {
             for (String dsId : dsIdList) {
                 String dsPrefix = SP_DS_Prefix + "." + dsId;

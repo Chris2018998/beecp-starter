@@ -25,7 +25,7 @@ import java.util.Map;
  */
 class TraceDataSourceMap {
     private final static TraceDataSourceMap instance = new TraceDataSourceMap();
-    private Map<String, TraceDataSource> dsMap = new LinkedHashMap<>();
+    private Map<String, TraceDataSource> dsMap = new LinkedHashMap<>(2);
     private ThreadLocal<String> dsIdLocal = new ThreadLocal();
 
     public final static TraceDataSourceMap getInstance() {
@@ -57,6 +57,7 @@ class TraceDataSourceMap {
     }
 
     public TraceDataSource[] getAllDataSource() {
-        return dsMap.values().toArray(new TraceDataSource[dsMap.size()]);
+        TraceDataSource[] dataSources= new TraceDataSource[dsMap.size()];
+        return dsMap.values().toArray(dataSources);
     }
 }
