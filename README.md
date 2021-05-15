@@ -1,4 +1,5 @@
-BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，通过<strong>标签+配置文件</strong>的方式启动一个或多个数据源，同时提供监控界面。
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，通过<strong>标签+配置文件</strong>的方式启动一个或多个数据源，同时提供监控界面。[如果您在寻找一款更专业性数据源监控工具，推荐使用Baomidou(
+https://github.com/baomidou/dynamic-datasource-spring-boot-starter)]
 
 Maven坐标(Java8)
 ```xml
