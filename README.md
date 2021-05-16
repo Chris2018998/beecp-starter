@@ -78,7 +78,7 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 
 ---
  
-#####  多源配置
+###  多源配置
  
 | 配置项                        |      说明                             | 备注                                  |
 |------------------------------|-------------------------------------- |---------------------------------------|    
@@ -97,7 +97,7 @@ public interface SpringBootDataSourceFactory {
 ```
 ---
 
-#####  监控界面
+###  监控界面
 
 
 监控标签启用后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
@@ -110,7 +110,7 @@ public interface SpringBootDataSourceFactory {
 
 ---
 
-#####  SQL监控配置
+###  SQL监控配置
 
 ```yml
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
@@ -123,8 +123,12 @@ spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值�
 
 ```
 
+---
+### 捐助
 
+如果您觉得此作品不错，可以捐赠请我们喝杯咖啡吧，在此表示感谢^_^。
 
+<img height="50%" width="50%" src="https://github.com/Chris2018998/BeeCP/blob/master/doc/individual/donate.png"> 
 
 
   
