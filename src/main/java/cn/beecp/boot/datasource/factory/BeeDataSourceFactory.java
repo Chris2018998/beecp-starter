@@ -48,25 +48,13 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         return new BeeDataSource(config);
     }
     private void parseConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
-        addConnectProperties(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties"),config);
+        config.addConnectProperty(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties"));
         String connectPropertiesCount =getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
         if (!isBlank(connectPropertiesCount)) {
             int count =0;
             try{count = Integer.parseInt(connectPropertiesCount.trim());}catch (Throwable e){}
             for(int i=1;i<=count;i++)
-                addConnectProperties(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties."+i),config);
-        }
-    }
-    private void addConnectProperties(String dsConfigPrefix,String connectPropertyValue,BeeDataSourceConfig config){
-        if (!isBlank(connectPropertyValue)) {
-            String[] attributeArray = connectPropertyValue.split("&");
-            for (String attribute : attributeArray) {
-                String[] pairs = attribute.split("=");
-                if (pairs.length == 2) {
-                    config.addConnectProperty(pairs[0].trim(), pairs[1].trim());
-                    log.info("{}.connectProperties.{}={}", dsConfigPrefix, pairs[0].trim(), pairs[1].trim());;
-                }
-            }
+                config.addConnectProperty(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties."+i));
         }
     }
 }
