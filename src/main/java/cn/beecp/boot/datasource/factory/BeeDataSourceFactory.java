@@ -48,13 +48,13 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         return new BeeDataSource(config);
     }
     private void parseConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
-        config.addConnectProperty(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties"));
+        config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties"));
         String connectPropertiesCount =getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
         if (!isBlank(connectPropertiesCount)) {
             int count =0;
             try{count = Integer.parseInt(connectPropertiesCount.trim());}catch (Throwable e){}
             for(int i=1;i<=count;i++)
-                config.addConnectProperty(dsConfigPrefix,getConfigValue(environment, dsConfigPrefix, "connectProperties."+i));
+                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties."+i));
         }
     }
 }
