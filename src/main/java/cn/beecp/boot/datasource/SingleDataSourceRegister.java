@@ -88,8 +88,10 @@ public class SingleDataSourceRegister {
                 if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
-            //5:inject found config value to ds config object
-            setPropertiesValue(config, setMethodMap, setValueMap);
+            if (!setValueMap.isEmpty()) {
+                //5:inject found config value to ds config object
+                setPropertiesValue(config, setMethodMap, setValueMap);
+            }
 
             //6:create sql-trace pool
             SqlTracePool tracePool = SqlTracePool.getInstance();
