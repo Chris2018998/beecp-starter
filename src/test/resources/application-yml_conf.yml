@@ -18,12 +18,12 @@ spring:
       primary: true
       username: root
       password: ''
-      jdbcUrl: jdbc:mysql://localhost:3306/test
+      jdbcUrl: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
       type: cn.beecp.BeeDataSource
       driverClassName: com.mysql.jdbc.Driver
     ds2:
       driver-class-name: com.mysql.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/test
+      jdbc-url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
       password: ''
       username: root
       type: cn.beecp.BeeDataSource
