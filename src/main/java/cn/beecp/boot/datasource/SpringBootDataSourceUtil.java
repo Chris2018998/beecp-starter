@@ -63,6 +63,13 @@ public class SpringBootDataSourceUtil {
     //combineDefaultDs
     public static final String SP_Multi_DS_Combine_PrimaryDs = "combinePrimaryId";
 
+    //admin user name
+    public static final String SP_DS_Monitor_Admin_Name = "adminName";
+
+    //admin user password
+    public static final String SP_DS_Monitor_Admin_Password = "adminPassword";
+
+
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
 
     public static final String formatDate(Date date) {
