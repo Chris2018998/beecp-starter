@@ -36,16 +36,31 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
     //Register self bean to ioc
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
-        String registerName = "cn.beecp.boot.datasource.DataSourceMonitor";
-        if (!existsBeanDefinition(registerName, registry)) {
+
+        //1:page controller
+        String pageControllerRegName = DataSourceMonitorPage.class.getName();
+        if (!existsBeanDefinition(pageControllerRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(DataSourceMonitor.class);
+            define.setBeanClass(DataSourceMonitorPage.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitor()));
-            registry.registerBeanDefinition(registerName, define);
-            log.info("Register DataSource-monitor({}) with id:{}", define.getBeanClassName(), registerName);
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitorPage()));
+            registry.registerBeanDefinition(pageControllerRegName, define);
+            log.info("Register DataSource-pageController({}) with id:{}", define.getBeanClassName(), pageControllerRegName);
         } else {
-            log.error("BeanDefinition id {} already exists in spring context", registerName);
+            log.error("BeanDefinition id {} already exists in spring context", pageControllerRegName);
+        }
+
+        //2:rest controller
+        String resetControllerRegName = DataSourceMonitorRest.class.getName();
+        if (!existsBeanDefinition(resetControllerRegName, registry)) {
+            GenericBeanDefinition define = new GenericBeanDefinition();
+            define.setBeanClass(DataSourceMonitorRest.class);
+            define.setPrimary(true);
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitorRest()));
+            registry.registerBeanDefinition(resetControllerRegName, define);
+            log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
+        } else {
+            log.error("BeanDefinition id {} already exists in spring context", resetControllerRegName);
         }
     }
 
