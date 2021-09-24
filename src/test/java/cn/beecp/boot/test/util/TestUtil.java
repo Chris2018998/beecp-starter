@@ -184,7 +184,7 @@ public class TestUtil {
         if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from dataSource(" + dsId + ")");
 
         //2:Get pool list to check ds pool whether exist in list
-        String poolInfoListURL = "/dsMonitor/getPoolList";
+        String poolInfoListURL = "/beecp/getPoolList";
         String response = getRest(mockMvc, poolInfoListURL, null, "post");
         List<Map<String, Object>> poolList = string2Obj(response, List.class, Map.class);
         boolean exists = false;
@@ -206,7 +206,7 @@ public class TestUtil {
         paramMap.put("slowInd", (testType == 2) ? "true" : "false");
         String getConResult = getRest(mockMvc, url, paramMap, "get");
 
-        String getSqlListUrl = "/dsMonitor/getSqlTraceList";
+        String getSqlListUrl = "/beecp/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
         List<Map<String, Object>> sqlList = string2Obj(response, List.class, Map.class);
         if (testType == 0) {//normal
