@@ -30,20 +30,23 @@ import java.util.Map;
 
 @Controller
 public class DataSourceMonitorPage {
+    private String chinese_page="/beecp/chinese.html";
+    private String english_page="/beecp/english.html";
+
     @RequestMapping("/beecp")
     public String welcome1() {return "redirect:/beecp/"; }
     @RequestMapping("/beecp/")
-    public String welcome2() { return "/beecp/chinese.html";}
+    public String welcome2() { return chinese_page;}
     @RequestMapping("/beecp/cn")
-    public String openChinesePage1() { return "/beecp/chinese.html";}
+    public String openChinesePage1() { return chinese_page;}
     @RequestMapping("/beecp/chinese")
-    public String openChinesePage2() { return "/beecp/chinese.html";}
+    public String openChinesePage2() { return chinese_page;}
     @RequestMapping("/beecp/index")
-    public String openChinesePage3() {return "/beecp/chinese.html";}
+    public String openChinesePage3() {return chinese_page;}
 
     @RequestMapping("/beecp/en")
-    public String openEnglishPage1() {return "/beecp/english.html";}
+    public String openEnglishPage1() {return english_page;}
     @RequestMapping("/beecp/english")
-    public String openEnglishPage2() {return "/beecp/english.html";}
+    public String openEnglishPage2() {return english_page;}
 
 }
