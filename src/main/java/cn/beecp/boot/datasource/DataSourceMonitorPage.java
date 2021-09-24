@@ -17,10 +17,6 @@ package cn.beecp.boot.datasource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * page Controller
@@ -30,23 +26,42 @@ import java.util.Map;
 
 @Controller
 public class DataSourceMonitorPage {
-    private String chinese_page="/beecp/chinese.html";
-    private String english_page="/beecp/english.html";
+    private String chinese_page = "/beecp/chinese.html";
+    private String english_page = "/beecp/english.html";
 
     @RequestMapping("/beecp")
-    public String welcome1() {return "redirect:/beecp/"; }
+    public String welcome1() {
+        return "redirect:/beecp/";
+    }
+
     @RequestMapping("/beecp/")
-    public String welcome2() { return chinese_page;}
+    public String welcome2() {
+        return chinese_page;
+    }
+
     @RequestMapping("/beecp/cn")
-    public String openChinesePage1() { return chinese_page;}
+    public String openChinesePage1() {
+        return chinese_page;
+    }
+
     @RequestMapping("/beecp/chinese")
-    public String openChinesePage2() { return chinese_page;}
+    public String openChinesePage2() {
+        return chinese_page;
+    }
+
     @RequestMapping("/beecp/index")
-    public String openChinesePage3() {return chinese_page;}
+    public String openChinesePage3() {
+        return chinese_page;
+    }
 
     @RequestMapping("/beecp/en")
-    public String openEnglishPage1() {return english_page;}
+    public String openEnglishPage1() {
+        return english_page;
+    }
+
     @RequestMapping("/beecp/english")
-    public String openEnglishPage2() {return english_page;}
+    public String openEnglishPage2() {
+        return english_page;
+    }
 
 }

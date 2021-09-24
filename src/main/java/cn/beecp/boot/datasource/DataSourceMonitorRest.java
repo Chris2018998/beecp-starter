@@ -74,7 +74,7 @@ public class DataSourceMonitorRest {
             if (vo.getPoolState() == 3) {//POOL_CLOSED
                 collector.removeDataSource(ds.getId());
             } else {
-                Map<String, Object> poolMap=new LinkedHashMap<>(9);
+                Map<String, Object> poolMap = new LinkedHashMap<>(9);
                 poolMap.put("dsId", ds.getId());
                 poolMap.put("poolName", vo.getPoolName());
                 poolMap.put("poolMode", vo.getPoolMode());

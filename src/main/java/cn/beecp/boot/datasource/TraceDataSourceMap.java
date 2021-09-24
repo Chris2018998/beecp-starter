@@ -57,7 +57,7 @@ class TraceDataSourceMap {
     }
 
     public TraceDataSource[] getAllDataSource() {
-        TraceDataSource[] dataSources= new TraceDataSource[dsMap.size()];
+        TraceDataSource[] dataSources = new TraceDataSource[dsMap.size()];
         return dsMap.values().toArray(dataSources);
     }
 }

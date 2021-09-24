@@ -17,14 +17,13 @@ package cn.beecp.boot.datasource.factory;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
-import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.configDataSource;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
-import static cn.beecp.pool.PoolStaticCenter.*;
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
  *  BeeDataSource Springboot Factory
@@ -47,14 +46,18 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
         return new BeeDataSource(config);
     }
+
     private void parseConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
         config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties"));
-        String connectPropertiesCount =getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
+        String connectPropertiesCount = getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
         if (!isBlank(connectPropertiesCount)) {
-            int count =0;
-            try{count = Integer.parseInt(connectPropertiesCount.trim());}catch (Throwable e){}
-            for(int i=1;i<=count;i++)
-                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties."+i));
+            int count = 0;
+            try {
+                count = Integer.parseInt(connectPropertiesCount.trim());
+            } catch (Throwable e) {
+            }
+            for (int i = 1; i <= count; i++)
+                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties." + i));
         }
     }
 }
