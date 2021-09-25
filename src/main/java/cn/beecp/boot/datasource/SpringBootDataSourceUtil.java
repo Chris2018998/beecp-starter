@@ -76,6 +76,10 @@ public class SpringBootDataSourceUtil {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
+    public static final boolean equals(String a, String b) {
+        return a == null ? b == null : a.equals(b);
+    }
+
     public static final boolean isBlank(String str) {
         if (str == null) return true;
         int strLen = str.length();

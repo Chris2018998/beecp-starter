@@ -88,7 +88,11 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
 
         //5:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, isSqlTrace, registry);
+
+        //6:read admin account and password
+        setAdminInfo(environment);
     }
+
 
     /**
      * 1: get datasource config id list

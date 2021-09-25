@@ -23,12 +23,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 /**
  * Controller
@@ -46,7 +51,7 @@ public class DataSourceMonitor {
 
     @RequestMapping("/beecp")
     public String welcome1() {
-        return "redirect:" + chinese_page;
+        return "redirect:/beecp/";
     }
 
     @RequestMapping("/beecp/")
@@ -79,10 +84,29 @@ public class DataSourceMonitor {
         return english_page;
     }
 
-
     /*******************************************************************************
      *                             Below are Rest methods
      *******************************************************************************/
+
+    @RequestMapping("/beecp/login")
+    @ResponseBody
+    public String login(@RequestBody(required = false) Map<String, String> paramMap) {
+        DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
+        if (!isBlank(admin.getUserName())) {
+            String inputUserName = paramMap.get("userName");
+            String inputPassword = paramMap.get("password");
+            if (admin.getUserName().equals(inputUserName) && SpringBootDataSourceUtil.equals(admin.getPassword(), inputPassword)) {
+                ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                HttpServletRequest request = servletRequestAttributes.getRequest();
+                request.getSession().setAttribute(DataSourceMonitorAdmin.SESSION_ATTR_NAME, "Y");
+                return "OK";//passed
+            } else {
+                return "FAIL";
+            }
+        } else {
+            return "OK";//passed
+        }
+    }
 
     @ResponseBody
     @RequestMapping("/beecp/getPoolList")

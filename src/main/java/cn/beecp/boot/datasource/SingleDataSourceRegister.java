@@ -32,8 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.SP_DS_Prefix;
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 import static cn.beecp.pool.PoolStaticCenter.getSetMethodMap;
 import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 
@@ -93,12 +92,28 @@ public class SingleDataSourceRegister {
                 setPropertiesValue(config, setMethodMap, setValueMap);
             }
 
-            //6:create sql-trace pool
+            //6:read admin account and password
+            setAdminInfo(environment);
+
+            //7:create sql-trace pool
             SqlTracePool tracePool = SqlTracePool.getInstance();
             tracePool.init(config);
             return tracePool.isSqlTrace();
         } catch (Exception e) {
             throw new SpringBootDataSourceException("Failed to set config value to sql-trace pool", e);
         }
+    }
+
+    /**
+     * read admin info
+     *
+     * @param environment Springboot environment
+     */
+    protected void setAdminInfo(Environment environment) {
+        String adminName = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Admin_Account);
+        String adminPassword = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Admin_Password);
+        DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
+        admin.setUserName(adminName);
+        admin.setPassword(adminPassword);
     }
 }
