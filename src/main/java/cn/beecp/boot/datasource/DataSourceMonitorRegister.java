@@ -37,26 +37,13 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
 
-        //1:page controller
-        String pageControllerRegName = DataSourceMonitorPage.class.getName();
-        if (!existsBeanDefinition(pageControllerRegName, registry)) {
-            GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(DataSourceMonitorPage.class);
-            define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitorPage()));
-            registry.registerBeanDefinition(pageControllerRegName, define);
-            log.info("Register DataSource-pageController({}) with id:{}", define.getBeanClassName(), pageControllerRegName);
-        } else {
-            log.error("BeanDefinition id {} already exists in spring context", pageControllerRegName);
-        }
-
-        //2:rest controller
-        String resetControllerRegName = DataSourceMonitorRest.class.getName();
+        // monitor controller
+        String resetControllerRegName = DataSourceMonitor.class.getName();
         if (!existsBeanDefinition(resetControllerRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(DataSourceMonitorRest.class);
+            define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitorRest()));
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitor()));
             registry.registerBeanDefinition(resetControllerRegName, define);
             log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
