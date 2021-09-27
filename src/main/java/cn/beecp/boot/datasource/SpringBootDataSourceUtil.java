@@ -42,6 +42,9 @@ public class SpringBootDataSourceUtil {
     //Spring dataSource configuration prefix-key name
     public static final String SP_DS_Prefix = "spring.datasource";
 
+    //Single-DataSource config id list on springboot
+    public static final String SP_Single_DS_Id = "dsId";
+
     //Multi-DataSource config id list on springboot
     public static final String SP_Multi_DS_Ids = "dsIds";
 

@@ -55,7 +55,9 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 public class SingleDataSourceRegister {
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        String dsId = "beeDs";
+        String dsId = getConfigValue(environment, SP_DS_Prefix, SP_Single_DS_Id);
+        if(isBlank(dsId))dsId = "beeDs";//default Id
+
         boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();
         XADataSource ds = (XADataSource) dsFactory.getObjectInstance(environment, dsId, SP_DS_Prefix);
