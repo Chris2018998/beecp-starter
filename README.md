@@ -52,7 +52,7 @@ application.properties文件配置
 
 ```yml
 #按单加载的列表，为数据源的名字清单
-spring.datasource.ds-ids=ds1,ds2,ds3 
+spring.datasource.dsId=ds1,ds2,ds3 
     
 #第1数据源
 spring.datasource.ds1.primary=true  
@@ -82,7 +82,7 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
  
 | 配置项                        |      说明                             | 备注                                  |
 |------------------------------|-------------------------------------- |---------------------------------------|    
-|dsIds                         | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
+|dsId                          | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
 |type                          | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
 |primary                       | 是否为首要数据源,不配置为false           |                                        |
 |jndiName                      | 数据源Jndi名，数据源来自部署容器本身      | 此项配置与type配置互斥                   |
