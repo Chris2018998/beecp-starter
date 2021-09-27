@@ -56,7 +56,7 @@ class DataSourceBuilder {
      * @return a dataSource
      */
     public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment) {
-        String jndiNameTex = getConfigValue(environment, dsPrefix, SP_Multi_DS_Jndi);
+        String jndiNameTex = getConfigValue(environment, dsPrefix, SP_DS_Jndi);
         if (!SpringBootDataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
             return lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
@@ -88,9 +88,9 @@ class DataSourceBuilder {
     //create raw dataSource instance by config class name
     private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment) {
         //1:load dataSource class
-        String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_Multi_DS_Type);
+        String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_DS_Type);
         if (SpringBootDataSourceUtil.isBlank(dataSourceClassName))
-            dataSourceClassName = SP_Multi_DS_Default_Type;//BeeDataSource is default
+            dataSourceClassName = SP_DS_Default_Type;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();
 

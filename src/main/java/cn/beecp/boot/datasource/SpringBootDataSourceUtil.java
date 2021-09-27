@@ -42,34 +42,31 @@ public class SpringBootDataSourceUtil {
     //Spring dataSource configuration prefix-key name
     public static final String SP_DS_Prefix = "spring.datasource";
 
-    //Single-DataSource config id list on springboot
-    public static final String SP_Single_DS_Id = "dsId";
-
-    //Multi-DataSource config id list on springboot
-    public static final String SP_Multi_DS_Ids = "dsIds";
+    //DataSource config id list on springboot
+    public static final String SP_DS_Id = "dsId";
 
     //Spring jndi dataSource configuration key name
-    public static final String SP_Multi_DS_Jndi = "jndiName";
+    public static final String SP_DS_Jndi = "jndiName";
 
     //indicator:Spring dataSource register as primary datasource
-    public static final String SP_Multi_DS_Primary = "primary";
+    public static final String SP_DS_Primary = "primary";
 
     //Datasource class name
-    public static final String SP_Multi_DS_Type = "type";
+    public static final String SP_DS_Type = "type";
 
     //Default DataSourceName
-    public static final String SP_Multi_DS_Default_Type = "cn.beecp.BeeDataSource";
+    public static final String SP_DS_Default_Type = "cn.beecp.BeeDataSource";
 
     //combineId
-    public static final String SP_Multi_DS_CombineId = "combineId";
+    public static final String SP_DS_CombineId = "combineId";
 
     //combineDefaultDs
-    public static final String SP_Multi_DS_Combine_PrimaryDs = "combinePrimaryId";
+    public static final String SP_DS_Combine_PrimaryDs = "combinePrimaryId";
 
-    //admin user name
+    //monitor admin user id
     public static final String SP_DS_Monitor_UserId = "monitorUserId";
 
-    //admin user password
+    //monitor admin user password
     public static final String SP_DS_Monitor_Password = "monitorPassword";
 
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);

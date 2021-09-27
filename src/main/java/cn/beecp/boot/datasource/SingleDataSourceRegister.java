@@ -39,6 +39,7 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 /*
  *  config example
  *
+ * spring.datasource.dsId=beeDs
  * spring.datasource.type=cn.beecp.BeeDataSource
  * spring.datasource.username=root
  * spring.datasource.password=
@@ -55,8 +56,8 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 public class SingleDataSourceRegister {
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        String dsId = getConfigValue(environment, SP_DS_Prefix, SP_Single_DS_Id);
-        if(isBlank(dsId))dsId = "beeDs";//default Id
+        String dsId = getConfigValue(environment, SP_DS_Prefix, SP_DS_Id);
+        if (isBlank(dsId)) dsId = "beeDs";//default ds Id
 
         boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();

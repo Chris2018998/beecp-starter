@@ -41,8 +41,9 @@ public class DataSourceMonitorFilter implements Filter {
     public void doFilter(ServletRequest var1, ServletResponse var2, FilterChain var3) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) var1;
         HttpSession session = req.getSession();
-        Object attributeVal = session.getAttribute(DataSourceMonitorAdmin.SESSION_ATTR_NAME);
-        if ("Y".equals(attributeVal) || isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(req.getServletPath())) {
+        Object attributeVal = session.getAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME);
+        String servletPath = req.getServletPath();
+        if ("Y".equals(attributeVal) || isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(servletPath)) {
             var3.doFilter(var1, var2);
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(var1, var2);

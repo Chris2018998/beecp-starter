@@ -22,7 +22,7 @@ package cn.beecp.boot.datasource;
  */
 
 class DataSourceMonitorAdmin {
-    public static final String SESSION_ATTR_NAME = DataSourceMonitorAdmin.class.getName();
+    public static final String PASSED_ATTR_NAME = DataSourceMonitorAdmin.class.getName();
     public static final DataSourceMonitorAdmin singleInstance = new DataSourceMonitorAdmin();
 
     private String userId;

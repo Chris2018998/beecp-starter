@@ -11,7 +11,7 @@ spring:
     sql-trace-timeout: 60000
     sql-trace-timeout-scan-period: 6000
     sql-exec-alert-action: cn.beecp.boot.test.util.TestAlert
-    ds-ids: ds1,ds2
+    dsId: ds1,ds2
     combineId: combineDs
     combinePrimaryId: ds1
     ds1:

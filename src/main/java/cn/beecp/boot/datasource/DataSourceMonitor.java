@@ -87,7 +87,6 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/login")
     public String login(@RequestBody Map<String, String> paramMap) {
-        System.out.println("login:");
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
         if (!isBlank(admin.getUserId())) {
             String userId = paramMap.get("userId");
@@ -95,7 +94,7 @@ public class DataSourceMonitor {
             if (admin.getUserId().equals(userId) && SpringBootDataSourceUtil.equals(admin.getPassword(), password)) {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = servletRequestAttributes.getRequest();
-                request.getSession().setAttribute(DataSourceMonitorAdmin.SESSION_ATTR_NAME, "Y");
+                request.getSession().setAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME, "Y");
                 return "OK";//passed
             } else {
                 return "FAIL";
