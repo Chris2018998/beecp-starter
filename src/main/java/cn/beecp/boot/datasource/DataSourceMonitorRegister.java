@@ -37,7 +37,7 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
 
-        // monitor controller
+        //1: register monitor controller
         String resetControllerRegName = DataSourceMonitor.class.getName();
         if (!existsBeanDefinition(resetControllerRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
@@ -48,6 +48,19 @@ public class DataSourceMonitorRegister implements ImportBeanDefinitionRegistrar 
             log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
             log.error("BeanDefinition id {} already exists in spring context", resetControllerRegName);
+        }
+
+        //2: register monitor controller filter
+        String resetControllerFilterRegName = DataSourceMonitorFilter.class.getName();
+        if (!existsBeanDefinition(resetControllerFilterRegName, registry)) {
+            GenericBeanDefinition define = new GenericBeanDefinition();
+            define.setBeanClass(DataSourceMonitorFilter.class);
+            define.setPrimary(true);
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitorFilter()));
+            registry.registerBeanDefinition(resetControllerFilterRegName, define);
+            log.info("Register DataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
+        } else {
+            log.error("BeanDefinition id {} already exists in spring context", resetControllerFilterRegName);
         }
     }
 

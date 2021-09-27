@@ -20,6 +20,7 @@ import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -69,11 +70,6 @@ public class DataSourceMonitor {
         return chinese_page;
     }
 
-    @RequestMapping("/beecp/index")
-    public String openChinesePage3() {
-        return chinese_page;
-    }
-
     @RequestMapping("/beecp/en")
     public String openEnglishPage1() {
         return english_page;
@@ -88,14 +84,15 @@ public class DataSourceMonitor {
      *                             Below are Rest methods
      *******************************************************************************/
 
-    @RequestMapping("/beecp/login")
     @ResponseBody
-    public String login(@RequestBody(required = false) Map<String, String> paramMap) {
+    @PostMapping("/beecp/login")
+    public String login(@RequestBody Map<String, String> paramMap) {
+        System.out.println("login:");
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        if (!isBlank(admin.getUserName())) {
-            String inputUserName = paramMap.get("userName");
-            String inputPassword = paramMap.get("password");
-            if (admin.getUserName().equals(inputUserName) && SpringBootDataSourceUtil.equals(admin.getPassword(), inputPassword)) {
+        if (!isBlank(admin.getUserId())) {
+            String userId = paramMap.get("userId");
+            String password = paramMap.get("password");
+            if (admin.getUserId().equals(userId) && SpringBootDataSourceUtil.equals(admin.getPassword(), password)) {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = servletRequestAttributes.getRequest();
                 request.getSession().setAttribute(DataSourceMonitorAdmin.SESSION_ATTR_NAME, "Y");
@@ -109,19 +106,19 @@ public class DataSourceMonitor {
     }
 
     @ResponseBody
-    @RequestMapping("/beecp/getPoolList")
+    @PostMapping("/beecp/getPoolList")
     public List<Map<String, Object>> getPoolList() {
         return getPoolInfoList();
     }
 
     @ResponseBody
-    @RequestMapping("/beecp/getSqlTraceList")
+    @PostMapping("/beecp/getSqlTraceList")
     public Object getSqTraceList() {
         return SqlTracePool.getInstance().getTraceQueue();
     }
 
     @ResponseBody
-    @RequestMapping("/beecp/clearAllConnections")
+    @PostMapping("/beecp/clearAllConnections")
     public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
         if (parameterMap != null) {
             TraceDataSource ds = collector.getDataSource(parameterMap.get("dsId"));

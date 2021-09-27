@@ -110,10 +110,10 @@ public class SingleDataSourceRegister {
      * @param environment Springboot environment
      */
     protected void setAdminInfo(Environment environment) {
-        String adminName = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Admin_Account);
-        String adminPassword = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Admin_Password);
+        String adminName = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_UserId);
+        String adminPassword = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Password);
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        admin.setUserName(adminName);
+        admin.setUserId(adminName);
         admin.setPassword(adminPassword);
     }
 }

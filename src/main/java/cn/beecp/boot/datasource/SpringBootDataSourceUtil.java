@@ -64,11 +64,10 @@ public class SpringBootDataSourceUtil {
     public static final String SP_Multi_DS_Combine_PrimaryDs = "combinePrimaryId";
 
     //admin user name
-    public static final String SP_DS_Monitor_Admin_Account = "adminAccount";
+    public static final String SP_DS_Monitor_UserId = "monitorUserId";
 
     //admin user password
-    public static final String SP_DS_Monitor_Admin_Password = "adminPassword";
-
+    public static final String SP_DS_Monitor_Password = "monitorPassword";
 
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
 

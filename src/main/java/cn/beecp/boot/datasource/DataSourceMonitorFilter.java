@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -27,21 +28,33 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
  *
  * @author Chris.Liao
  */
+@WebFilter(filterName = "beecpMonitorFilter", urlPatterns = "/beecp/*")
 public class DataSourceMonitorFilter implements Filter {
-    public void init(FilterConfig var1) throws ServletException {
-    }
+    private String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
 
     public void destroy() {
+    }
+
+    public void init(FilterConfig var1) throws ServletException {
     }
 
     public void doFilter(ServletRequest var1, ServletResponse var2, FilterChain var3) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) var1;
         HttpSession session = req.getSession();
         Object attributeVal = session.getAttribute(DataSourceMonitorAdmin.SESSION_ATTR_NAME);
-        if ("Y".equals(attributeVal) || isBlank(DataSourceMonitorAdmin.singleInstance.getUserName())) {
+        if ("Y".equals(attributeVal) || isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(req.getServletPath())) {
             var3.doFilter(var1, var2);
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(var1, var2);
         }
+    }
+
+    private boolean isExcludeUrl(String spath) {
+        for (String str : excludeUrls) {
+            if (spath.indexOf(str) != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

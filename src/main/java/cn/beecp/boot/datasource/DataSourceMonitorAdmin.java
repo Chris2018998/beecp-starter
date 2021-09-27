@@ -21,18 +21,19 @@ package cn.beecp.boot.datasource;
  * @author Chris.Liao
  */
 
-public class DataSourceMonitorAdmin {
+class DataSourceMonitorAdmin {
     public static final String SESSION_ATTR_NAME = DataSourceMonitorAdmin.class.getName();
-    static final DataSourceMonitorAdmin singleInstance = new DataSourceMonitorAdmin();
-    private String userName;
+    public static final DataSourceMonitorAdmin singleInstance = new DataSourceMonitorAdmin();
+
+    private String userId;
     private String password;
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPassword() {
@@ -42,6 +43,5 @@ public class DataSourceMonitorAdmin {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }
 
