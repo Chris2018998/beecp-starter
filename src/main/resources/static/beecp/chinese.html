@@ -85,7 +85,7 @@
 
         $("#pool_Refresh").click(function () {
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: poolURL,
                 dataType: 'json',
                 success: function (data) {
@@ -124,7 +124,7 @@
 
         $("#sql-refresh").click(function () {
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: sqlURL,
                 dataType: 'json',
                 success: function (data) {

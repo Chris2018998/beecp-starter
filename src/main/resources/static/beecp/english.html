@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>BeeCP Monitor</title>
+    <title>Beecp Monitor</title>
     <link href="css/monitor.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
@@ -83,7 +83,7 @@
         $('#sql-monitorTable').tablesorter();
         $("#pool_Refresh").click(function () {
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: poolURL,
                 dataType: 'json',
                 success: function (data) {
@@ -121,7 +121,7 @@
 
         $("#sql-refresh").click(function () {
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: sqlURL,
                 dataType: 'json',
                 success: function (data) {

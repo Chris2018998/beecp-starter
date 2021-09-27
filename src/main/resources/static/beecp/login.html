@@ -2,24 +2,172 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>beecp admin login</title>
-    <link href="css/login.css" rel="stylesheet" type="text/css"/>
+    <title>monitor login</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html,body {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7fafc;
+        }
+        .wrapper {
+            margin: 0 auto;
+            width: 884px;
+        }
+        .loginBox {
+            background-color: #F0F4F6;
+            /*上divcolor*/
+            border: 1px solid #BfD6E1;
+            border-radius: 5px;
+            color: #444;
+            font: 14px 'Microsoft YaHei', '微软雅黑';
+            margin: 0 auto;
+            width: 388px
+        }
+        .loginBox .loginBoxCenter {
+            border-bottom: 1px solid #DDE0E8;
+            padding: 24px;
+        }
+        .loginBox .loginBoxCenter p {
+            margin-bottom: 10px
+        }
+		.loginBox .loginHead {
+            border-top: 0px solid #FFF;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+			font: 30px 'Microsoft YaHei', '微软雅黑';
+            line-height: 28px;
+            overflow: hidden;
+            padding: 20px 24px;
+			text-align:center;
+            vertical-align: center;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+        }
+        .loginBox .loginBoxButtons {
+            /*background-color: #F0F4F6;*/
+            /*下divcolor*/
+            border-top: 0px solid #FFF;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            line-height: 28px;
+            overflow: hidden;
+            padding: 20px 24px;
+            vertical-align: center;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+        }
+        .loginBox .loginInput {
+            border: 1px solid #D2D9dC;
+            border-radius: 2px;
+            color: #444;
+            font: 12px 'Microsoft YaHei', '微软雅黑';
+            padding: 8px 14px;
+            margin-bottom: 8px;
+            width: 310px;
+        }
+        .loginBox .loginInput:FOCUS {
+            border: 1px solid #B7D4EA;
+            box-shadow: 0 0 8px #B7D4EA;
+        }
+        .loginBox .loginBtn {
+            background-image: -moz-linear-gradient(to bottom, blue, #85CFEE);
+            border: 1px solid #98CCE7;
+            border-radius: 20px;
+            box-shadow: inset rgba(255, 255, 255, 0.6) 0 1px 1px, rgba(0, 0, 0, 0.1) 0 1px 1px;
+            color: #444;
+            /*登录*/
+            cursor: pointer;
+            float: right;
+            font: bold 13px Arial;
+            padding: 10px 50px;
+        }
+        .loginBox .loginBtn:HOVER {
+            background-image: -moz-linear-gradient(to top, blue, #85CFEE);
+        }
+    </style>
 </head> 
  <body> 
   <div class="wrapper"> 
-   <form action="/chaos/EvilEmail.html" method="post"> 
     <div class="loginBox"> 
+	 <div class="loginHead"> 
+		   Monitor Login
+     </div>  
      <div class="loginBoxCenter"> 
-      <p><label for="username">UserName：</label></p> 
-      <p><input type="text" id="text" name="text" class="loginInput" autofocus="autofocus" required="required" autocomplete="off" placeholder="input userName" value="" /></p> 
-      <p><label for="password">Password：</label></p> 
-      <p><input type="password" id="password" name="password" class="loginInput" required="required" placeholder="input password" value="" /></p> 
+      <p><label>UserId：</label></p>
+      <p><input type="text" id="userId" name="userId" class="loginInput"  maxlength="50" autofocus="autofocus" required="required" autocomplete="off" /></p>
+      <p><label>Password：</label></p>
+      <p><input type="password" id="password" name="password" class="loginInput" maxlength="50" /></p>
      </div> 
      <div class="loginBoxButtons"> 
-      <button class="loginBtn">Login</button> 
+      <button id ="loginButton" class="loginBtn" onclick="login()">Login</button>
      </div> 
     </div> 
-   </form> 
-  </div>  
+  </div>
+  <script type="text/javascript">
+      function getContextPath() {
+          var webFullPath = window.document.location.href;
+          var strPath = window.document.location.pathname;
+          var pos = webFullPath.indexOf(strPath);
+          var webHostPath = webFullPath.substring(0, pos);
+          var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
+          return (webHostPath + projectName);
+      }
+      function createXMLHttpRequest() {
+          if(window.XMLHttpRequest) {
+              return (new XMLHttpRequest());
+          }else{
+              var arr_t = new Array(
+                  "MSXML2.XMLHTTP.4.0",
+                  "MSXML2.XMLHTTP.3.0",
+                  "MSXML2.XMLHTTP.2.6",
+                  "MSXML2.XMLHTTP",
+                  "Microsoft.XMLHTTP",
+                  "MSXML.XMLHTTP");
+              for(var i = 0; i < arr_t.length; i++) {
+                  try {
+                      xmlhttp_ver = arr_t[i];
+                      return new ActiveXObject(arr_t[i]);
+                  } catch(e) {}
+              }
+          }
+          return null;
+      }
+
+      function login() {
+          var inputUserId=document.getElementById("userId").value;
+          var inputPassword=document.getElementById("password").value;
+          if(inputUserId ==""){alert("UserId can't be null");return;}
+          var data={userId:inputUserId,password:inputPassword};
+          var contextPath=getContextPath();
+          var loginURL = contextPath+'/beecp/login';
+
+          var xmlHttp = createXMLHttpRequest();
+          xmlHttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status==200) {
+                   var result=this.responseText;
+                   if("OK"==result){
+                       window.location.href=contextPath+"/beecp/";
+                   }else{
+                       alert("Error userId or password");
+                   }
+              }
+          }
+
+          xmlHttp.open("POST", loginURL, true);
+          xmlHttp.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+          xmlHttp.send(JSON.stringify(data));
+      }
+  </script>
  </body>
 </html>
