@@ -1,5 +1,19 @@
-BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">小蜜蜂连接池</a>在Springboot的装载器，通过<strong>标签+配置文件</strong>的方式启动一个或多个数据源，同时提供监控界面。[如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou(
-https://github.com/baomidou/dynamic-datasource-spring-boot-starter)]
+<img height="20px" width="20px" align="bottom" src="https://github.com/Chris2018998/BeeCP/blob/master/doc/individual/bee.png"></img>
+
+<p align="left">
+ <a><img src="https://img.shields.io/badge/JDK-1.8+-green.svg"></a>
+ <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
+ <a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
+ <a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
+</p>
+
+## :coffee: 简介
+
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>在Springboot的数据源管理工具，通过它可配置一个或多个数据源，且提供监控界面
+
+[*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)</font>]
+
+## :arrow_down: 下载 
 
 Maven坐标(Java8)
 ```xml
@@ -9,9 +23,8 @@ Maven坐标(Java8)
    <version>1.6.0</version>
 </dependency>
 ```
----
 
-##### 标签介绍
+## :book: 标签介绍
 
 | 标签                     | 备注                                                                 |
 | ----------------------- | ------------------------------------------------------------------   |
@@ -19,9 +32,41 @@ Maven坐标(Java8)
 | @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况                  |
 | @DataSourceId           | 数据源动态切换标签                                                      |
 
----
 
-##### 单源例子
+## :computer: 监控画面
+
+监控标签启用后，通过访问地址:http://IP:port/xxxx/beecp  可打开监控界面（其中xxxx为项目部署名）
+   
+ <img height="50%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/login.png"></img>
+ 
+<img height="100%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
+
+<img height="100%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
+
+
+## 配置项  
+ 
+| 配置项                        |      说明                             | 备注                                  |
+|------------------------------|-------------------------------------- |---------------------------------------|    
+|dsId                          | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
+|type                          | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
+|primary                       | 是否为首要数据源,不配置为false           |                                        |
+|jndiName                      | 数据源Jndi名，数据源来自部署容器本身      | 此项配置与type配置互斥                   |
+
+## SQL监控配置
+
+```yml
+spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
+spring.datasource.sql-show=true                       #是否打印SQL
+spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
+spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
+spring.datasource.sql-exec-slow-time=5000             #SQL执行时间警告值（毫秒） 
+spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
+spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.datasource.sqltrace.SqlTraceAlert)
+
+```
+
+## 单源例子
 
 若不启用@EnableMultiDataSource标签，启动器则自动尝试装载单源，前提系统ClassPath中存在小蜜蜂数据源类，适用于单一数据源的情况,参考配置如下
 
@@ -42,9 +87,8 @@ spring.datasource.xxx=value
  
 完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsDemo_JPA.rar
 
----
 
-#####  多源例子
+## 多源例子
 
 若启用@EnableMultiDataSource标签，则表示工具按多源配置的方式装载数据源，配置个数不限制，但最少一个。
 
@@ -76,60 +120,10 @@ spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 ```
 完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsDemo_JPA.rar
 
----
- 
-###  多源配置
- 
-| 配置项                        |      说明                             | 备注                                  |
-|------------------------------|-------------------------------------- |---------------------------------------|    
-|dsId                          | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
-|type                          | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
-|primary                       | 是否为首要数据源,不配置为false           |                                        |
-|jndiName                      | 数据源Jndi名，数据源来自部署容器本身      | 此项配置与type配置互斥                   |
 
-数据源配置工厂如下
-
-```java
-public interface SpringBootDataSourceFactory {
-
-    Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception;
-}
-```
----
-
-###  监控界面
-
-
-监控标签启用后，访问页面的地址为:http://IP:port/xxxx/BeeCPMonitor.html（其中xxxx为项目名）效果页面如下
-   
-   
-<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
-
-
-<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
-
----
-
-###  SQL监控配置
-
-```yml
-spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
-spring.datasource.sql-show=true                       #是否打印SQL
-spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
-spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
-spring.datasource.sql-exec-slow-time=5000            #SQL执行时间警告值（毫秒） 
-spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
-spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.datasource.sqltrace.SqlTraceAlert)
-
-```
-
----
-### 捐助
+## :sparkling_heart:捐助
 
 如果您觉得此作品不错，可以捐赠请我们喝杯咖啡吧，在此表示感谢^_^。
 
 <img height="50%" width="50%" src="https://github.com/Chris2018998/BeeCP/blob/master/doc/individual/donate.png"> 
 
-
-  
-  
