@@ -95,7 +95,7 @@ class DataSourceBuilder {
             dataSourceClassName = dataSourceClassName.trim();
 
         //2:create dataSource
-        Object ds = null;
+        Object ds;
         Class dataSourceClass = loadClass(dsId, dataSourceClassName);
         SpringBootDataSourceFactory dsFactory = factoryMap.get(dataSourceClass);
         if (dsFactory == null && SpringBootDataSourceFactory.class.isAssignableFrom(dataSourceClass))
@@ -116,7 +116,6 @@ class DataSourceBuilder {
         } else {
             throw new SpringBootDataSourceException("DataSource(" + dsId + ")-target type is not a valid data source type");
         }
-
         return new DataSourceHolder(dsId, ds);
     }
 

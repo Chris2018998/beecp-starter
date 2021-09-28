@@ -44,8 +44,8 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 @Controller
 public class DataSourceMonitor {
-    private final String chinese_page = "/beecp/chinese.html";
-    private final String english_page = "/beecp/english.html";
+    private final static String chinese_page = "/beecp/chinese.html";
+    private final static String english_page = "/beecp/english.html";
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private List<Map<String, Object>> poolInfoList = new LinkedList<Map<String, Object>>();
     private TraceDataSourceMap collector = TraceDataSourceMap.getInstance();
@@ -81,8 +81,8 @@ public class DataSourceMonitor {
     }
 
     /*******************************************************************************
-     *                             Below are Rest methods
-     *******************************************************************************/
+     /*                         Below are Rest methods
+     /*******************************************************************************/
 
     @ResponseBody
     @PostMapping("/beecp/login")

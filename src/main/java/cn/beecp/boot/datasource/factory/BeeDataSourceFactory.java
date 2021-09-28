@@ -17,8 +17,6 @@ package cn.beecp.boot.datasource.factory;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.configDataSource;
@@ -37,17 +35,16 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  *  @author Chris.Liao
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception {
         BeeDataSourceConfig config = new BeeDataSourceConfig();
         configDataSource(config, environment, dsId, dsConfigPrefix);
-        parseConnectPropertiesConfig(config, environment, dsConfigPrefix);
+        setConnectPropertiesConfig(config, environment, dsConfigPrefix);
 
         return new BeeDataSource(config);
     }
 
-    private void parseConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
+    private void setConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
         config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties"));
         String connectPropertiesCount = getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
         if (!isBlank(connectPropertiesCount)) {
