@@ -39,12 +39,12 @@ Maven坐标(Java8)
    
  <img height="50%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/login.png"></img>
  
-<img height="100%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
 
-<img height="100%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
+<img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
 
 
-## 配置项  
+## :capital_abcd: 配置项  
  
 | 配置项                        |      说明                             | 备注                                  |
 |------------------------------|-------------------------------------- |---------------------------------------|    
@@ -53,7 +53,7 @@ Maven坐标(Java8)
 |primary                       | 是否为首要数据源,不配置为false           |                                        |
 |jndiName                      | 数据源Jndi名，数据源来自部署容器本身      | 此项配置与type配置互斥                   |
 
-## SQL监控配置
+## :capital_abcd: SQL监控配置
 
 ```yml
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
