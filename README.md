@@ -1,5 +1,4 @@
 <img height="20px" width="20px" align="bottom" src="https://github.com/Chris2018998/BeeCP/blob/master/doc/individual/bee.png"></img>
-
 <p align="left">
  <a><img src="https://img.shields.io/badge/JDK-1.8+-green.svg"></a>
  <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
@@ -11,7 +10,7 @@
 
 BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>在Springboot的数据源管理工具，通过它可配置一个或多个数据源，且提供监控界面
 
-[*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)</font>]
+[*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
 
 ## :arrow_down: 下载 
 
