@@ -27,7 +27,7 @@ Maven坐标(Java8)
 
 监控标签启用后，通过访问地址:http://IP:port/xxxx/beecp  可打开监控界面（其中xxxx为项目部署名）
    
- <img height="50%" width="50%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/login.png"></img>
+ <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/login.png"></img>
  
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor1.png"></img>
 
