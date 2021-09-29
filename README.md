@@ -34,28 +34,74 @@ Maven坐标(Java8)
 <img height="100%" width="100%" src="https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/monitor2.png"></img>
 
 
-## :book: 标签介绍
+## :book: 应用标签
 
 | 标签                     | 备注                                                                 |
 | ----------------------- | ------------------------------------------------------------------   |
-| @EnableMultiDataSource  | 多数据源启用标签，一定要配置在@SpringBootApplication<strong>之前</strong> |
-| @EnableDataSourceMonitor| 连接池监控启用标签，可通过界面实时查看连接情况和SQL执行情况                  |
-| @DataSourceId           | 数据源动态切换标签                                                      |
+|@EnableMultiDataSource   |多数据源启用标签，一定要配置在@SpringBootApplication<strong>之前</strong> |
+|@EnableDataSourceMonitor |连接池监控启用标签，否则监控界面无法打开                                   |
+|@DataSourceId            |组合数据源应用时，可指定数据源id                                          |
 
 
-
-
-
-## :capital_abcd: 配置项  
+## :book: 数据源配置项  
  
-| 配置项                        |      说明                             | 备注                                  |
-|------------------------------|-------------------------------------- |---------------------------------------|    
-|dsId                          | 数据源配置名单表,名字作为数据源的Ioc注册名 | 必须提供                                |      
-|type                          | 数据源类名,必须含有无参构造函数           | 其他数据源必须提供，则会默认为小蜜蜂池的配置 |
-|primary                       | 是否为首要数据源,不配置为false           |                                        |
-|jndiName                      | 数据源Jndi名，数据源来自部署容器本身      | 此项配置与type配置互斥                   |
+###### :capital_abcd: dsId
+ 
+数据源Id,作为BeanId注册进Spring容器，在多源（@EnableMultiDataSource）时可以配置多个，用逗号隔开例如：ds1,ds2
+ 
+###### :1234: type
+ 
+数据源类名，如果不填写则默认为：cn.beecp.BeeDataSource,此项配置可用于支持其他数据源
 
-## :capital_abcd: SQL监控配置
+###### :capital_abcd: primary
+ 
+是否注册为默认数据标记
+ 
+###### :1234: jndiName
+ 
+数据源Jndi名，数据源来自部署容器本身，此项配置与type配置互斥
+
+:sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP">BeeCP</a>属性清单*
+
+## :book: 监控项配置 
+
+###### :capital_abcd: spring.datasource.monitorUserId
+
+监控登陆用户Id，此项不配置则表示无需登陆
+
+###### :1234: spring.datasource.monitorPassword
+
+监控登陆用户口令
+ 
+###### :capital_abcd: spring.datasource.sql-trace
+
+sql执行监控开关，true则表示打开
+
+###### :1234: spring.datasource.sql-show
+
+后端是否打印sql的开关
+
+###### :capital_abcd: spring.datasource.sql-trace-max-size
+
+sql监控池的大小（1000以内）
+
+###### :1234: spring.datasource.sql-trace-timeout
+
+sql处于监控池的最大时间，单位：毫秒
+
+###### :capital_abcd: spring.datasource.sql-exec-slow-time
+
+低效SqL执行的时间阀值，单位：毫秒
+
+###### :capital_abcd: spring.datasource.sql-trace-timeout-scan-period
+
+sql监控池定时扫描间隔时间，在池中时间大于sql-trace-timeout则被清理，单位：毫秒
+
+###### :1234: spring.datasource.sql-exec-alert-action
+
+sql执行预警触发类名（需要扩展类：cn.beecp.boot.datasource.sqltrace.SqlTraceAlert），低效与错误sql触发
+
+###### :point_right: 参考例子
 
 ```yml
 spring.datasource.sql-trace=true                      #开启动SQL监控(默认为True)
@@ -68,7 +114,9 @@ spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值�
 
 ```
 
-## 单源例子
+
+
+## :tractor: 单源例子
 
 若不启用@EnableMultiDataSource标签，启动器则自动尝试装载单源，前提系统ClassPath中存在小蜜蜂数据源类，适用于单一数据源的情况,参考配置如下
 
@@ -90,7 +138,7 @@ spring.datasource.xxx=value
 完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsDemo_JPA.rar
 
 
-## 多源例子
+## :tractor: 多源例子
 
 若启用@EnableMultiDataSource标签，则表示工具按多源配置的方式装载数据源，配置个数不限制，但最少一个。
 
