@@ -83,14 +83,6 @@ li a {
     width: 500px;
 }
 
-.sqlExecSlow {
-    background-color: #CCFF66;
-}
-
-.sqlExecFail {
-    background-color: #FFCC00;
-}
-
 /* tables */
 table.tablesorter {
     width: 100%;
@@ -137,3 +129,37 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
     background-color: #8dbdd8;
 }
+
+input[type='button']{
+	height:25px;
+	line-height:15px;
+	vertical-align:middle;
+	text-align:center;
+}
+
+input[type='text']{
+	height:20px;
+	line-height:10px;
+	outline-style: none;
+	border: 1px solid #ccc; 
+	vertical-align:middle;
+	text-align:center;
+}
+select{
+	height:25px;
+	line-height:10px;
+	outline-style: none;
+	border: 1px solid #ccc; 
+	vertical-align:middle;
+	text-align:center;
+}
+
+.sqlExecSlow {
+    background-color: #CCFF66;
+}
+
+.sqlExecFail {
+    background-color: #FFCC00;
+}
+
+

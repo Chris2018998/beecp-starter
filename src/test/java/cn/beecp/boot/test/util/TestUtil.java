@@ -184,7 +184,7 @@ public class TestUtil {
         if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from dataSource(" + dsId + ")");
 
         //2:Get pool list to check ds pool whether exist in list
-        String poolInfoListURL = "/beecp/getPoolList";
+        String poolInfoListURL = "/beecp/getDataSourceList";
         String response = getRest(mockMvc, poolInfoListURL, null, "post");
         List<Map<String, Object>> poolList = string2Obj(response, List.class, Map.class);
         boolean exists = false;

@@ -105,33 +105,14 @@ public class DataSourceMonitor {
     }
 
     @ResponseBody
-    @PostMapping("/beecp/getPoolList")
-    public List<Map<String, Object>> getPoolList() {
-        return getPoolInfoList();
-    }
-
-    @ResponseBody
     @PostMapping("/beecp/getSqlTraceList")
     public Object getSqTraceList() {
         return SqlTracePool.getInstance().getTraceQueue();
     }
 
     @ResponseBody
-    @PostMapping("/beecp/clearAllConnections")
-    public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
-        if (parameterMap != null) {
-            TraceDataSource ds = collector.getDataSource(parameterMap.get("dsId"));
-            if (ds != null) {
-                try {
-                    ds.clearAllConnections();
-                } catch (SQLException e) {
-                    log.error("Failed to reset datasource({}) connection pool", ds.getId());
-                }
-            }
-        }
-    }
-
-    private List<Map<String, Object>> getPoolInfoList() {
+    @PostMapping("/beecp/getDataSourceList")
+    public List<Map<String, Object>> getDataSourceList() {
         poolInfoList.clear();
         for (TraceDataSource ds : collector.getAllDataSource()) {
             ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
@@ -153,5 +134,20 @@ public class DataSourceMonitor {
             }
         }
         return poolInfoList;
+    }
+
+    @ResponseBody
+    @PostMapping("/beecp/clearAllConnections")
+    public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
+        if (parameterMap != null) {
+            TraceDataSource ds = collector.getDataSource(parameterMap.get("dsId"));
+            if (ds != null) {
+                try {
+                    ds.clearAllConnections();
+                } catch (SQLException e) {
+                    log.error("Failed to reset datasource({}) connection pool", ds.getId());
+                }
+            }
+        }
     }
 }
