@@ -1,14 +1,8 @@
-body {
-    margin: 5px;
-    font: 12px Arial, serif;
-}
-
-.tab-contain {
-    margin: 0 auto;
-    width: 100%;
-    height: 100%;
-    padding: 5px;
-    background: #7F7D7D;
+body{
+	margin:2px;
+	padding:0px;
+	background-color:#f7fafc;
+	font: 12px Arial, serif;
 }
 
 #tabs {
@@ -68,19 +62,12 @@ li a {
     margin: 0;
     width: 100%;
     height: 100%;
-    align: left;
+    text-align: left;
 }
 
 .show {
     display: block;
     background: #f7fafc;
-}
-
-
-#sql-monitorTable tbody tr td:first-child {
-    word-wrap: break-word;
-    word-break: break-all;
-    width: 500px;
 }
 
 /* tables */
@@ -161,5 +148,4 @@ select{
 .sqlExecFail {
     background-color: #FFCC00;
 }
-
 
