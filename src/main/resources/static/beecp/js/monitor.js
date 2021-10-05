@@ -98,7 +98,7 @@ $(function() {
                             var mode = element.poolMode;
                             var state = element.poolState;
 
-                            if (language = 'cn') {
+                            if (language == 'cn') {
                                 mode = (mode == 'compete') ? '竞争': '公平';
                                 if (state == 1) state = "未初始化";
                                 else if (state == 2) state = "已启动";
