@@ -35,6 +35,7 @@
         <p></p>
         <div align="center">
             <input type="button" id="ds_refresh_button" value="Refresh"/>
+			<input type="button" id="ds_timer_button" value="Run Timer"/>
             <select id="ds_refresh_interval">
                 <option value="10000" selected>10s</option>
                 <option value="20000">20s</option>
@@ -64,12 +65,7 @@
         <p></p>
         <div align="center">
             <input type="button" id="sql_refresh_button" value="Refresh"/>
-            <select id="sql_refresh_interval">
-                <option value="10000" selected>10s</option>
-                <option value="20000">20s</option>
-                <option value="30000">30s</option>
-                <option value="40000">40s</option>
-            </select>
+	
             <input type="button" disabled="disabled" id="sql_first" value="Fisrt"/>
             <input type="button" disabled="disabled" id="sql_pre"  value="Pre"/>
             <input type="button" disabled="disabled" id="sql_next" value="Next"/>
@@ -84,6 +80,13 @@
 			<input type="text" size="3" disabled="disabled" align="right" id="total_sql" value="0"/>
             <input type="text" size="3" disabled="disabled" style="background-color:#CCFF66" value="Slow"/>
             <input type="text" size="3" disabled="disabled" style="background-color:#FFCC00" value="Error"/>
+			<input type="button" id="sql_timer_button" value="Run Timer"/>
+            <select id="sql_refresh_interval">
+                <option value="10000" selected>10s</option>
+                <option value="20000">20s</option>
+                <option value="30000">30s</option>
+                <option value="40000">40s</option>
+            </select>
             <p></p>
         </div>
     </div>
