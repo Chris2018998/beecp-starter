@@ -18,15 +18,44 @@ $(function() {
     $("#sql_refresh_button").click(function() {
         getSqlListFromServer();
     });
+	
+	$("#ds_timer_button").click(function() {
+        if (dsRefreshTask != null){//stop
+		 	clearInterval(dsRefreshTask);
+			dsRefreshTask =null;
+			var name=(language=='cn')?'启动定时':'Run Timer';
+			$("#ds_timer_button").val(name)
+		}else{//run
+			dsRefreshTask = setInterval(getDataSourceListFromServer, $("#ds_refresh_interval").val());
+			var name=(language=='cn')?'停止定时':'Stop Timer';
+			$("#ds_timer_button").val(name);
+		}
+    });
+	$("#sql_timer_button").click(function() {
+        if (sqlRefreshTask != null){//stop
+		 	clearInterval(sqlRefreshTask);
+			sqlRefreshTask =null;
+			var name=(language == 'cn')?'启动定时':'Run Timer';
+			$("#sql_timer_button").val(name);
+		}else{//run
+		    sqlRefreshTask = setInterval(getSqlListFromServer, $("#sql_refresh_interval").val()); 
+			var name=(language=='cn')?'停止定时':'Stop Timer';
+			$("#sql_timer_button").val(name);
+		}
+    });
     $("#ds_refresh_interval").click(function() {
-        if (dsRefreshTask != null) clearInterval(dsRefreshTask);
-        dsRefreshTask = setInterval(getDataSourceListFromServer, $("#ds_refresh_interval").val());
+        if (dsRefreshTask != null){ 
+		  clearInterval(dsRefreshTask);
+          dsRefreshTask = setInterval(getDataSourceListFromServer, $("#ds_refresh_interval").val());
+		}
     });
     $("#sql_refresh_interval").click(function() {
-        if (sqlRefreshTask != null) clearInterval(sqlRefreshTask);
-        sqlRefreshTask = setInterval(getSqlListFromServer, $("#sql_refresh_interval").val());
+        if (sqlRefreshTask != null){
+			clearInterval(sqlRefreshTask);
+			sqlRefreshTask = setInterval(getSqlListFromServer, $("#sql_refresh_interval").val());
+		}
     });
-
+	
     $("#page_size").change(function() {
         curSqlPageSize = $("#page_size").val();
         curSqlPageNo = 1;
@@ -192,6 +221,4 @@ $(function() {
 
     $("#ds_refresh_button").trigger("click");
     $("#sql_refresh_button").trigger("click");
-    $("#ds_refresh_interval").trigger("click");
-    $("#sql_refresh_interval").trigger("click");
 });
