@@ -16,14 +16,14 @@
 package cn.beecp.boot.datasource;
 
 /**
- * monitor admin
+ * global monitor admin
  *
  * @author Chris.Liao
  */
 
 class DataSourceMonitorAdmin {
-    public static final String PASSED_ATTR_NAME = DataSourceMonitorAdmin.class.getName();
-    public static final DataSourceMonitorAdmin singleInstance = new DataSourceMonitorAdmin();
+    static final String PASSED_ATTR_NAME = DataSourceMonitorAdmin.class.getName();
+    static final DataSourceMonitorAdmin singleInstance = new DataSourceMonitorAdmin();
 
     private String userId;
     private String password;

@@ -89,8 +89,6 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         //5:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, isSqlTrace, registry);
 
-        //6:read admin account and password
-        setAdminInfo(environment);
     }
 
 
@@ -210,7 +208,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
             dsIdSetDefine.setInstanceSupplier(createSupplier(new DataSourceIdSetter()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            log.info("Registered DataSourceId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
+            log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }
 
@@ -219,9 +217,9 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         Object dsw = null;
         Object ds = regInfo.getDs();
         if (ds instanceof DataSource && ds instanceof XADataSource) {
-            dsw = new TraceXDataSource(regInfo.getDsId(), (XADataSource) ds, traceSQL, regInfo.isJndiDs());
+            dsw = new SpringRegXDataSource(regInfo.getDsId(), (XADataSource) ds, traceSQL, regInfo.isJndiDs());
         } else if (ds instanceof DataSource) {
-            dsw = new TraceDataSource(regInfo.getDsId(), (DataSource) ds, traceSQL, regInfo.isJndiDs());
+            dsw = new SpringRegDataSource(regInfo.getDsId(), (DataSource) ds, traceSQL, regInfo.isJndiDs());
         } else if (ds instanceof XADataSource) {
             dsw = new DataSourceXaWrapper(regInfo.getDsId(), (XADataSource) ds, traceSQL, regInfo.isJndiDs());
         }
@@ -234,14 +232,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
                 define.setInstanceSupplier(createSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
                 log.info("Registered XADataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
-            } else if (dsw instanceof TraceDataSource) {
+            } else if (dsw instanceof SpringRegDataSource) {
                 GenericBeanDefinition define = new GenericBeanDefinition();
                 define.setPrimary(regInfo.isPrimary());
                 define.setBeanClass(dsw.getClass());
                 define.setInstanceSupplier(createSupplier(dsw));
                 registry.registerBeanDefinition(regInfo.getDsId(), define);
                 log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
-                TraceDataSourceMap.getInstance().addDataSource((TraceDataSource) dsw);
+                SpringDataSourceRegMap.getInstance().addDataSource((SpringRegDataSource) dsw);
             }
         }
     }

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class CombineDataSource implements DataSource {
     private String primaryId;
     private boolean isClosed = false;
-    private TraceDataSourceMap dataSourceMap = TraceDataSourceMap.getInstance();
+    private SpringDataSourceRegMap dataSourceMap = SpringDataSourceRegMap.getInstance();
 
     public CombineDataSource(String primaryId) {
         this.primaryId = primaryId;
@@ -51,11 +51,11 @@ public class CombineDataSource implements DataSource {
         return getTraceDataSource().getConnection(username, password);
     }
 
-    private TraceDataSource getTraceDataSource() throws SQLException {
+    private SpringRegDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
         dsId = !SpringBootDataSourceUtil.isBlank(dsId) ? dsId : primaryId;
-        TraceDataSource ds = dataSourceMap.getDataSource(dsId);
+        SpringRegDataSource ds = dataSourceMap.getDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;
     }

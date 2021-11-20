@@ -15,9 +15,9 @@
  */
 package cn.beecp.boot.test.controller;
 
-import cn.beecp.boot.DataSourceId;
-import cn.beecp.boot.EnableDataSourceMonitor;
-import cn.beecp.boot.EnableMultiDataSource;
+import cn.beecp.boot.DsId;
+import cn.beecp.boot.EnableDsMonitor;
+import cn.beecp.boot.EnableMultiDs;
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.test.util.TestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ import javax.sql.DataSource;
  *
  *  @author Chris.Liao
  */
-@EnableMultiDataSource
-@EnableDataSourceMonitor
+@EnableMultiDs
+@EnableDsMonitor
 @SpringBootApplication
 @RestController
 public class MultiDsController {
@@ -74,25 +74,25 @@ public class MultiDsController {
     }
 
     @GetMapping("/testGetConnection1")
-    @DataSourceId("ds1")
+    @DsId("ds1")
     public String testCombineDs1() throws Exception {
         return TestUtil.testGetConnection(combineDs);
     }
 
     @GetMapping("/testGetConnection2")
-    @DataSourceId("ds2")
+    @DsId("ds2")
     public String testCombineDs2() throws Exception {
         return TestUtil.testGetConnection(combineDs);
     }
 
     @GetMapping("/testExecSQL1")
-    @DataSourceId("ds1")
+    @DsId("ds1")
     public String testExecSQL1(String sql, String type, String slowInd) throws Exception {
         return TestUtil.testSQL(combineDs, sql, type, slowInd);
     }
 
     @GetMapping("/testExecSQL2")
-    @DataSourceId("ds2")
+    @DsId("ds2")
     public String testExecSQL2(String sql, String type, String slowInd) throws Exception {
         return TestUtil.testSQL(combineDs, sql, type, slowInd);
     }

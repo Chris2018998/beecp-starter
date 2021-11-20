@@ -16,7 +16,6 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
-import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -29,8 +28,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +43,8 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 public class DataSourceMonitor {
     private final static String chinese_page = "/beecp/chinese.html";
     private final static String english_page = "/beecp/english.html";
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private List<Map<String, Object>> poolInfoList = new LinkedList<Map<String, Object>>();
-    private TraceDataSourceMap collector = TraceDataSourceMap.getInstance();
+    private static final Logger log = LoggerFactory.getLogger(DataSourceMonitor.class);
+    private SpringDataSourceRegMap traceDataSourceMap = SpringDataSourceRegMap.getInstance();
 
     @RequestMapping("/beecp")
     public String welcome1() {
@@ -113,34 +109,15 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/getDataSourceList")
     public List<Map<String, Object>> getDataSourceList() {
-        poolInfoList.clear();
-        for (TraceDataSource ds : collector.getAllDataSource()) {
-            ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
-            if (vo == null) continue;
-            if (vo.getPoolState() == 3) {//POOL_CLOSED
-                collector.removeDataSource(ds.getId());
-            } else {
-                Map<String, Object> poolMap = new LinkedHashMap<>(9);
-                poolMap.put("dsId", ds.getId());
-                poolMap.put("poolName", vo.getPoolName());
-                poolMap.put("poolMode", vo.getPoolMode());
-                poolMap.put("poolState", vo.getPoolState());
-                poolMap.put("maxActive", vo.getMaxActive());
-                poolMap.put("idleSize", vo.getIdleSize());
-                poolMap.put("usingSize", vo.getUsingSize());
-                poolMap.put("semaphoreWaiterSize", vo.getSemaphoreWaiterSize());
-                poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
-                poolInfoList.add(poolMap);
-            }
-        }
-        return poolInfoList;
+        return traceDataSourceMap.getPoolMonitorVoList();
     }
 
     @ResponseBody
     @PostMapping("/beecp/clearAllConnections")
     public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
         if (parameterMap != null) {
-            TraceDataSource ds = collector.getDataSource(parameterMap.get("dsId"));
+            String dsId = parameterMap.get("dsId");
+            SpringRegDataSource ds = traceDataSourceMap.getDataSource(dsId);
             if (ds != null) {
                 try {
                     ds.clearAllConnections();

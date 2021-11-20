@@ -63,8 +63,8 @@ public class SingleDataSourceRegister {
         BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();
         XADataSource ds = (XADataSource) dsFactory.getObjectInstance(environment, dsId, SP_DS_Prefix);
 
-        TraceDataSource dsWrapper = new TraceXDataSource(dsId, ds, traceSQL, false);
-        TraceDataSourceMap.getInstance().addDataSource(dsWrapper);
+        SpringRegDataSource dsWrapper = new SpringRegXDataSource(dsId, ds, traceSQL, false);
+        SpringDataSourceRegMap.getInstance().addDataSource(dsWrapper);
         return dsWrapper;
     }
 
@@ -95,28 +95,12 @@ public class SingleDataSourceRegister {
                 setPropertiesValue(config, setMethodMap, setValueMap);
             }
 
-            //6:read admin account and password
-            setAdminInfo(environment);
-
-            //7:create sql-trace pool
+            //6:create sql-trace pool
             SqlTracePool tracePool = SqlTracePool.getInstance();
             tracePool.init(config);
             return tracePool.isSqlTrace();
         } catch (Exception e) {
             throw new SpringBootDataSourceException("Failed to set config value to sql-trace pool", e);
         }
-    }
-
-    /**
-     * read admin info
-     *
-     * @param environment Springboot environment
-     */
-    protected void setAdminInfo(Environment environment) {
-        String adminName = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_UserId);
-        String adminPassword = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Password);
-        DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        admin.setUserId(adminName);
-        admin.setPassword(adminPassword);
     }
 }

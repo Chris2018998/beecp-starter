@@ -42,9 +42,6 @@ class DataSourceBuilder {
 
     static {
         factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
-//        factoryMap.put(DruidDataSource.class, new DruidDataSourceFactory());
-//        factoryMap.put(HikariDataSource.class, new HikariDataSourceFactory());
-//        factoryMap.put(org.apache.tomcat.jdbc.pool.DataSource.class, new TomcatJdbcDataSourceFactory());
     }
 
     /**

@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.boot.DataSourceId;
+import cn.beecp.boot.DsId;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -33,15 +33,15 @@ import org.springframework.core.annotation.Order;
 @Order(1)
 public class DataSourceIdSetter {
 
-    @Pointcut("@annotation(cn.beecp.boot.DataSourceId)")
+    @Pointcut("@annotation(cn.beecp.boot.DsId)")
     public void pointcut() {
     }
 
     @Around("pointcut()")
     public Object setDataSourceId(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        DataSourceId annotation = (DataSourceId) methodSignature.getMethod().getAnnotation(DataSourceId.class);
-        TraceDataSourceMap dsMap = TraceDataSourceMap.getInstance();
+        DsId annotation = (DsId) methodSignature.getMethod().getAnnotation(DsId.class);
+        SpringDataSourceRegMap dsMap = SpringDataSourceRegMap.getInstance();
 
         String dsId = annotation.value();
         if (!SpringBootDataSourceUtil.isBlank(dsId))

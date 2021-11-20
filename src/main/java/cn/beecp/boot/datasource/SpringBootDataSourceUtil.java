@@ -157,7 +157,7 @@ public class SpringBootDataSourceUtil {
         }
     }
 
-    static final Supplier createSupplier(Object bean) {
+    public static final Supplier createSupplier(Object bean) {
         return new RegSupplier(bean);
     }
 
