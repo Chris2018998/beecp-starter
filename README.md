@@ -1,4 +1,4 @@
-<img height="20px" width="20px" align="bottom" src="https://github.com/Chris2018998/BeeCP/blob/master/doc/individual/bee.png"></img>
+![图片](https://user-images.githubusercontent.com/32663325/153719123-5a730234-1964-4bf8-b9f8-77a0a8c4426a.png)
 <p align="left">
  <a><img src="https://img.shields.io/badge/JDK-1.8+-green.svg"></a>
  <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
