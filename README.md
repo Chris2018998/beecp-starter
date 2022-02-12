@@ -60,7 +60,7 @@ Maven坐标(Java8)
  
 数据源Jndi名，数据源来自部署容器本身，此项配置与type配置互斥
 
-:sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP">BeeCP</a>属性清单*
+:sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP/blob/master/README_ZH.md">BeeCP</a>属性清单*
 
 ## :book: 监控项配置 
 
