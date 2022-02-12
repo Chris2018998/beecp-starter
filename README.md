@@ -10,7 +10,7 @@
 
 BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>在Springboot的数据源管理工具
 
-[*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
+[*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou动态数据源启动器(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
 
 ## :arrow_down: 下载 
 
