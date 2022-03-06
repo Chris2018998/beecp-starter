@@ -168,9 +168,3 @@ spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
 spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 ```
 完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsDemo_JPA.rar
-
-
-## :sparkling_heart:捐助
-
-如果您觉得此作品不错，请捐赠我们喝杯咖啡吧，在此表示感谢^_^。
-![图片](https://user-images.githubusercontent.com/32663325/154846747-fc279653-7951-4e79-a49e-beaf31a9957b.png)
