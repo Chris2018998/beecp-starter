@@ -17,6 +17,8 @@ package cn.beecp.boot.datasource.factory;
 
 import org.springframework.core.env.Environment;
 
+import javax.sql.DataSource;
+
 /*
  *  Spring Boot DataSource Factory
  *
@@ -33,6 +35,6 @@ public interface SpringBootDataSourceFactory {
      * @return data source instance
      * @throws Exception when fail to set
      */
-    Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception;
+    DataSource createDataSource(Environment environment, String dsId, String dsConfigPrefix) throws Exception;
 
 }

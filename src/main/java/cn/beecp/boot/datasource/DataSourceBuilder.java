@@ -24,7 +24,6 @@ import org.springframework.core.env.Environment;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,12 +51,12 @@ class DataSourceBuilder {
      * @param environment dataSource config environment
      * @return a dataSource
      */
-    public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment) {
+    public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment, boolean isSqlTrace) {
         String jndiNameTex = getConfigValue(environment, dsPrefix, SP_DS_Jndi);
         if (!SpringBootDataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
-            return lookupJndiDataSource(dsId, jndiNameTex);
+            return lookupJndiDataSource(dsId, jndiNameTex, isSqlTrace);
         } else {//independent type
-            return createDataSourceByDsType(dsId, dsPrefix, environment);
+            return createDataSourceByDsType(dsId, dsPrefix, environment, isSqlTrace);
         }
     }
 
@@ -68,12 +67,12 @@ class DataSourceBuilder {
      * @param jndiName dataSource jndi name on middle-container
      * @return a jndi DataSource
      */
-    private DataSourceHolder lookupJndiDataSource(String dsId, String jndiName) {
+    private DataSourceHolder lookupJndiDataSource(String dsId, String jndiName, boolean traceSQL) {
         try {
             InitialContext context = new InitialContext();
             Object namingObj = context.lookup(jndiName);
-            if (namingObj instanceof DataSource || namingObj instanceof XADataSource) {
-                return new DataSourceHolder(dsId, namingObj, true);
+            if (namingObj instanceof DataSource) {
+                return new DataSourceHolder(dsId, new SpringRegDataSource(dsId, (DataSource) namingObj, traceSQL, true), true);
             } else {
                 throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Jndi Name(" + jndiName + ") is not a data source object");
             }
@@ -82,8 +81,8 @@ class DataSourceBuilder {
         }
     }
 
-    //create raw dataSource instance by config class name
-    private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment) {
+    //create rawConn dataSource instance by config class name
+    private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment, boolean traceSQL) {
         //1:load dataSource class
         String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_DS_Type);
         if (SpringBootDataSourceUtil.isBlank(dataSourceClassName))
@@ -92,28 +91,27 @@ class DataSourceBuilder {
             dataSourceClassName = dataSourceClassName.trim();
 
         //2:create dataSource
-        Object ds;
+        DataSource ds;
         Class dataSourceClass = loadClass(dsId, dataSourceClassName);
         SpringBootDataSourceFactory dsFactory = factoryMap.get(dataSourceClass);
         if (dsFactory == null && SpringBootDataSourceFactory.class.isAssignableFrom(dataSourceClass))
             dsFactory = (SpringBootDataSourceFactory) createInstanceByClassName(dsId, dataSourceClass);
         if (dsFactory != null) {//create by factory
             try {
-                ds = dsFactory.getObjectInstance(environment, dsId, dsConfigPrefix);
-                if (!(ds instanceof DataSource) && !(ds instanceof XADataSource))
-                    throw new SpringBootDataSourceException("DataSource(" + dsId + ")-instance from data source factory is not a valid data source object");
+                ds = dsFactory.createDataSource(environment, dsId, dsConfigPrefix);
             } catch (SpringBootDataSourceException e) {
                 throw e;
             } catch (Exception e) {
                 throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to get instance from dataSource factory", e);
             }
-        } else if (DataSource.class.isAssignableFrom(dataSourceClass) || XADataSource.class.isAssignableFrom(dataSourceClass)) {
+        } else if (DataSource.class.isAssignableFrom(dataSourceClass)) {
             ds = createInstanceByClassName(dsId, dataSourceClass);
             configDataSource(ds, environment, dsId, dsConfigPrefix);
         } else {
             throw new SpringBootDataSourceException("DataSource(" + dsId + ")-target type is not a valid data source type");
         }
-        return new DataSourceHolder(dsId, ds);
+
+        return new DataSourceHolder(dsId, new SpringRegDataSource(dsId, ds, traceSQL, false), false);
     }
 
     private Class loadClass(String dsId, String className) {
@@ -124,9 +122,9 @@ class DataSourceBuilder {
         }
     }
 
-    private Object createInstanceByClassName(String dsId, Class objClass) {
+    private DataSource createInstanceByClassName(String dsId, Class objClass) {
         try {
-            return objClass.newInstance();
+            return (DataSource) objClass.newInstance();
         } catch (Exception e) {
             throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to instantiated the class:" + objClass.getName(), e);
         }

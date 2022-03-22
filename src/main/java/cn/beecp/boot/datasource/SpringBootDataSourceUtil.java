@@ -21,13 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static cn.beecp.pool.PoolStaticCenter.*;
@@ -71,29 +66,27 @@ public class SpringBootDataSourceUtil {
 
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
 
-    public static final String formatDate(Date date) {
+    public static String formatDate(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
-    public static final boolean equals(String a, String b) {
+    public static boolean equalsString(String a, String b) {
         return a == null ? b == null : a.equals(b);
     }
 
-    public static final boolean isBlank(String str) {
+    public static boolean isBlank(String str) {
         if (str == null) return true;
-        int strLen = str.length();
-        for (int i = 0; i < strLen; ++i) {
-            if (!Character.isWhitespace(str.charAt(i))) {
+        for (int i = 0, l = str.length(); i < l; ++i) {
+            if (!Character.isWhitespace(str.charAt(i)))
                 return false;
-            }
         }
         return true;
     }
 
-    public static final void configDataSource(Object bean, Environment environment, String dsId, String dsConfigPrefix) throws SpringBootDataSourceException {
+    public static void configDataSource(Object bean, Environment environment, String dsId, String dsConfigPrefix) throws SpringBootDataSourceException {
         try {
             //1:get all set methods
-            Map<String, Method> setMethodMap = getSetMethodMap(bean.getClass());
+            Map<String, Method> setMethodMap = getClassSetMethodMap(bean.getClass());
 
             //2:create map to collect config value
             Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
@@ -102,7 +95,6 @@ public class SpringBootDataSourceUtil {
             Iterator<String> iterator = setMethodMap.keySet().iterator();
             while (iterator.hasNext()) {
                 String propertyName = iterator.next();
-
                 String configVal = getConfigValue(environment, dsConfigPrefix, propertyName);
                 if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
@@ -115,16 +107,21 @@ public class SpringBootDataSourceUtil {
         }
     }
 
-    public static final String getConfigValue(Environment environment, String dsConfigPrefix, String key) {
-        String value = readConfig(environment, dsConfigPrefix + "." + key);
-        if (SpringBootDataSourceUtil.isBlank(value))
-            value = readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_MiddleLine));
-        if (SpringBootDataSourceUtil.isBlank(value))
-            value = readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(key, DS_Config_Prop_Separator_UnderLine));
-        return value;
+    public static String getConfigValue(Environment environment, String dsConfigPrefix, String propertyName) {
+        String value = readConfig(environment, dsConfigPrefix + "." + propertyName);
+        if (value != null) return value;
+
+        propertyName = propertyName.substring(0, 1).toLowerCase(Locale.US) + propertyName.substring(1);
+        value = readConfig(environment, dsConfigPrefix + "." + propertyName);
+        if (value != null) return value;
+
+        value = readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(propertyName, Separator_MiddleLine));
+        if (value != null) return value;
+
+        return readConfig(environment, dsConfigPrefix + "." + propertyNameToFieldId(propertyName, Separator_UnderLine));
     }
 
-    private static final String readConfig(Environment environment, String key) {
+    private static String readConfig(Environment environment, String key) {
         String value = environment.getProperty(key);
         if (!SpringBootDataSourceUtil.isBlank(value)) {
             value = value.trim();
@@ -133,16 +130,7 @@ public class SpringBootDataSourceUtil {
         return value;
     }
 
-    public static final void setMethodAccessible(Method method, boolean accessible) {
-        AccessController.doPrivileged(new PrivilegedAction<String>() {
-            public String run() {
-                method.setAccessible(accessible);
-                return method.getName();
-            }
-        });
-    }
-
-    public static final void tryToCloseDataSource(Object ds) {
+    static void tryToCloseDataSource(Object ds) {
         Class[] paramTypes = new Class[0];
         Object[] paramValues = new Object[0];
         Class dsClass = ds.getClass();
@@ -157,14 +145,14 @@ public class SpringBootDataSourceUtil {
         }
     }
 
-    public static final Supplier createSupplier(Object bean) {
+    static Supplier createSupplier(Object bean) {
         return new RegSupplier(bean);
     }
 
     private static final class RegSupplier implements Supplier {
         private Object ds;
 
-        public RegSupplier(Object ds) {
+        RegSupplier(Object ds) {
             this.ds = ds;
         }
 

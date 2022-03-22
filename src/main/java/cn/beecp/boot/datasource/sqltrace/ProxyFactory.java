@@ -38,14 +38,6 @@ public class ProxyFactory {
         );
     }
 
-    public static final XAConnection createXAConnection(XAConnection delegate, String dsId) {
-        return (XAConnection) Proxy.newProxyInstance(
-                classLoader,
-                INTF_XAConnection,
-                new XAConnectionHandler(delegate, dsId)
-        );
-    }
-
     public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId) {
         return createStatementProxy(delegate, statementType, dsId, null);
     }

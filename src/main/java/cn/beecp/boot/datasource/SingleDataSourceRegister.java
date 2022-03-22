@@ -26,14 +26,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
-import static cn.beecp.pool.PoolStaticCenter.getSetMethodMap;
+import static cn.beecp.pool.PoolStaticCenter.getClassSetMethodMap;
 import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 
 /*
@@ -47,7 +46,7 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
  * spring.datasource.driverClassName=com.mysql.jdbc.Driver
  * spring.datasource.fairMode=true
  * spring.datasource.initialSize=10
- * spring.datasource.maxActive = 10
+ * spring.datasource.maxActive =10
  *
  * @author Chris.Liao
  */
@@ -61,11 +60,11 @@ public class SingleDataSourceRegister {
 
         boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();
-        XADataSource ds = (XADataSource) dsFactory.getObjectInstance(environment, dsId, SP_DS_Prefix);
+        DataSource beesDs = dsFactory.createDataSource(environment, dsId, SP_DS_Prefix);
 
-        SpringRegDataSource dsWrapper = new SpringRegXDataSource(dsId, ds, traceSQL, false);
-        SpringDataSourceRegMap.getInstance().addDataSource(dsWrapper);
-        return dsWrapper;
+        SpringRegDataSource springDs = new SpringRegDataSource(dsId, beesDs, traceSQL, false);
+        SpringDataSourceRegMap.getInstance().addDataSource(springDs);
+        return springDs;
     }
 
     /**
@@ -79,7 +78,7 @@ public class SingleDataSourceRegister {
             //1:create sql trace config instance
             SqlTraceConfig config = new SqlTraceConfig();
             //2:get all properties set methods
-            Map<String, Method> setMethodMap = getSetMethodMap(config.getClass());
+            Map<String, Method> setMethodMap = getClassSetMethodMap(config.getClass());
             //3:create properties to collect config value
             Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
             //4:loop to find config value by properties map

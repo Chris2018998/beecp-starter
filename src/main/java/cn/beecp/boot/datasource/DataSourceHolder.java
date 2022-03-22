@@ -23,22 +23,18 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSo
  *  @author Chris.Liao
  */
 class DataSourceHolder {
-    private Object ds;
     private String dsId;
     private boolean jndiDs;
     private boolean primary;
+    private SpringRegDataSource ds;
 
-    public DataSourceHolder(String dsId, Object ds) {
-        this(dsId, ds, false);
-    }
-
-    public DataSourceHolder(String dsId, Object ds, boolean jndiDs) {
+    DataSourceHolder(String dsId, SpringRegDataSource ds, boolean jndiDs) {
         this.ds = ds;
         this.dsId = dsId;
         this.jndiDs = jndiDs;
     }
 
-    public Object getDs() {
+    public SpringRegDataSource getDs() {
         return ds;
     }
 
@@ -54,15 +50,15 @@ class DataSourceHolder {
         this.jndiDs = jndiDs;
     }
 
-    public boolean isPrimary() {
+    boolean isPrimary() {
         return primary;
     }
 
-    public void setPrimary(boolean primary) {
+    void setPrimary(boolean primary) {
         this.primary = primary;
     }
 
-    public void close() {
+    void close() {
         if (!jndiDs)
             tryToCloseDataSource(ds);
     }

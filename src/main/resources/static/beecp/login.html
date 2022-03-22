@@ -113,7 +113,7 @@
 <div class="wrapper">
     <div class="loginBox">
         <div class="loginHead">
-           BeeCP Monitor 
+            BeeCP Monitor
         </div>
         <div class="loginBoxCenter">
             <p><label>UserId：</label></p>
@@ -122,17 +122,17 @@
                       required="required" type="text"/></p>
             <p><label>Password：</label></p>
             <p><input class="loginInput" id="password" maxlength="50" name="password" type="password"/></p>
-			
-			<p>
-			    <label>Language：</label>
-				<select id="language">
-					<option value="en" selected>English</option>
-					<option value="cn">中文</option>
-				</select>
-			</p>
+
+            <p>
+                <label>Language：</label>
+                <select id="language">
+                    <option selected value="en">English</option>
+                    <option value="cn">中文</option>
+                </select>
+            </p>
         </div>
         <div class="loginBoxButtons">
-            <input type="button" class="loginBtn" id="loginButton" onclick="login()" value="Login"/>
+            <input class="loginBtn" id="loginButton" onclick="login()" type="button" value="Login"/>
         </div>
     </div>
 </div>
@@ -183,14 +183,14 @@
             if (this.readyState == 4 && this.status == 200) {
                 var result = this.responseText;
                 if ("OK" == result) {
-					var language = document.getElementById("language").value;
-					if(language=='en'){
-					    alert("Login successful");
-					    window.location.href = contextPath + "/beecp/english.html";
-					}else{
-						alert("登陆成功");
-						window.location.href = contextPath + "/beecp/chinese.html";
-					}
+                    var language = document.getElementById("language").value;
+                    if (language == 'en') {
+                        alert("Login successful");
+                        window.location.href = contextPath + "/beecp/english.html";
+                    } else {
+                        alert("登陆成功");
+                        window.location.href = contextPath + "/beecp/chinese.html";
+                    }
                     window.event.returnValue = false;
                 } else {
                     alert("Error userId or password");

@@ -20,8 +20,6 @@ import cn.beecp.pool.ConnectionPoolMonitorVo;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
-
 /**
  * Collect registered dataSource
  *
@@ -29,7 +27,7 @@ import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
  */
 class SpringDataSourceRegMap {
     private final static SpringDataSourceRegMap instance = new SpringDataSourceRegMap();
-    private final ThreadLocal<String> dsIdLocal = new ThreadLocal();
+    private final ThreadLocal<String> dsIdLocal = new ThreadLocal<String>();
     private final Map<String, SpringRegDataSource> dsMap = new ConcurrentHashMap<>(2);
 
     public final static SpringDataSourceRegMap getInstance() {
@@ -63,7 +61,7 @@ class SpringDataSourceRegMap {
             SpringRegDataSource ds = iterator.next();
             ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
             if (vo == null) continue;
-            if (vo.getPoolState() == POOL_CLOSED) {//POOL_CLOSED
+            if (vo.getPoolState() == 2) {//POOL_CLOSED
                 iterator.remove();
             } else {
                 Map<String, Object> poolMap = new LinkedHashMap<>(9);
@@ -71,11 +69,11 @@ class SpringDataSourceRegMap {
                 poolMap.put("poolName", vo.getPoolName());
                 poolMap.put("poolMode", vo.getPoolMode());
                 poolMap.put("poolState", vo.getPoolState());
-                poolMap.put("maxActive", vo.getMaxActive());
+                poolMap.put("poolMaxSize", vo.getPoolMaxSize());
                 poolMap.put("idleSize", vo.getIdleSize());
                 poolMap.put("usingSize", vo.getUsingSize());
-                poolMap.put("semaphoreWaiterSize", vo.getSemaphoreWaiterSize());
-                poolMap.put("transferWaiterSize", vo.getTransferWaiterSize());
+                poolMap.put("semaphoreWaitingSize", vo.getSemaphoreWaitingSize());
+                poolMap.put("transferWaitingSize", vo.getTransferWaitingSize());
                 poolMonitorVoList.add(poolMap);
             }
         }

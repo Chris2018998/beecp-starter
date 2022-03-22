@@ -31,7 +31,7 @@ public class CombineDataSource implements DataSource {
     private boolean isClosed = false;
     private SpringDataSourceRegMap dataSourceMap = SpringDataSourceRegMap.getInstance();
 
-    public CombineDataSource(String primaryId) {
+    CombineDataSource(String primaryId) {
         this.primaryId = primaryId;
     }
 

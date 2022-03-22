@@ -40,7 +40,7 @@ public class DataSourceIdSetter {
     @Around("pointcut()")
     public Object setDataSourceId(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        DsId annotation = (DsId) methodSignature.getMethod().getAnnotation(DsId.class);
+        DsId annotation = methodSignature.getMethod().getAnnotation(DsId.class);
         SpringDataSourceRegMap dsMap = SpringDataSourceRegMap.getInstance();
 
         String dsId = annotation.value();

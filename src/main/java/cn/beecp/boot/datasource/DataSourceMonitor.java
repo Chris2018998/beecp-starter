@@ -87,7 +87,7 @@ public class DataSourceMonitor {
         if (!isBlank(admin.getUserId())) {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
-            if (admin.getUserId().equals(userId) && SpringBootDataSourceUtil.equals(admin.getPassword(), password)) {
+            if (admin.getUserId().equals(userId) && SpringBootDataSourceUtil.equalsString(admin.getPassword(), password)) {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = servletRequestAttributes.getRequest();
                 request.getSession().setAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME, "Y");
@@ -120,7 +120,7 @@ public class DataSourceMonitor {
             SpringRegDataSource ds = traceDataSourceMap.getDataSource(dsId);
             if (ds != null) {
                 try {
-                    ds.clearAllConnections();
+                    ds.clear();
                 } catch (SQLException e) {
                     log.error("Failed to reset datasource({}) connection pool", ds.getId());
                 }

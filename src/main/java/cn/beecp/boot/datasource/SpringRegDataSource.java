@@ -17,6 +17,7 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
+import cn.beecp.jta.BeeJtaDataSource;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 
 import javax.sql.DataSource;
@@ -35,23 +36,21 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSo
  */
 public class SpringRegDataSource implements DataSource {
     protected String dsId;
-    protected boolean traceSQL;
     private boolean jndiDs;
-    private boolean beeType;
-    private DataSource delegate;
+    private DataSource ds;
+    private boolean isBeeDs;
+    private boolean traceSQL;
 
     private Method resetPoolMethod;
-    private Object[] resetParamValues = new Object[]{false};
     private Method getPoolMonitorVoMethod;
-    private Object[] emptyParamValues = new Object[0];
 
-    public SpringRegDataSource(String dsId, DataSource delegate, boolean traceSQL, boolean jndiDs) {
+    SpringRegDataSource(String dsId, DataSource ds, boolean traceSQL, boolean jndiDs) {
         this.dsId = dsId;
-        this.delegate = delegate;
+        this.ds = ds;
 
         this.jndiDs = jndiDs;
         this.traceSQL = traceSQL;
-        this.beeType = delegate instanceof BeeDataSource;
+        this.isBeeDs = ds instanceof BeeDataSource || ds instanceof BeeJtaDataSource;
     }
 
     public String getId() {
@@ -62,89 +61,86 @@ public class SpringRegDataSource implements DataSource {
         return jndiDs;
     }
 
-    public boolean isTraceSQL() {
+    boolean isTraceSQL() {
         return traceSQL;
     }
 
-    public boolean isBeeType() {
-        return beeType;
+    public boolean isBeeDs() {
+        return isBeeDs;
     }
 
     public Connection getConnection() throws SQLException {
-        Connection con = delegate.getConnection();
+        Connection con = ds.getConnection();
         return traceSQL ? ProxyFactory.createConnection(con, dsId) : con;
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        Connection con = delegate.getConnection(username, password);
+        Connection con = ds.getConnection(username, password);
         return traceSQL ? ProxyFactory.createConnection(con, dsId) : con;
     }
 
     public java.io.PrintWriter getLogWriter() throws SQLException {
-        return delegate.getLogWriter();
+        return ds.getLogWriter();
     }
 
     public void setLogWriter(java.io.PrintWriter out) throws SQLException {
-        delegate.setLogWriter(out);
+        ds.setLogWriter(out);
     }
 
     public int getLoginTimeout() throws SQLException {
-        return delegate.getLoginTimeout();
+        return ds.getLoginTimeout();
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        delegate.setLoginTimeout(seconds);
+        ds.setLoginTimeout(seconds);
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return delegate.getParentLogger();
+        return ds.getParentLogger();
     }
 
     public <T> T unwrap(java.lang.Class<T> iface) throws java.sql.SQLException {
-        return delegate.unwrap(iface);
+        return ds.unwrap(iface);
     }
 
     public boolean isWrapperFor(java.lang.Class<?> iface) throws java.sql.SQLException {
-        return delegate.isWrapperFor(iface);
+        return ds.isWrapperFor(iface);
     }
 
     public void close() {
-        if (!jndiDs)
-            tryToCloseDataSource(delegate);
+        if (!jndiDs) tryToCloseDataSource(ds);
     }
 
-    public void clearAllConnections() throws SQLException {
-        if (beeType) {
+    void clear() throws SQLException {
+        if (isBeeDs) {
             if (resetPoolMethod == null) {
                 try {
-                    Class dsClass = delegate.getClass();
-                    resetPoolMethod = dsClass.getMethod("clearAllConnections", new Class[]{Boolean.TYPE});
+                    resetPoolMethod = ds.getClass().getMethod("clear", Boolean.TYPE);
                 } catch (Throwable e) {
                 }
             }
 
             if (resetPoolMethod != null) {
                 try {
-                    resetPoolMethod.invoke(delegate, resetParamValues);
+                    resetPoolMethod.invoke(ds, false);
                 } catch (Throwable e) {
                 }
             }
         }
     }
 
-    public ConnectionPoolMonitorVo getPoolMonitorVo() {
-        if (beeType) {
+    ConnectionPoolMonitorVo getPoolMonitorVo() {
+        if (isBeeDs) {
             if (getPoolMonitorVoMethod == null) {
                 try {
-                    Class dsClass = delegate.getClass();
-                    getPoolMonitorVoMethod = dsClass.getMethod("getPoolMonitorVo", new Class[0]);
+                    getPoolMonitorVoMethod = ds.getClass().getMethod("getPoolMonitorVo");
                 } catch (Throwable e) {
                 }
             }
 
             if (getPoolMonitorVoMethod != null) {
                 try {
-                    return (ConnectionPoolMonitorVo) getPoolMonitorVoMethod.invoke(delegate, emptyParamValues);
+                    return (ConnectionPoolMonitorVo) getPoolMonitorVoMethod.invoke(ds, new Object[0]);
                 } catch (Throwable e) {
                 }
             }

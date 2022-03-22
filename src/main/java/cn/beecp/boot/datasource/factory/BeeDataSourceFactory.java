@@ -17,11 +17,17 @@ package cn.beecp.boot.datasource.factory;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
+import cn.beecp.jta.BeeJtaDataSource;
 import org.springframework.core.env.Environment;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import javax.transaction.TransactionManager;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.configDataSource;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
-import static cn.beecp.pool.PoolStaticCenter.isBlank;
+import static cn.beecp.pool.PoolStaticCenter.*;
 
 /*
  *  BeeDataSource Springboot Factory
@@ -36,25 +42,32 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
-    public Object getObjectInstance(Environment environment, String dsId, String dsConfigPrefix) throws Exception {
+    public DataSource createDataSource(Environment environment, String dsId, String dsConfigPrefix) throws Exception {
+        //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
         configDataSource(config, environment, dsId, dsConfigPrefix);
         setConnectPropertiesConfig(config, environment, dsConfigPrefix);
 
-        return new BeeDataSource(config);
+        //2:try to lookup TransactionManager by jndi
+        TransactionManager tm = null;
+        String tmJndiName = getConfigValue(environment, dsConfigPrefix, CONFIG_TM_JNDI);
+        if (!isBlank(tmJndiName)) {
+            Context nameCtx = new InitialContext();
+            tm = (TransactionManager) nameCtx.lookup(tmJndiName);
+        }
+
+        //3:create dataSource instance
+        BeeDataSource ds = new BeeDataSource(config);
+        return (tm != null) ? new BeeJtaDataSource(ds, tm) : ds;
     }
 
     private void setConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
-        config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties"));
-        String connectPropertiesCount = getConfigValue(environment, dsConfigPrefix, "connectProperties.count");
+        config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP));
+        String connectPropertiesCount = getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP_SIZE);
         if (!isBlank(connectPropertiesCount)) {
-            int count = 0;
-            try {
-                count = Integer.parseInt(connectPropertiesCount.trim());
-            } catch (Throwable e) {
-            }
+            int count = Integer.parseInt(connectPropertiesCount.trim());
             for (int i = 1; i <= count; i++)
-                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, "connectProperties." + i));
+                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i));
         }
     }
 }

@@ -34,10 +34,10 @@
         </table>
         <p></p>
         <div align="center">
-            <input type="button" id="ds_refresh_button" value="刷新"/>
-			<input type="button" id="ds_timer_button"   value="启动定时"/>
+            <input id="ds_refresh_button" type="button" value="刷新"/>
+            <input id="ds_timer_button" type="button" value="启动定时"/>
             <select id="ds_refresh_interval">
-                <option value="10000" selected>10s</option>
+                <option selected value="10000">10s</option>
                 <option value="20000">20s</option>
                 <option value="30000">30s</option>
                 <option value="40000">40s</option>
@@ -49,13 +49,13 @@
         <table class="tablesorter" id="sql_monitorTable">
             <thead>
             <tr>
-               <th>SQL</th> 
-			   <th width="100px">数据源</th> 
-			   <th width="150px">开始时间</th>
-			   <th width="150px">结束时间</th>
-			   <th width="100px">耗时(毫秒)</th> 
-			   <th width="100px">是否成功</th> 
-			   <th width="200px">执行方法</th> 
+                <th>SQL</th>
+                <th width="100px">数据源</th>
+                <th width="150px">开始时间</th>
+                <th width="150px">结束时间</th>
+                <th width="100px">耗时(毫秒)</th>
+                <th width="100px">是否成功</th>
+                <th width="200px">执行方法</th>
             </tr>
             </thead>
             <tbody>
@@ -64,11 +64,11 @@
         </table>
         <p></p>
         <div align="center">
-            <input type="button" id="sql_refresh_button" value="刷新"/>
-            <input type="button" disabled="disabled" id="sql_first" value="首页"/>
-            <input type="button" disabled="disabled" id="sql_pre"  value="上一页"/>
-            <input type="button" disabled="disabled" id="sql_next" value="下一页"/>
-            <input type="button" disabled="disabled" id="sql_last" value="末页"/>
+            <input id="sql_refresh_button" type="button" value="刷新"/>
+            <input disabled="disabled" id="sql_first" type="button" value="首页"/>
+            <input disabled="disabled" id="sql_pre" type="button" value="上一页"/>
+            <input disabled="disabled" id="sql_next" type="button" value="下一页"/>
+            <input disabled="disabled" id="sql_last" type="button" value="末页"/>
             <select id="page-size">
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -76,12 +76,12 @@
                 <option value="40">40</option>
             </select>
             sql-size:
-			<input type="text" size="3" disabled="disabled" align="right" id="total_sql" value="0"/>
-            <input type="text" size="3" disabled="disabled" style="background-color:#CCFF66" value="缓慢"/>
-            <input type="text" size="3" disabled="disabled" style="background-color:#FFCC00" value="错误"/>
-			<input type="button" id="sql_timer_button" value="启动定时"/>
-			<select id="sql_refresh_interval">
-                <option value="10000" selected>10s</option>
+            <input align="right" disabled="disabled" id="total_sql" size="3" type="text" value="0"/>
+            <input disabled="disabled" size="3" style="background-color:#CCFF66" type="text" value="缓慢"/>
+            <input disabled="disabled" size="3" style="background-color:#FFCC00" type="text" value="错误"/>
+            <input id="sql_timer_button" type="button" value="启动定时"/>
+            <select id="sql_refresh_interval">
+                <option selected value="10000">10s</option>
                 <option value="20000">20s</option>
                 <option value="30000">30s</option>
                 <option value="40000">40s</option>
