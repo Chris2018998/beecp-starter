@@ -4,11 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.chris2018998</groupId>
     <artifactId>beecp-spring-boot-starter</artifactId>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <name>beecp-starter</name>
     <url>https://github.com/Chris2018998/BeeCP-Starter</url>
     <description>beecp starter on springboot</description>
     <properties>
+        <gpg.skip>false</gpg.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -46,12 +47,18 @@
         <dependency>
             <groupId>com.github.chris2018998</groupId>
             <artifactId>beecp</artifactId>
-            <version>3.3.0</version>
+            <version>3.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.36</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -73,15 +80,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.0.9.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.27</version>
+            <version>8.0.28</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -97,50 +98,28 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.1.1</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
+                <configuration>
+                    <skipTests>false</skipTests>
+                </configuration>
             </plugin>
-			 <plugin>
-				  <groupId>org.apache.maven.plugins</groupId>
-				  <artifactId>maven-gpg-plugin</artifactId>
-				  <version>1.5</version>
-				  <executions>
-					  <execution>
-						  <id>sign-artifacts</id>
-						  <phase>verify</phase>
-						  <goals>
-							  <goal>sign</goal>
-						  </goals>
-					  </execution>
-				  </executions>
-			  </plugin>     
-              <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-source-plugin</artifactId>
-                  <version>2.2.1</version>
-                  <executions>
-                      <execution>
-                          <id>attach-sources</id>
-                          <goals>
-                              <goal>jar-no-fork</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -148,8 +127,26 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <skip>${gpg.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
