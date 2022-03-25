@@ -7,24 +7,21 @@
 </p>
 
 ### :coffee: 简介
-
 BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>在Springboot的数据源管理工具
 
 [*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou动态数据源启动器(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
 
 ### :arrow_down: 下载 
-
 Maven坐标(Java8)
 ```xml
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.6.4</version>
+   <version>1.6.5</version>
 </dependency>
 ```
 
 ### :computer: 监控画面
-
 监控地址:http://IP:port/xxxx/beecp 可打开监控界面（其中xxxx为项目部署名）
    
 ![图片](https://user-images.githubusercontent.com/32663325/153717085-00c35733-604a-4287-be1a-9b8cd42df9d5.png)
