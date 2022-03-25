@@ -16,7 +16,6 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
-import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -84,7 +83,7 @@ public class SpringBootDataSourceUtil {
             while (iterator.hasNext()) {
                 String propertyName = iterator.next();
                 String configVal = getConfigValue(environment, dsConfigPrefix, propertyName);
-                if (PoolStaticCenter.isBlank(configVal)) continue;
+                if (isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
 
@@ -111,7 +110,7 @@ public class SpringBootDataSourceUtil {
 
     private static String readConfig(Environment environment, String key) {
         String value = environment.getProperty(key);
-        if (!PoolStaticCenter.isBlank(value)) {
+        if (!isBlank(value)) {
             value = value.trim();
             log.info("{}={}", key, value);
         }
