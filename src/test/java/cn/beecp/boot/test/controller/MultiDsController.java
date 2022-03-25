@@ -18,8 +18,8 @@ package cn.beecp.boot.test.controller;
 import cn.beecp.boot.DsId;
 import cn.beecp.boot.EnableDsMonitor;
 import cn.beecp.boot.EnableMultiDs;
-import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.test.util.TestUtil;
+import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,7 +50,7 @@ public class MultiDsController {
 
     @GetMapping("/testGetConnection")
     public String testGetConnection(String dsId) throws Exception {
-        if (SpringBootDataSourceUtil.isBlank(dsId)) throw new Exception("DataSource Id cant't be null or empty");
+        if (PoolStaticCenter.isBlank(dsId)) throw new Exception("DataSource Id cant't be null or empty");
         if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
             throw new Exception("DataSource Id must be one of list(ds1,ds2)");
 
@@ -61,11 +61,11 @@ public class MultiDsController {
 
     @GetMapping("/testSQL")
     public String testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
-        if (SpringBootDataSourceUtil.isBlank(dsId)) throw new Exception("DataSource Id cant't be null or empty");
+        if (PoolStaticCenter.isBlank(dsId)) throw new Exception("DataSource Id cant't be null or empty");
         if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
             throw new Exception("DataSource Id must be one of list(ds1,ds2)");
-        if (SpringBootDataSourceUtil.isBlank(sql)) throw new Exception("Execute SQL can't be null or empty");
-        if (SpringBootDataSourceUtil.isBlank(type)) throw new Exception("Execute type't be null or empty");
+        if (PoolStaticCenter.isBlank(sql)) throw new Exception("Execute SQL can't be null or empty");
+        if (PoolStaticCenter.isBlank(type)) throw new Exception("Execute type't be null or empty");
         if (!"Statement".equalsIgnoreCase(type) && !"PreparedStatement".equalsIgnoreCase(type) && !"CallableStatement".equalsIgnoreCase(type))
             throw new Exception("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
 

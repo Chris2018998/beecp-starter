@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.test.util;
 
+import cn.beecp.pool.PoolStaticCenter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -35,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
-
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 /*
  *  Util
@@ -150,7 +149,7 @@ public class TestUtil {
 
     public static final <T> T string2Obj(String str, Class<T> clazz) {
         try {
-            if (isBlank(str) || clazz == null) {
+            if (PoolStaticCenter.isBlank(str) || clazz == null) {
                 return null;
             } else if (clazz.equals(String.class)) {
                 return (T) str;
