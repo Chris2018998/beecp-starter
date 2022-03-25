@@ -87,7 +87,7 @@ public class SingleDataSourceRegister {
             while (iterator.hasNext()) {
                 String propertyName = iterator.next();
                 String configVal = getConfigValue(environment, SP_DS_Prefix, propertyName);
-                if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
+                if (PoolStaticCenter.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
             if (!setValueMap.isEmpty()) {

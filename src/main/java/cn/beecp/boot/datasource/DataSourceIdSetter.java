@@ -36,6 +36,7 @@ public class DataSourceIdSetter {
 
     @Pointcut("@annotation(cn.beecp.boot.DsId)")
     public void pointcut() {
+        //do nothing
     }
 
     @Around("pointcut()")

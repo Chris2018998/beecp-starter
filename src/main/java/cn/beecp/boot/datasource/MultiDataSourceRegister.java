@@ -106,7 +106,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         String[] dsIds = dsIdsText.trim().split(",");
         ArrayList<String> dsIdList = new ArrayList(dsIds.length);
         for (String id : dsIds) {
-            if (SpringBootDataSourceUtil.isBlank(id)) continue;
+            if (PoolStaticCenter.isBlank(id)) continue;
 
             id = id.trim();
             if (dsIdList.contains(id))
