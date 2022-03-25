@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
+import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -70,19 +71,6 @@ public class SpringBootDataSourceUtil {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
-    public static boolean equalsString(String a, String b) {
-        return a == null ? b == null : a.equals(b);
-    }
-
-    public static boolean isBlank(String str) {
-        if (str == null) return true;
-        for (int i = 0, l = str.length(); i < l; ++i) {
-            if (!Character.isWhitespace(str.charAt(i)))
-                return false;
-        }
-        return true;
-    }
-
     public static void configDataSource(Object bean, Environment environment, String dsId, String dsConfigPrefix) throws SpringBootDataSourceException {
         try {
             //1:get all set methods
@@ -96,7 +84,7 @@ public class SpringBootDataSourceUtil {
             while (iterator.hasNext()) {
                 String propertyName = iterator.next();
                 String configVal = getConfigValue(environment, dsConfigPrefix, propertyName);
-                if (SpringBootDataSourceUtil.isBlank(configVal)) continue;
+                if (PoolStaticCenter.isBlank(configVal)) continue;
                 setValueMap.put(propertyName, configVal.trim());
             }
 
@@ -123,7 +111,7 @@ public class SpringBootDataSourceUtil {
 
     private static String readConfig(Environment environment, String key) {
         String value = environment.getProperty(key);
-        if (!SpringBootDataSourceUtil.isBlank(value)) {
+        if (!PoolStaticCenter.isBlank(value)) {
             value = value.trim();
             log.info("{}={}", key, value);
         }

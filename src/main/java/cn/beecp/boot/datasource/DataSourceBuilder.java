@@ -19,6 +19,7 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
+import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.core.env.Environment;
 
 import javax.naming.InitialContext;
@@ -53,7 +54,7 @@ class DataSourceBuilder {
      */
     public DataSourceHolder createDataSource(String dsId, String dsPrefix, Environment environment, boolean isSqlTrace) {
         String jndiNameTex = getConfigValue(environment, dsPrefix, SP_DS_Jndi);
-        if (!SpringBootDataSourceUtil.isBlank(jndiNameTex)) {//jndi dataSource
+        if (!PoolStaticCenter.isBlank(jndiNameTex)) {//jndi dataSource
             return lookupJndiDataSource(dsId, jndiNameTex, isSqlTrace);
         } else {//independent type
             return createDataSourceByDsType(dsId, dsPrefix, environment, isSqlTrace);
@@ -85,7 +86,7 @@ class DataSourceBuilder {
     private DataSourceHolder createDataSourceByDsType(String dsId, String dsConfigPrefix, Environment environment, boolean traceSQL) {
         //1:load dataSource class
         String dataSourceClassName = getConfigValue(environment, dsConfigPrefix, SP_DS_Type);
-        if (SpringBootDataSourceUtil.isBlank(dataSourceClassName))
+        if (PoolStaticCenter.isBlank(dataSourceClassName))
             dataSourceClassName = SP_DS_Default_Type;//BeeDataSource is default
         else
             dataSourceClassName = dataSourceClassName.trim();

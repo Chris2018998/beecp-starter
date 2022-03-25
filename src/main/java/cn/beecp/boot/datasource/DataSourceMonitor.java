@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
+import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -30,8 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 /**
  * Controller
@@ -84,10 +83,10 @@ public class DataSourceMonitor {
     @PostMapping("/beecp/login")
     public String login(@RequestBody Map<String, String> paramMap) {
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        if (!isBlank(admin.getUserId())) {
+        if (!PoolStaticCenter.isBlank(admin.getUserId())) {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
-            if (admin.getUserId().equals(userId) && SpringBootDataSourceUtil.equalsString(admin.getPassword(), password)) {
+            if (admin.getUserId().equals(userId) && PoolStaticCenter.equalsString(admin.getPassword(), password)) {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = servletRequestAttributes.getRequest();
                 request.getSession().setAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME, "Y");

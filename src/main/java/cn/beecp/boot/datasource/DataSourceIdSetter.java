@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.DsId;
+import cn.beecp.pool.PoolStaticCenter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -44,13 +45,13 @@ public class DataSourceIdSetter {
         SpringDataSourceRegMap dsMap = SpringDataSourceRegMap.getInstance();
 
         String dsId = annotation.value();
-        if (!SpringBootDataSourceUtil.isBlank(dsId))
+        if (!PoolStaticCenter.isBlank(dsId))
             dsMap.setCurDsId(dsId.trim());
 
         try {
             return joinPoint.proceed();
         } finally {
-            if (!SpringBootDataSourceUtil.isBlank(dsId))
+            if (!PoolStaticCenter.isBlank(dsId))
                 dsMap.removeCurDsId();
         }
     }

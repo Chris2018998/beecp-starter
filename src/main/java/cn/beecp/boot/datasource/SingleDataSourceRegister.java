@@ -20,6 +20,7 @@ import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
+import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,7 @@ public class SingleDataSourceRegister {
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
         String dsId = getConfigValue(environment, SP_DS_Prefix, SP_DS_Id);
-        if (isBlank(dsId)) dsId = "beeDs";//default ds Id
+        if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDs";//default ds Id
 
         boolean traceSQL = configSqlTracePool(environment);
         BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();

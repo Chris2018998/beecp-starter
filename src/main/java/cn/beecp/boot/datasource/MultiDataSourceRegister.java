@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
+import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -99,7 +100,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      */
     private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
         String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_DS_Id);
-        if (SpringBootDataSourceUtil.isBlank(dsIdsText))
+        if (PoolStaticCenter.isBlank(dsIdsText))
             throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_DS_Id);
 
         String[] dsIds = dsIdsText.trim().split(",");
@@ -135,13 +136,13 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
 
-        if (!SpringBootDataSourceUtil.isBlank(combineId)) {
+        if (!PoolStaticCenter.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
                 throw new SpringBootDataSourceException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
             if (this.existsBeanDefinition(combineId, registry))
                 throw new SpringBootDataSourceException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
-            if (SpringBootDataSourceUtil.isBlank(primaryDs))
+            if (PoolStaticCenter.isBlank(primaryDs))
                 throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_DS_Combine_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
                 throw new SpringBootDataSourceException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
@@ -167,7 +168,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
             for (String dsId : dsIdList) {
                 String dsPrefix = SP_DS_Prefix + "." + dsId;
                 String primaryText = getConfigValue(environment, dsPrefix, SP_DS_Primary);
-                boolean primary = SpringBootDataSourceUtil.isBlank(primaryText) ? false : Boolean.valueOf(primaryText);
+                boolean primary = PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText);
                 DataSourceHolder ds = dsBuilder.createDataSource(dsId, dsPrefix, environment, isSqlTrace);//create datasource instanc
                 ds.setPrimary(primary);
                 dsMap.put(dsId, ds);
@@ -190,10 +191,10 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         String primaryDsId = combineProperties.getProperty(SP_DS_Combine_PrimaryDs);
 
         for (DataSourceHolder regInfo : dsMap.values())
-            registerDataSourceBean(regInfo, isSqlTrace, combineId, registry);
+            registerDataSourceBean(regInfo, isSqlTrace, registry);
 
         //register combine DataSource
-        if (!isBlank(combineId) && !isBlank(primaryDsId)) {
+        if (!PoolStaticCenter.isBlank(combineId) && !PoolStaticCenter.isBlank(primaryDsId)) {
             CombineDataSource combineDataSource = new CombineDataSource(primaryDsId);
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
@@ -211,7 +212,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
     }
 
     //4.1:register dataSource to Spring bean container
-    private void registerDataSourceBean(DataSourceHolder regInfo, boolean traceSQL, String combineId, BeanDefinitionRegistry registry) {
+    private void registerDataSourceBean(DataSourceHolder regInfo, boolean traceSQL, BeanDefinitionRegistry registry) {
         SpringRegDataSource ds = regInfo.getDs();
         GenericBeanDefinition define = new GenericBeanDefinition();
         define.setPrimary(regInfo.isPrimary());

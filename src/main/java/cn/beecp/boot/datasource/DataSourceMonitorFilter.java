@@ -15,13 +15,13 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.pool.PoolStaticCenter;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.isBlank;
 
 /**
  * request filter
@@ -33,9 +33,11 @@ public class DataSourceMonitorFilter implements Filter {
     private String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
 
     public void destroy() {
+        //do nothing
     }
 
     public void init(FilterConfig var1) throws ServletException {
+        //do nothing
     }
 
     public void doFilter(ServletRequest var1, ServletResponse var2, FilterChain var3) throws IOException, ServletException {
@@ -43,7 +45,7 @@ public class DataSourceMonitorFilter implements Filter {
         HttpSession session = req.getSession();
         Object attributeVal = session.getAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME);
         String servletPath = req.getServletPath();
-        if ("Y".equals(attributeVal) || isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(servletPath)) {
+        if ("Y".equals(attributeVal) || PoolStaticCenter.isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(servletPath)) {
             var3.doFilter(var1, var2);
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(var1, var2);

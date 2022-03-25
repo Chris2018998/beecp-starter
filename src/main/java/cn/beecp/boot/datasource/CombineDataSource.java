@@ -15,6 +15,8 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.pool.PoolStaticCenter;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,7 +56,7 @@ public class CombineDataSource implements DataSource {
     private SpringRegDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
-        dsId = !SpringBootDataSourceUtil.isBlank(dsId) ? dsId : primaryId;
+        dsId = !PoolStaticCenter.isBlank(dsId) ? dsId : primaryId;
         SpringRegDataSource ds = dataSourceMap.getDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;
