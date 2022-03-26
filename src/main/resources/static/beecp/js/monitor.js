@@ -111,8 +111,7 @@ $(function () {
                 afterLoadSqlTraceList(data);
             }
         });
-    };
-
+    }
     function getDataSourceListFromServer() {
         $.ajax({
             type: 'POST',
@@ -148,8 +147,7 @@ $(function () {
                 }
             }
         });
-    };
-
+    }
     function getContextPath() {
         var webFullPath = window.document.location.href;
         var strPath = window.document.location.pathname;
