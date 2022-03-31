@@ -54,7 +54,7 @@ public class SqlTracePool {
     private static final SqlTracePool instance = new SqlTracePool();
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final LinkedList<SqlTraceEntry> alertEntryList = new LinkedList();
+    private final LinkedList<SqlTraceEntry> alertEntryList = new LinkedList<>();
     private final AtomicInteger tracedQueueSize = new AtomicInteger(0);
     private final ConcurrentLinkedDeque<SqlTraceEntry> traceQueue = new ConcurrentLinkedDeque<SqlTraceEntry>();
     private final ScheduledThreadPoolExecutor timeoutSchExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
@@ -66,9 +66,9 @@ public class SqlTracePool {
     private long sqlExecSlowTime = TimeUnit.SECONDS.toMillis(6);
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
     private SqlTraceAlert sqlTraceAlert = new SqlTraceAlert();
-    private LinkedList<SqlTraceEntry> tempList = new LinkedList();
+    private LinkedList<SqlTraceEntry> tempList = new LinkedList<>();
 
-    public static final SqlTracePool getInstance() {
+    public static SqlTracePool getInstance() {
         return instance;
     }
 

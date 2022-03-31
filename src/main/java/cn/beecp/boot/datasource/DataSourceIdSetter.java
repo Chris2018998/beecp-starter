@@ -33,7 +33,6 @@ import org.springframework.core.annotation.Order;
 @Aspect
 @Order(1)
 public class DataSourceIdSetter {
-
     @Pointcut("@annotation(cn.beecp.boot.DsId)")
     public void pointcut() {
         //do nothing
@@ -43,7 +42,7 @@ public class DataSourceIdSetter {
     public Object setDataSourceId(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         DsId annotation = methodSignature.getMethod().getAnnotation(DsId.class);
-        SpringDataSourceRegMap dsMap = SpringDataSourceRegMap.getInstance();
+        SpringBootDataSourceCenter dsMap = SpringBootDataSourceCenter.getInstance();
 
         String dsId = annotation.value();
         if (!PoolStaticCenter.isBlank(dsId))

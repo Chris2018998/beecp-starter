@@ -1,0 +1,239 @@
+/*
+ * Copyright Chris2018998
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package cn.beecp.boot.datasource;
+
+import cn.beecp.BeeDataSource;
+import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
+import cn.beecp.pool.PoolStaticCenter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.core.env.Environment;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import static cn.beecp.pool.PoolStaticCenter.*;
+
+/*
+ *  Spring Boot DataSource Util
+ *
+ *  @author Chris.Liao
+ */
+public class SpringBootDataSourceUtil {
+    //Spring dataSource configuration prefix-key name
+    static final String SP_DS_Prefix = "spring.datasource";
+    //DataSource config id list on springboot
+    static final String SP_DS_Id = "dsId";
+    //indicator:Spring dataSource register as primary datasource
+    static final String SP_DS_Primary = "primary";
+    //combineId
+    static final String SP_DS_CombineId = "combineId";
+    //combineDefaultDs
+    static final String SP_DS_Combine_PrimaryDs = "combinePrimaryId";
+    //monitor admin user id
+    static final String SP_DS_Monitor_UserId = "monitorUserId";
+    //monitor admin user password
+    static final String SP_DS_Monitor_Password = "monitorPassword";
+    //Spring jndi dataSource configuration key name
+    private static final String SP_DS_Jndi = "jndiName";
+    //Datasource class name
+    private static final String SP_DS_Type = "type";
+    //Default DataSourceName
+    private static final String SP_DS_Default_Type = "cn.beecp.BeeDataSource";
+    //log
+    private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
+    //Spring  DsAttributeSetFactory map
+    private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
+
+    static {
+        factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
+    }
+
+    //***************************************************************************************************************//
+    //                                1: spring register or base  (3)                                                //
+    //***************************************************************************************************************//
+    public static String formatDate(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
+    }
+
+    static Supplier createSupplier(Object bean) {
+        return new RegSupplier(bean);
+    }
+
+    static boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
+        try {
+            return registry.getBeanDefinition(beanName) != null;
+        } catch (NoSuchBeanDefinitionException e) {
+            return false;
+        }
+    }
+
+    //***************************************************************************************************************//
+    //                                2: Spring Boot dataSource create(4)                                            //
+    //***************************************************************************************************************//
+    static SpringBootDataSource createSpringBootDataSource(String dsPrefix, String dsId, Environment environment) {
+        String jndiNameTex = getConfigValue(dsPrefix, SP_DS_Jndi, environment);
+        if (!PoolStaticCenter.isBlank(jndiNameTex)) {//jndi dataSource
+            return lookupJndiDataSource(dsId, jndiNameTex);
+        } else {//independent type
+            return createDataSourceByDsType(dsPrefix, dsId, environment);
+        }
+    }
+
+    private static SpringBootDataSource lookupJndiDataSource(String dsId, String jndiName) {
+        try {
+            Object namingObj = new InitialContext().lookup(jndiName);
+            if (namingObj instanceof DataSource) {
+                return new SpringBootDataSource(dsId, (DataSource) namingObj, true);
+            } else {
+                throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Jndi Name(" + jndiName + ") is not a data source object");
+            }
+        } catch (NamingException e) {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to lookup data source by jndi-name:" + jndiName);
+        }
+    }
+
+    private static SpringBootDataSource createDataSourceByDsType(String dsPrefix, String dsId, Environment environment) {
+        //1:load dataSource class
+        String dsClassName = getConfigValue(dsPrefix, SP_DS_Type, environment);
+        dsClassName = PoolStaticCenter.isBlank(dsClassName) ? SP_DS_Default_Type : dsClassName.trim();
+
+        //2:create dataSource class
+        Class dsClass;
+        try {
+            dsClass = Class.forName(dsClassName);
+        } catch (ClassNotFoundException e) {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Not found class:" + dsClassName);
+        }
+
+        //3:create dataSource
+        DataSource ds;
+        SpringBootDataSourceFactory dsFactory = factoryMap.get(dsClass);
+        if (dsFactory == null && SpringBootDataSourceFactory.class.isAssignableFrom(dsClass))
+            dsFactory = (SpringBootDataSourceFactory) createInstanceByClassName(dsId, dsClass);
+        if (dsFactory != null) {//create by factory
+            try {
+                ds = dsFactory.createDataSource(dsPrefix, dsId, environment);
+            } catch (SpringBootDataSourceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to get instance from dataSource factory", e);
+            }
+        } else if (DataSource.class.isAssignableFrom(dsClass)) {
+            ds = (DataSource) createInstanceByClassName(dsId, dsClass);
+            setPropertiesValue(ds, dsPrefix, dsId, environment);
+        } else {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-target type is not a valid data source type");
+        }
+
+        return new SpringBootDataSource(dsId, ds, false);
+    }
+
+    private static Object createInstanceByClassName(String dsId, Class objClass) {
+        try {
+            return objClass.newInstance();
+        } catch (Exception e) {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to instantiated the class:" + objClass.getName(), e);
+        }
+    }
+
+    //***************************************************************************************************************//
+    //                                3: Spring Boot configuration set(3)                                            //
+    //***************************************************************************************************************//
+    public static void setPropertiesValue(Object bean, String dsPrefix, String dsId, Environment environment) throws SpringBootDataSourceException {
+        try {
+            //1:get all set methods
+            Map<String, Method> setMethodMap = getClassSetMethodMap(bean.getClass());
+            //2:create map to collect config value
+            Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
+            //3:loop to find out properties config value by set methods
+            for (String propertyName : setMethodMap.keySet()) {
+                String configVal = getConfigValue(dsPrefix, propertyName, environment);
+                if (isBlank(configVal)) continue;
+                setValueMap.put(propertyName, configVal.trim());
+            }
+            //4:inject found config value to ds config object
+            PoolStaticCenter.setPropertiesValue(bean, setMethodMap, setValueMap);
+        } catch (Throwable e) {
+            throw new SpringBootDataSourceException("DataSource(" + dsId + ")-Failed to set properties", e);
+        }
+    }
+
+    public static String getConfigValue(String dsPrefix, final String propertyName, Environment environment) {
+        String value = readConfig(environment, dsPrefix + "." + propertyName);
+        if (value != null) return value;
+
+        String newPropertyName = propertyName.substring(0, 1).toLowerCase(Locale.US) + propertyName.substring(1);
+        value = readConfig(environment, dsPrefix + "." + newPropertyName);
+        if (value != null) return value;
+
+        value = readConfig(environment, dsPrefix + "." + propertyNameToFieldId(newPropertyName, Separator_MiddleLine));
+        if (value != null) return value;
+
+        return readConfig(environment, dsPrefix + "." + propertyNameToFieldId(newPropertyName, Separator_UnderLine));
+    }
+
+    private static String readConfig(Environment environment, String key) {
+        String value = environment.getProperty(key);
+        if (!isBlank(value)) {
+            value = value.trim();
+            log.info("{}={}", key, value);
+        }
+        return value;
+    }
+
+    //***************************************************************************************************************//
+    //                               4: other(2)                                                                     //
+    //***************************************************************************************************************//
+    static void tryToCloseDataSource(DataSource ds) {
+        Class dsClass = ds.getClass();
+        Class[] paramTypes = new Class[0];
+        Object[] paramValues = new Object[0];
+        String[] methodNames = new String[]{"close", "shutdown", "terminate"};
+        for (String name : methodNames) {
+            try {
+                dsClass.getMethod(name, paramTypes).invoke(ds, paramValues);
+                break;
+            } catch (Throwable e) {
+                //do nothing
+            }
+        }
+    }
+
+    private static final class RegSupplier implements Supplier {
+        private final Object ds;
+
+        RegSupplier(Object ds) {
+            this.ds = ds;
+        }
+
+        public Object get() {
+            return ds;
+        }
+    }
+}

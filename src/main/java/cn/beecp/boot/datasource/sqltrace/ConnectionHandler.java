@@ -34,7 +34,7 @@ public class ConnectionHandler implements InvocationHandler {
     private String dsId;
     private Connection connection;
 
-    public ConnectionHandler(Connection connection, String dsId) {
+    ConnectionHandler(Connection connection, String dsId) {
         this.dsId = dsId;
         this.connection = connection;
     }

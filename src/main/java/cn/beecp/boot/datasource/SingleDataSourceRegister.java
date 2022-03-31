@@ -27,14 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
-import static cn.beecp.pool.PoolStaticCenter.getClassSetMethodMap;
-import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 
 /*
  *  config example
@@ -54,48 +48,35 @@ import static cn.beecp.pool.PoolStaticCenter.setPropertiesValue;
 @ConditionalOnClass(BeeDataSource.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
+
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        String dsId = getConfigValue(environment, SP_DS_Prefix, SP_DS_Id);
+        String dsId = getConfigValue(SP_DS_Prefix, SP_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDs";//default ds Id
 
-        boolean traceSQL = configSqlTracePool(environment);
-        BeeDataSourceFactory dsFactory = new BeeDataSourceFactory();
-        DataSource beesDs = dsFactory.createDataSource(environment, dsId, SP_DS_Prefix);
-
-        SpringRegDataSource springDs = new SpringRegDataSource(dsId, beesDs, traceSQL, false);
-        SpringDataSourceRegMap.getInstance().addDataSource(springDs);
+        DataSource beesDs = new BeeDataSourceFactory().createDataSource(SP_DS_Prefix, dsId, environment);
+        SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
+        springDs.setTraceSQL(setupSqlTracePool(dsId, environment));
+        SpringBootDataSourceCenter.getInstance().addDataSource(springDs);
         return springDs;
     }
 
     /**
      * config sql trace pool
      *
+     * @param dsId        dataSource Id
      * @param environment Springboot environment
      * @return sql trace indicator
      */
-    protected boolean configSqlTracePool(Environment environment) {
+    boolean setupSqlTracePool(String dsId, Environment environment) {
         try {
             //1:create sql trace config instance
             SqlTraceConfig config = new SqlTraceConfig();
-            //2:get all properties set methods
-            Map<String, Method> setMethodMap = getClassSetMethodMap(config.getClass());
-            //3:create properties to collect config value
-            Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
-            //4:loop to find config value by properties map
-            Iterator<String> iterator = setMethodMap.keySet().iterator();
-            while (iterator.hasNext()) {
-                String propertyName = iterator.next();
-                String configVal = getConfigValue(environment, SP_DS_Prefix, propertyName);
-                if (PoolStaticCenter.isBlank(configVal)) continue;
-                setValueMap.put(propertyName, configVal.trim());
-            }
-            if (!setValueMap.isEmpty()) {
-                //5:inject found config value to ds config object
-                setPropertiesValue(config, setMethodMap, setValueMap);
-            }
 
-            //6:create sql-trace pool
+            //2:set Properties
+            setPropertiesValue(config, SP_DS_Prefix, dsId, environment);
+
+            //3:create sql-trace pool
             SqlTracePool tracePool = SqlTracePool.getInstance();
             tracePool.init(config);
             return tracePool.isSqlTrace();

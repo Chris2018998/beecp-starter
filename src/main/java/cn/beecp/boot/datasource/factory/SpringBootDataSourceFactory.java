@@ -29,12 +29,12 @@ public interface SpringBootDataSourceFactory {
     /**
      * create datasource by configuration
      *
-     * @param environment    SpringBoot environment
-     * @param dsId           configured data source id
-     * @param dsConfigPrefix configured prefix name
+     * @param environment SpringBoot environment
+     * @param dsId        configured data source id
+     * @param dsPrefix    configured prefix name
      * @return data source instance
      * @throws Exception when fail to set
      */
-    DataSource createDataSource(Environment environment, String dsId, String dsConfigPrefix) throws Exception;
+    DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception;
 
 }

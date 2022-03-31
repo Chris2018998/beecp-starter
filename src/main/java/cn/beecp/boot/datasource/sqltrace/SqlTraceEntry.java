@@ -42,8 +42,7 @@ public class SqlTraceEntry {
     private Throwable failCause;
     private String methodName;
 
-
-    public SqlTraceEntry(String dsId, String sql, String statementType) {
+    SqlTraceEntry(String dsId, String sql, String statementType) {
         this.sql = sql;
         this.dsId = dsId;
         this.statementType = statementType;

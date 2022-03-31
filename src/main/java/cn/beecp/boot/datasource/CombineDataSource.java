@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 public class CombineDataSource implements DataSource {
     private String primaryId;
     private boolean isClosed = false;
-    private SpringDataSourceRegMap dataSourceMap = SpringDataSourceRegMap.getInstance();
+    private SpringBootDataSourceCenter dataSourceMap = SpringBootDataSourceCenter.getInstance();
 
     CombineDataSource(String primaryId) {
         this.primaryId = primaryId;
@@ -53,11 +53,11 @@ public class CombineDataSource implements DataSource {
         return getTraceDataSource().getConnection(username, password);
     }
 
-    private SpringRegDataSource getTraceDataSource() throws SQLException {
+    private SpringBootDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = dataSourceMap.getCurDsId();
         dsId = !PoolStaticCenter.isBlank(dsId) ? dsId : primaryId;
-        SpringRegDataSource ds = dataSourceMap.getDataSource(dsId);
+        SpringBootDataSource ds = dataSourceMap.getDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;
     }

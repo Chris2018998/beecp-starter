@@ -28,7 +28,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class DataSourceMonitor {
     private final static String chinese_page = "/beecp/chinese.html";
     private final static String english_page = "/beecp/english.html";
     private static final Logger log = LoggerFactory.getLogger(DataSourceMonitor.class);
-    private SpringDataSourceRegMap traceDataSourceMap = SpringDataSourceRegMap.getInstance();
+    private SpringBootDataSourceCenter traceDataSourceMap = SpringBootDataSourceCenter.getInstance();
 
     @RequestMapping("/beecp")
     public String welcome1() {
@@ -116,14 +115,8 @@ public class DataSourceMonitor {
     public void clearAllConnections(@RequestBody Map<String, String> parameterMap) {
         if (parameterMap != null) {
             String dsId = parameterMap.get("dsId");
-            SpringRegDataSource ds = traceDataSourceMap.getDataSource(dsId);
-            if (ds != null) {
-                try {
-                    ds.clear();
-                } catch (SQLException e) {
-                    log.error("Failed to reset datasource({}) connection pool", ds.getId());
-                }
-            }
+            SpringBootDataSource ds = traceDataSourceMap.getDataSource(dsId);
+            if (ds != null) ds.clear();
         }
     }
 }

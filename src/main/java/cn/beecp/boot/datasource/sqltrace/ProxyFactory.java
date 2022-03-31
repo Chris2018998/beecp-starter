@@ -30,7 +30,7 @@ public class ProxyFactory {
     private static final Class[] INTF_XAConnection = new Class[]{XAConnection.class};
     private static final Class[] INTF_CallableStatement = new Class[]{CallableStatement.class};
 
-    public static final Connection createConnection(Connection delegate, String dsId) {
+    public static Connection createConnection(Connection delegate, String dsId) {
         return (Connection) Proxy.newProxyInstance(
                 classLoader,
                 INTF_Connection,
@@ -38,11 +38,11 @@ public class ProxyFactory {
         );
     }
 
-    public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId) {
+    public static Statement createStatementProxy(Statement delegate, String statementType, String dsId) {
         return createStatementProxy(delegate, statementType, dsId, null);
     }
 
-    public static final Statement createStatementProxy(Statement delegate, String statementType, String dsId, String SQL) {
+    static Statement createStatementProxy(Statement delegate, String statementType, String dsId, String SQL) {
         return (Statement) Proxy.newProxyInstance(
                 classLoader,
                 INTF_CallableStatement,

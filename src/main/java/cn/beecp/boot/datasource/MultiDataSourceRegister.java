@@ -19,7 +19,6 @@ import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.EnvironmentAware;
@@ -80,16 +79,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         Properties combineProperties = getCombineInfo(dsIdList, environment, registry);
 
         //3:config sql-trace pool
-        boolean isSqlTrace = this.configSqlTracePool(environment);
+        boolean isSqlTrace = this.setupSqlTracePool(null, environment);
 
         //4:create dataSources by id list
-        Map<String, DataSourceHolder> dsMap = this.createDataSources(dsIdList, environment, isSqlTrace);
+        Map<String, SpringBootDataSource> dsMap = this.createDataSources(dsIdList, environment, isSqlTrace);
 
         //5:register datasource to spring container
-        this.registerDataSources(dsMap, combineProperties, isSqlTrace, registry);
-
+        this.registerDataSources(dsMap, combineProperties, registry);
     }
-
 
     /**
      * 1: get datasource config id list
@@ -99,19 +96,19 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      * @return datasource name list
      */
     private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
-        String dsIdsText = getConfigValue(environment, SP_DS_Prefix, SP_DS_Id);
+        String dsIdsText = getConfigValue(SP_DS_Prefix, SP_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsIdsText))
             throw new SpringBootDataSourceException("Missed or not found config item:" + SP_DS_Prefix + "." + SP_DS_Id);
 
         String[] dsIds = dsIdsText.trim().split(",");
-        ArrayList<String> dsIdList = new ArrayList(dsIds.length);
+        ArrayList<String> dsIdList = new ArrayList<>(dsIds.length);
         for (String id : dsIds) {
             if (PoolStaticCenter.isBlank(id)) continue;
 
             id = id.trim();
             if (dsIdList.contains(id))
                 throw new SpringBootDataSourceException("Duplicated id(" + id + ")in multi-datasource id list");
-            if (this.existsBeanDefinition(id, registry))
+            if (existsBeanDefinition(id, registry))
                 throw new SpringBootDataSourceException("DataSource id(" + id + ")has been registered by another bean");
 
             dsIdList.add(id);
@@ -130,8 +127,8 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      * @return datasource name list
      */
     private Properties getCombineInfo(List<String> dsIdList, Environment environment, BeanDefinitionRegistry registry) {
-        String combineId = getConfigValue(environment, SP_DS_Prefix, SP_DS_CombineId);
-        String primaryDs = getConfigValue(environment, SP_DS_Prefix, SP_DS_Combine_PrimaryDs);
+        String combineId = getConfigValue(SP_DS_Prefix, SP_DS_CombineId, environment);
+        String primaryDs = getConfigValue(SP_DS_Prefix, SP_DS_Combine_PrimaryDs, environment);
 
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
@@ -139,7 +136,7 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
         if (!PoolStaticCenter.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
                 throw new SpringBootDataSourceException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
-            if (this.existsBeanDefinition(combineId, registry))
+            if (existsBeanDefinition(combineId, registry))
                 throw new SpringBootDataSourceException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
             if (PoolStaticCenter.isBlank(primaryDs))
@@ -159,23 +156,22 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      *
      * @param dsIdList    datasource name list
      * @param environment springboot environment
-     * @return
+     * @return dataSource holder map
      */
-    private Map<String, DataSourceHolder> createDataSources(List<String> dsIdList, Environment environment, boolean isSqlTrace) {
-        DataSourceBuilder dsBuilder = new DataSourceBuilder();
-        Map<String, DataSourceHolder> dsMap = new LinkedHashMap<String, DataSourceHolder>(dsIdList.size());
+    private Map<String, SpringBootDataSource> createDataSources(List<String> dsIdList, Environment environment, boolean isSqlTrace) {
+        Map<String, SpringBootDataSource> dsMap = new LinkedHashMap<String, SpringBootDataSource>(dsIdList.size());
         try {
             for (String dsId : dsIdList) {
                 String dsPrefix = SP_DS_Prefix + "." + dsId;
-                String primaryText = getConfigValue(environment, dsPrefix, SP_DS_Primary);
-                boolean primary = PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText);
-                DataSourceHolder ds = dsBuilder.createDataSource(dsId, dsPrefix, environment, isSqlTrace);//create datasource instanc
-                ds.setPrimary(primary);
+                SpringBootDataSource ds = createSpringBootDataSource(dsPrefix, dsId, environment);//create datasource instance
+                ds.setTraceSQL(isSqlTrace);
+                String primaryText = getConfigValue(dsPrefix, SP_DS_Primary, environment);
+                ds.setPrimary(PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
                 dsMap.put(dsId, ds);
             }
             return dsMap;
         } catch (Throwable e) {//failed then close all created dataSource
-            for (DataSourceHolder ds : dsMap.values())
+            for (SpringBootDataSource ds : dsMap.values())
                 ds.close();
             throw new RuntimeException("multi-DataSource created failed", e);
         }
@@ -186,12 +182,12 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
      *
      * @param dsMap datasource list
      */
-    private void registerDataSources(Map<String, DataSourceHolder> dsMap, Properties combineProperties, boolean isSqlTrace, BeanDefinitionRegistry registry) {
+    private void registerDataSources(Map<String, SpringBootDataSource> dsMap, Properties combineProperties, BeanDefinitionRegistry registry) {
         String combineId = combineProperties.getProperty(SP_DS_CombineId);
         String primaryDsId = combineProperties.getProperty(SP_DS_Combine_PrimaryDs);
 
-        for (DataSourceHolder regInfo : dsMap.values())
-            registerDataSourceBean(regInfo, isSqlTrace, registry);
+        for (SpringBootDataSource ds : dsMap.values())
+            registerDataSourceBean(ds, registry);
 
         //register combine DataSource
         if (!PoolStaticCenter.isBlank(combineId) && !PoolStaticCenter.isBlank(primaryDsId)) {
@@ -212,23 +208,14 @@ public class MultiDataSourceRegister extends SingleDataSourceRegister implements
     }
 
     //4.1:register dataSource to Spring bean container
-    private void registerDataSourceBean(DataSourceHolder regInfo, boolean traceSQL, BeanDefinitionRegistry registry) {
-        SpringRegDataSource ds = regInfo.getDs();
+    private void registerDataSourceBean(SpringBootDataSource springDs, BeanDefinitionRegistry registry) {
         GenericBeanDefinition define = new GenericBeanDefinition();
-        define.setPrimary(regInfo.isPrimary());
-        define.setBeanClass(ds.getClass());
-        define.setInstanceSupplier(createSupplier(ds));
-        registry.registerBeanDefinition(regInfo.getDsId(), define);
-        log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), regInfo.getDsId());
-        SpringDataSourceRegMap.getInstance().addDataSource(ds);
-    }
-
-    private boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
-        try {
-            return registry.getBeanDefinition(beanName) != null;
-        } catch (NoSuchBeanDefinitionException e) {
-            return false;
-        }
+        define.setPrimary(springDs.isPrimary());
+        define.setBeanClass(springDs.getClass());
+        define.setInstanceSupplier(createSupplier(springDs));
+        registry.registerBeanDefinition(springDs.getId(), define);
+        log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), springDs.getId());
+        SpringBootDataSourceCenter.getInstance().addDataSource(springDs);
     }
 }
 

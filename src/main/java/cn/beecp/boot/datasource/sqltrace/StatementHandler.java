@@ -35,7 +35,7 @@ public class StatementHandler implements InvocationHandler {
         this(statement, statementType, dsId, null);
     }
 
-    public StatementHandler(Statement statement, String statementType, String dsId, String sql) {
+    StatementHandler(Statement statement, String statementType, String dsId, String sql) {
         this.dsId = dsId;
         this.statement = statement;
         this.statementType = statementType;

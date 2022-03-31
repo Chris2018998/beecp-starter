@@ -28,19 +28,19 @@ class DataSourceMonitorAdmin {
     private String userId;
     private String password;
 
-    public String getUserId() {
+    String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
 }

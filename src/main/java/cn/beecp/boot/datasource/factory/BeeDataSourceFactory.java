@@ -17,6 +17,7 @@ package cn.beecp.boot.datasource.factory;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.BeeDataSourceConfig;
+import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.jta.BeeJtaDataSource;
 import org.springframework.core.env.Environment;
 
@@ -25,7 +26,6 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.configDataSource;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
 import static cn.beecp.pool.PoolStaticCenter.*;
 
@@ -42,15 +42,15 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
-    public DataSource createDataSource(Environment environment, String dsId, String dsConfigPrefix) throws Exception {
+    public DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception {
         //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
-        configDataSource(config, environment, dsId, dsConfigPrefix);
-        setConnectPropertiesConfig(config, environment, dsConfigPrefix);
+        SpringBootDataSourceUtil.setPropertiesValue(config, dsPrefix, dsId, environment);
+        setConnectPropertiesConfig(config, dsPrefix, environment);
 
         //2:try to lookup TransactionManager by jndi
         TransactionManager tm = null;
-        String tmJndiName = getConfigValue(environment, dsConfigPrefix, CONFIG_TM_JNDI);
+        String tmJndiName = getConfigValue(dsPrefix, CONFIG_TM_JNDI, environment);
         if (!isBlank(tmJndiName)) {
             Context nameCtx = new InitialContext();
             tm = (TransactionManager) nameCtx.lookup(tmJndiName);
@@ -61,13 +61,13 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         return (tm != null) ? new BeeJtaDataSource(ds, tm) : ds;
     }
 
-    private void setConnectPropertiesConfig(BeeDataSourceConfig config, Environment environment, String dsConfigPrefix) {
-        config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP));
-        String connectPropertiesCount = getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP_SIZE);
+    private void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+        config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
+        String connectPropertiesCount = getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
         if (!isBlank(connectPropertiesCount)) {
             int count = Integer.parseInt(connectPropertiesCount.trim());
             for (int i = 1; i <= count; i++)
-                config.addConnectProperty(getConfigValue(environment, dsConfigPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i));
+                config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i, environment));
         }
     }
 }

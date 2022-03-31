@@ -17,7 +17,6 @@ package cn.beecp.boot.datasource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.EnvironmentAware;
@@ -80,22 +79,14 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
         setAdminInfo(environment);
     }
 
-    private boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
-        try {
-            return registry.getBeanDefinition(beanName) != null;
-        } catch (NoSuchBeanDefinitionException e) {
-            return false;
-        }
-    }
-
     /**
      * read admin info
      *
      * @param environment Springboot environment
      */
     private void setAdminInfo(Environment environment) {
-        String adminName = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_UserId);
-        String adminPassword = getConfigValue(environment, SP_DS_Prefix, SP_DS_Monitor_Password);
+        String adminName = getConfigValue(SP_DS_Prefix, SP_DS_Monitor_UserId, environment);
+        String adminPassword = getConfigValue(SP_DS_Prefix, SP_DS_Monitor_Password, environment);
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
         admin.setUserId(adminName);
         admin.setPassword(adminPassword);

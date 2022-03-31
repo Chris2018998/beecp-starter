@@ -198,6 +198,7 @@
 
                 return list;
             }
+
             function detectParserForColumn(table, rows, rowIndex, cellIndex) {
                 var l = parsers.length,
                     node = false,
@@ -288,6 +289,7 @@
 
                 return cache;
             }
+
             function getElementText(config, node) {
 
                 var text = "";
@@ -369,6 +371,7 @@
                 }, 0);
 
             }
+
             function buildHeaders(table) {
 
                 if (table.config.debug) {
@@ -408,6 +411,7 @@
                 return $tableHeaders;
 
             }
+
             // from:
             // http://www.javascripttoolbox.com/lib/table/examples.php
             // http://www.javascripttoolbox.com/temp/table_cellindex.html
@@ -473,6 +477,7 @@
                 }
                 return arr;
             }
+
             function checkHeaderMetadata(cell) {
                 if (($.metadata) && ($(cell).metadata().sorter === false)) {
                     return true;
@@ -510,6 +515,7 @@
                     }
                 }
             }
+
             function formatSortingOrder(v) {
                 if (typeof (v) != "Number") {
                     return (v.toLowerCase() == "desc") ? 1 : 0;
@@ -624,6 +630,7 @@
 
                 return cache;
             }
+
             function makeSortFunction(type, direction, index) {
                 var a = "a[" + index + "]",
                     b = "b[" + index + "]";
@@ -637,32 +644,41 @@
                     return "(" + a + " === null && " + b + " === null) ? 0 :(" + a + " === null ? Number.POSITIVE_INFINITY : (" + b + " === null ? Number.NEGATIVE_INFINITY : " + b + " - " + a + "));";
                 }
             }
+
             function makeSortText(i) {
                 return "((a[" + i + "] < b[" + i + "]) ? -1 : ((a[" + i + "] > b[" + i + "]) ? 1 : 0));";
             }
+
             function makeSortTextDesc(i) {
                 return "((b[" + i + "] < a[" + i + "]) ? -1 : ((b[" + i + "] > a[" + i + "]) ? 1 : 0));";
             }
+
             function makeSortNumeric(i) {
                 return "a[" + i + "]-b[" + i + "];";
             }
+
             function makeSortNumericDesc(i) {
                 return "b[" + i + "]-a[" + i + "];";
             }
+
             function sortText(a, b) {
                 if (table.config.sortLocaleCompare) return a.localeCompare(b);
                 return ((a < b) ? -1 : ((a > b) ? 1 : 0));
             }
+
             function sortTextDesc(a, b) {
                 if (table.config.sortLocaleCompare) return b.localeCompare(a);
                 return ((b < a) ? -1 : ((b > a) ? 1 : 0));
             }
+
             function sortNumeric(a, b) {
                 return a - b;
             }
+
             function sortNumericDesc(a, b) {
                 return b - a;
             }
+
             function getCachedSortType(parsers, i) {
                 return parsers[i].type;
             } /* public methods */
@@ -852,7 +868,8 @@
                 }
             };
         };
-    });
+})
+    ;
 
     // extend plugin scope
     $.fn.extend({
