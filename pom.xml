@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.chris2018998</groupId>
     <artifactId>beecp-spring-boot-starter</artifactId>
-    <version>1.6.5</version>
+    <version>1.6.6</version>
     <name>beecp-starter</name>
     <url>https://github.com/Chris2018998/BeeCP-Starter</url>
     <description>beecp starter on springboot</description>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.github.chris2018998</groupId>
             <artifactId>beecp</artifactId>
-            <version>3.3.3</version>
+            <version>3.3.5</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
