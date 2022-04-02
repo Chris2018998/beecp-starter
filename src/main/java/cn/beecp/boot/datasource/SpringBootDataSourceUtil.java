@@ -65,7 +65,12 @@ public class SpringBootDataSourceUtil {
     private static final String SP_DS_Type = "type";
     //Default DataSourceName
     private static final String SP_DS_Default_Type = "cn.beecp.BeeDataSource";
-    //log
+    //redis server
+    private static final String SP_Redis_Server = "redisServer";
+    //redis password
+    private static final String SP_Redis_Password = "redisPassword";
+
+    //logger
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     //Spring  DsAttributeSetFactory map
     private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
