@@ -21,7 +21,6 @@ import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
 import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
 import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
-import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -65,27 +64,35 @@ public class SpringBootDataSourceUtil {
     static final String Config_DS_Monitor_UserId = "monitorUserId";
     //monitor admin user password
     static final String Config_DS_Monitor_Password = "monitorPassword";
-    //monitor redis server
-    static final String Config_DS_Monitor_Redis_Server = "monitorRedis";
-    //monitor redis password
-    static final String Config_DS_Monitor_Redis_Password = "monitorRedisPassword";
 
-    //BeeCP
+    //monitor queue server
+    static final String Config_Queue_Server = "queueServer";
+    //monitor queue server port
+    static final String Config_Queue_Server_Port = "queueServerPort";
+    //monitor queue server userId
+    static final String Config_Queue_Server_UserId = "queueServerUserId";
+    //monitor queue server password
+    static final String Config_Queue_Server_Password = "queueServerPassword";
+    //monitor queue server password
+    static final String Config_Queue_Server_Push_Interval = "queueServerPushInterval";
+
+    //BeeCP dataSource Id
     static final String BeeCP_DS_ID = "beeDs";
     //BeeCP DataSource class name
     static final String BeeCP_DS_Class = "cn.beecp.BeeDataSource";
-
+    //Bee DataSource Factory
+    static final BeeDataSourceFactory BeeDataSourceFactory = new BeeDataSourceFactory();
     //logger
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     //Spring  DsAttributeSetFactory map
     private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
 
     static {
-        factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
+        factoryMap.put(BeeDataSource.class, BeeDataSourceFactory);
     }
 
     //***************************************************************************************************************//
-    //                                1: spring register or base  (3)                                                //
+    //                                1: spring register or base (3)                                                //
     //***************************************************************************************************************//
     public static String formatDate(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
@@ -108,7 +115,7 @@ public class SpringBootDataSourceUtil {
     //***************************************************************************************************************//
     static SpringBootDataSource createSpringBootDataSource(String dsPrefix, String dsId, Environment environment) {
         String jndiNameTex = getConfigValue(dsPrefix, Config_DS_Jndi, environment);
-        if (!PoolStaticCenter.isBlank(jndiNameTex)) {//jndi dataSource
+        if (!isBlank(jndiNameTex)) {//jndi dataSource
             return lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
             return createDataSourceByDsType(dsPrefix, dsId, environment);

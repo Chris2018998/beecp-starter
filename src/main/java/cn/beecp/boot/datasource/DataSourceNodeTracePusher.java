@@ -15,6 +15,10 @@
  */
 package cn.beecp.boot.datasource;
 
+import redis.clients.jedis.Jedis;
+
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
+
 /**
  * DataSource Node trace push to Jedis server
  *
@@ -22,6 +26,27 @@ package cn.beecp.boot.datasource;
  */
 
 public class DataSourceNodeTracePusher {
+    private String server;
+    private int serverPort;
+    private String password;
+
+    public void setServerInfo(String server, int serverPort, String password) {
+        this.server = server;
+        this.serverPort = serverPort;
+        this.password = password;
+    }
+
+    private void connect() {
+        Jedis jedis = new Jedis(server, serverPort);
+        if (!isBlank(password)) jedis.auth(password);
+    }
 
 
+    public void pushConnectionInfo() {
+
+    }
+
+    public void pushSQLExecuteInfo() {
+
+    }
 }
