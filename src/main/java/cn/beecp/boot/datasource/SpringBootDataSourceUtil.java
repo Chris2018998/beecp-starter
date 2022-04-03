@@ -59,17 +59,17 @@ public class SpringBootDataSourceUtil {
     static final String SP_DS_Monitor_UserId = "monitorUserId";
     //monitor admin user password
     static final String SP_DS_Monitor_Password = "monitorPassword";
-    //Spring jndi dataSource configuration key name
-    private static final String SP_DS_Jndi = "jndiName";
+    //monitor redis server
+    static final String SP_DS_Monitor_Redis_Server = "monitorRedis";
+    //monitor redis password
+    static final String SP_DS_Monitor_Redis_Password = "monitorRedisPassword";
+
     //Datasource class name
     private static final String SP_DS_Type = "type";
+    //Spring jndi dataSource configuration key name
+    private static final String SP_DS_Jndi = "jndiName";
     //Default DataSourceName
     private static final String SP_DS_Default_Type = "cn.beecp.BeeDataSource";
-    //redis server
-    private static final String SP_Redis_Server = "redisServer";
-    //redis password
-    private static final String SP_Redis_Password = "redisPassword";
-
     //logger
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     //Spring  DsAttributeSetFactory map
