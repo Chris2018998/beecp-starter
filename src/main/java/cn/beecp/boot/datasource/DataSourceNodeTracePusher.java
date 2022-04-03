@@ -20,7 +20,7 @@ import redis.clients.jedis.Jedis;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /**
- * DataSource Node trace push to Jedis server
+ * DataSource Node trace push to message queue server
  *
  * @author Chris.Liao
  */
