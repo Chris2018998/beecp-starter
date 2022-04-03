@@ -20,6 +20,8 @@ import cn.beecp.pool.ConnectionPoolMonitorVo;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
+
 /**
  * Collect registered dataSource
  *
@@ -61,7 +63,7 @@ class SpringBootDataSourceCenter {
             SpringBootDataSource ds = iterator.next();
             ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
             if (vo == null) continue;
-            if (vo.getPoolState() == 2) {//POOL_CLOSED
+            if (vo.getPoolState() == POOL_CLOSED) {//POOL_CLOSED
                 iterator.remove();
             } else {
                 Map<String, Object> monitorMap = new HashMap<>(9);

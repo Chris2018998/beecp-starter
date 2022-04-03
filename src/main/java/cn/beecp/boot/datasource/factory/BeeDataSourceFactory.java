@@ -45,7 +45,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
     public DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception {
         //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
-        SpringBootDataSourceUtil.setPropertiesValue(config, dsPrefix, dsId, environment);
+        SpringBootDataSourceUtil.setConfigPropertiesValue(config, dsPrefix, dsId, environment);
         setConnectPropertiesConfig(config, dsPrefix, environment);
 
         //2:try to lookup TransactionManager by jndi

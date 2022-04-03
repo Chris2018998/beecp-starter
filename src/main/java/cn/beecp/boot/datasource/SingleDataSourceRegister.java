@@ -17,9 +17,6 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
-import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
-import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
-import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,7 +28,7 @@ import javax.sql.DataSource;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
 /*
- *  config example
+ * config example
  *
  * spring.datasource.dsId=beeDs
  * spring.datasource.type=cn.beecp.BeeDataSource
@@ -51,37 +48,13 @@ public class SingleDataSourceRegister {
 
     @Bean
     public DataSource beeDataSource(Environment environment) throws Exception {
-        String dsId = getConfigValue(SP_DS_Prefix, SP_DS_Id, environment);
-        if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDs";//default ds Id
+        String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
+        if (PoolStaticCenter.isBlank(dsId)) dsId = BeeCP_DS_ID;//default ds Id
 
-        DataSource beesDs = new BeeDataSourceFactory().createDataSource(SP_DS_Prefix, dsId, environment);
+        DataSource beesDs = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
         SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
         springDs.setTraceSQL(setupSqlTracePool(dsId, environment));
         SpringBootDataSourceCenter.getInstance().addDataSource(springDs);
         return springDs;
-    }
-
-    /**
-     * config sql trace pool
-     *
-     * @param dsId        dataSource Id
-     * @param environment Springboot environment
-     * @return sql trace indicator
-     */
-    boolean setupSqlTracePool(String dsId, Environment environment) {
-        try {
-            //1:create sql trace config instance
-            SqlTraceConfig config = new SqlTraceConfig();
-
-            //2:set Properties
-            setPropertiesValue(config, SP_DS_Prefix, dsId, environment);
-
-            //3:create sql-trace pool
-            SqlTracePool tracePool = SqlTracePool.getInstance();
-            tracePool.init(config);
-            return tracePool.isSqlTrace();
-        } catch (Exception e) {
-            throw new SpringBootDataSourceException("Failed to set config value to sql-trace pool", e);
-        }
     }
 }

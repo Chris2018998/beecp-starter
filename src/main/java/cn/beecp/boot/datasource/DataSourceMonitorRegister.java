@@ -85,8 +85,8 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
      * @param environment Springboot environment
      */
     private void setAdminInfo(Environment environment) {
-        String adminName = getConfigValue(SP_DS_Prefix, SP_DS_Monitor_UserId, environment);
-        String adminPassword = getConfigValue(SP_DS_Prefix, SP_DS_Monitor_Password, environment);
+        String adminName = getConfigValue(Config_DS_Prefix, Config_DS_Monitor_UserId, environment);
+        String adminPassword = getConfigValue(Config_DS_Prefix, Config_DS_Monitor_Password, environment);
         DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
         admin.setUserId(adminName);
         admin.setPassword(adminPassword);

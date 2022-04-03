@@ -69,10 +69,6 @@ public class SpringBootDataSource implements DataSource {
         this.primary = primary;
     }
 
-    boolean isTraceSQL() {
-        return traceSQL;
-    }
-
     void setTraceSQL(boolean traceSQL) {
         this.traceSQL = traceSQL;
     }
