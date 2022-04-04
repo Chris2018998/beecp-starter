@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.beecp.boot.datasource.factory;
+package cn.beecp.boot.datasource;
 
-/*
- *  Config Exception
+import cn.beecp.boot.datasource.statement.SqlExecutionTrace;
+
+import java.util.List;
+
+/**
+ * when SQL execution time greater than alert time,then trigger it
  *
- *  @author Chris Liao
+ * @author Chris.Liao
  */
-public class SpringBootDataSourceException extends RuntimeException {
+public class DataSourceSqlTraceAlert {
 
-    public SpringBootDataSourceException(String message) {
-        super(message);
-    }
-
-    public SpringBootDataSourceException(String message, Throwable cause) {
-        super(message, cause);
+    public void alert(List<SqlExecutionTrace> alertList) {
     }
 }

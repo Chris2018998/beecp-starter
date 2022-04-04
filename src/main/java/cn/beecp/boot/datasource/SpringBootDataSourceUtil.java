@@ -19,8 +19,6 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
-import cn.beecp.boot.datasource.sqltrace.SqlTraceConfig;
-import cn.beecp.boot.datasource.sqltrace.SqlTracePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -47,7 +45,11 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  */
 public class SpringBootDataSourceUtil {
     //Spring dataSource configuration prefix-key name
-    static final String Config_DS_Prefix = "spring.datasource";
+    public static final String Config_DS_Prefix = "spring.datasource";
+    //monitor admin user id
+    public static final String Config_DS_Monitor_UserId = "monitorUserId";
+    //monitor admin user password
+    public static final String Config_DS_Monitor_Password = "monitorPassword";
     //DataSource config id list on springboot
     static final String Config_DS_Id = "dsId";
     //Datasource class name
@@ -60,10 +62,6 @@ public class SpringBootDataSourceUtil {
     static final String Config_DS_CombineId = "combineId";
     //combineDefaultDs
     static final String Config_DS_Combine_PrimaryDs = "combinePrimaryId";
-    //monitor admin user id
-    static final String Config_DS_Monitor_UserId = "monitorUserId";
-    //monitor admin user password
-    static final String Config_DS_Monitor_Password = "monitorPassword";
 
     //monitor queue server
     static final String Config_Queue_Server = "queueServer";
@@ -98,11 +96,11 @@ public class SpringBootDataSourceUtil {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
-    static Supplier createSupplier(Object bean) {
+    public static Supplier createSupplier(Object bean) {
         return new RegSupplier(bean);
     }
 
-    static boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
+    public static boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
         try {
             return registry.getBeanDefinition(beanName) != null;
         } catch (NoSuchBeanDefinitionException e) {
@@ -171,19 +169,18 @@ public class SpringBootDataSourceUtil {
         return new SpringBootDataSource(dsId, ds, false);
     }
 
-    //create sql trace pool
-    static boolean setupSqlTracePool(String dsId, Environment environment) {
+    //create sql statement pool
+    static DataSourceSqlTraceConfig setupSqlTraceConfig(Environment environment) {
         try {
-            //1:create sql trace config instance
-            SqlTraceConfig config = new SqlTraceConfig();
+            //1:create sql statement config instance
+            DataSourceSqlTraceConfig config = new DataSourceSqlTraceConfig();
             //2:set Properties
-            setConfigPropertiesValue(config, Config_DS_Prefix, dsId, environment);
-            //3:create sql-trace pool
-            SqlTracePool tracePool = SqlTracePool.getInstance();
-            tracePool.init(config);
-            return tracePool.isSqlTrace();
+            setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
+            //3:set SqlTraceConfig
+            SpringBootDataSourceManager.getInstance().setSqlTraceConfig(config);
+            return config;
         } catch (Exception e) {
-            throw new SpringBootDataSourceException("Failed to set config value to sql-trace pool", e);
+            throw new SpringBootDataSourceException("Failed to set config value to sql-statement pool", e);
         }
     }
 

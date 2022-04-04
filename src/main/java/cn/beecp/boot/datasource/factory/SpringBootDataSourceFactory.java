@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 /*
  *  Spring Boot DataSource Factory
  *
- *  @author Chris.Liao
+ *  @author Chris Liao
  */
 public interface SpringBootDataSourceFactory {
 

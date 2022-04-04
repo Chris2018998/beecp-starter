@@ -16,7 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.sqltrace.ProxyFactory;
+import cn.beecp.boot.datasource.statement.ProxyFactory;
 import cn.beecp.jta.BeeJtaDataSource;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
@@ -28,37 +28,45 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.UUID;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSource;
 
 /**
- * trace datasource
+ * statement datasource
  *
  * @author Chris.Liao
  */
 public class SpringBootDataSource implements DataSource {
-    private final String id;
+    private final String dsId;
+    private final String dsUUID;
     private final DataSource ds;
     private final boolean jndiDs;
     private final boolean isBeeDs;
     private final Logger Log = LoggerFactory.getLogger(SpringBootDataSource.class);
 
     private boolean primary;
-    private boolean traceSQL;
+    private boolean traceSql;
     private Method poolClearMethod;
     private Method poolMonitorVoMethod;
 
-    SpringBootDataSource(String id, DataSource ds, boolean jndiDs) {
-        this.id = id;
+    SpringBootDataSource(String dsId, DataSource ds, boolean jndiDs) {
+        this.dsId = dsId;
         this.ds = ds;
-
         this.jndiDs = jndiDs;
+
         this.isBeeDs = ds instanceof BeeDataSource || ds instanceof BeeJtaDataSource;
         if (isBeeDs) readBeeDsMethods();
+        String dsType = isBeeDs ? "BeeCP_" : "BeeOther_";
+        this.dsUUID = dsType + UUID.randomUUID().toString();
     }
 
     String getId() {
-        return id;
+        return dsId;
+    }
+
+    String getDsUUID() {
+        return dsUUID;
     }
 
     boolean isPrimary() {
@@ -69,18 +77,18 @@ public class SpringBootDataSource implements DataSource {
         this.primary = primary;
     }
 
-    void setTraceSQL(boolean traceSQL) {
-        this.traceSQL = traceSQL;
+    void setTraceSql(boolean traceSql) {
+        this.traceSql = traceSql;
     }
 
     public Connection getConnection() throws SQLException {
         Connection con = ds.getConnection();
-        return traceSQL ? ProxyFactory.createConnection(con, id) : con;
+        return traceSql ? ProxyFactory.createConnection(con, dsId, dsUUID) : con;
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
         Connection con = ds.getConnection(username, password);
-        return traceSQL ? ProxyFactory.createConnection(con, id) : con;
+        return traceSql ? ProxyFactory.createConnection(con, dsId, dsUUID) : con;
     }
 
     public PrintWriter getLogWriter() throws SQLException {
@@ -118,7 +126,7 @@ public class SpringBootDataSource implements DataSource {
         if (!jndiDs) tryToCloseDataSource(ds);
     }
 
-    void clear() {
+    void clearAllConnections() {
         if (poolClearMethod != null) {
             try {
                 poolClearMethod.invoke(ds, false);

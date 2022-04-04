@@ -38,7 +38,7 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  *  spring.datasource.d1.jdbcUrl=jdbc:mysql://localhost:3306/test
  *  spring.datasource.d1.driverClassName=com.mysql.cj.jdbc.Driver
  *
- *  @author Chris.Liao
+ *  @author Chris liao
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 

@@ -16,8 +16,8 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.pool.PoolStaticCenter;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -45,16 +45,24 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 @ConditionalOnClass(BeeDataSource.class)
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
-
     @Bean
-    public DataSource beeDataSource(Environment environment) throws Exception {
+    public DataSource beeDataSource(Environment environment, BeanDefinitionRegistry registry) throws Exception {
+        //1:read sql statement config
+        DataSourceSqlTraceConfig sqlTraceConfig = setupSqlTraceConfig(environment);
+
+        //2:read ds Id
         String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsId)) dsId = BeeCP_DS_ID;//default ds Id
+        if (existsBeanDefinition(dsId, registry))
+            throw new Exception("conflicting beanDefinition exception with id:" + dsId);
 
-        DataSource beesDs = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
+        //3:create BeeDataSource
+        DataSource beesDs = BeeDataSourceFactory.createDataSource(Config_DS_Prefix, dsId, environment);
         SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
-        springDs.setTraceSQL(setupSqlTracePool(dsId, environment));
-        SpringBootDataSourceCenter.getInstance().addDataSource(springDs);
+        springDs.setTraceSql(sqlTraceConfig.isSqlTrace());
+
+        //4:add dataSource to manager
+        SpringBootDataSourceManager.getInstance().addDataSource(springDs);
         return springDs;
     }
 }

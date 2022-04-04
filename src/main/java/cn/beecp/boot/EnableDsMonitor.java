@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot;
 
-import cn.beecp.boot.datasource.DataSourceMonitorRegister;
+import cn.beecp.boot.datasource.monitor.DataSourceMonitorRegister;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
