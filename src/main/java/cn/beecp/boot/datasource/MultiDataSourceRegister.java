@@ -173,7 +173,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         } catch (Throwable e) {//failed then close all created dataSource
             for (SpringBootDataSource ds : dsMap.values())
                 ds.close();
-            throw new RuntimeException("multi-DataSource created failed", e);
+            throw new SpringBootDataSourceException("multi-DataSource created failed", e);
         }
     }
 
