@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.beecp.boot.datasource.admin;
+package cn.beecp.boot.datasource.monitor.admin;
 
 import redis.clients.jedis.Jedis;
 
