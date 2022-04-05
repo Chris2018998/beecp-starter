@@ -56,7 +56,7 @@ public class CombineDataSource implements DataSource {
         if (isClosed) throw new SQLException("DataSource has closed");
         String dsId = SpringBootDataSourceManager.getInstance().getCurrentDsId();
         dsId = !PoolStaticCenter.isBlank(dsId) ? dsId : primaryId;
-        SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getDataSource(dsId);
+        SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId);
         if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
         return ds;
     }

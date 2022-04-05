@@ -169,21 +169,6 @@ public class SpringBootDataSourceUtil {
         return new SpringBootDataSource(dsId, ds, false);
     }
 
-    //create sql statement pool
-    static DataSourceSqlTraceConfig setupSqlTraceConfig(Environment environment) {
-        try {
-            //1:create sql statement config instance
-            DataSourceSqlTraceConfig config = new DataSourceSqlTraceConfig();
-            //2:set Properties
-            setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
-            //3:set SqlTraceConfig
-            SpringBootDataSourceManager.getInstance().setSqlTraceConfig(config);
-            return config;
-        } catch (Exception e) {
-            throw new SpringBootDataSourceException("Failed to set config value to sql-statement pool", e);
-        }
-    }
-
     private static Object createInstanceByClassName(String dsId, Class objClass) {
         try {
             return objClass.newInstance();

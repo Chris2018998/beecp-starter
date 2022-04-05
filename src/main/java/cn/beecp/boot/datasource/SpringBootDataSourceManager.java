@@ -19,6 +19,7 @@ import cn.beecp.boot.datasource.statement.SqlExecutionTrace;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +27,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
 
 /*
@@ -69,28 +70,6 @@ public class SpringBootDataSourceManager {
         return instance;
     }
 
-    void setSqlTraceConfig(DataSourceSqlTraceConfig traceConfig) {
-        if (traceConfig == null) return;
-        if (sqlTrace = traceConfig.isSqlTrace()) {
-            this.sqlShow = traceConfig.isSqlShow();
-            this.sqlExecSlowTime = traceConfig.getSqlExecSlowTime();
-            this.sqlTraceMaxSize = traceConfig.getSqlTraceMaxSize();
-            this.sqlTraceTimeout = traceConfig.getSqlTraceTimeout();
-            this.sqlAlertTempList = new LinkedList<>();
-            this.sqlTraceAlert = traceConfig.getSqlExecAlertAction();
-            this.sqlTraceQueue = new LinkedBlockingQueue<SqlExecutionTrace>(sqlTraceMaxSize);
-
-            ScheduledThreadPoolExecutor timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
-            timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
-            timeoutScanExecutor.allowCoreThreadTimeOut(true);
-            timeoutScanExecutor.scheduleAtFixedRate(new Runnable() {
-                public void run() {// check idle connection
-                    removeTimeoutTrace();
-                }
-            }, 0, traceConfig.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
-        }
-    }
-
     void removeCurrentDsId() {
         dsIdLocal.remove();
     }
@@ -103,12 +82,40 @@ public class SpringBootDataSourceManager {
         dsIdLocal.set(dsId);
     }
 
-    void addDataSource(SpringBootDataSource ds) {
-        dsMap.put(ds.getId(), ds);
+    SpringBootDataSource getSpringBootDataSource(String dsId) {
+        return dsMap.get(dsId);
     }
 
-    SpringBootDataSource getDataSource(String dsId) {
-        return dsMap.get(dsId);
+    void addSpringBootDataSource(SpringBootDataSource ds) {
+        dsMap.put(ds.getId(), ds);
+        ds.setTraceSql(sqlTrace);
+    }
+
+    //create sql statement pool
+    void setupSqlTraceConfig(Environment environment) {
+        //1:create sql statement config instance
+        DataSourceSqlTraceConfig config = new DataSourceSqlTraceConfig();
+        //2:set Properties
+        setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
+        //3:set sql trace properties
+        if (sqlTrace = config.isSqlTrace()) {
+            this.sqlShow = config.isSqlShow();
+            this.sqlExecSlowTime = config.getSqlExecSlowTime();
+            this.sqlTraceMaxSize = config.getSqlTraceMaxSize();
+            this.sqlTraceTimeout = config.getSqlTraceTimeout();
+            this.sqlAlertTempList = new LinkedList<>();
+            this.sqlTraceAlert = config.getSqlExecAlertAction();
+            this.sqlTraceQueue = new LinkedBlockingQueue<SqlExecutionTrace>(sqlTraceMaxSize);
+
+            ScheduledThreadPoolExecutor timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
+            timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
+            timeoutScanExecutor.allowCoreThreadTimeOut(true);
+            timeoutScanExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {// check idle connection
+                    removeTimeoutTrace();
+                }
+            }, 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
+        }
     }
 
     //clear pool

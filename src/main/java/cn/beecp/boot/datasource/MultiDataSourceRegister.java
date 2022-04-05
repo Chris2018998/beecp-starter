@@ -71,17 +71,19 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      */
     public final void registerBeanDefinitions(AnnotationMetadata classMetadata,
                                               BeanDefinitionRegistry registry) {
-        //1:read sql statement config
-        DataSourceSqlTraceConfig sqlTraceConfig = setupSqlTraceConfig(environment);
 
-        //2:read multi-dataSource id list
+
+        //1:read multi-dataSource id list
         List<String> dsIdList = this.getIdList(environment, registry);
 
-        //3:read combine-ds config
+        //2:read combine-ds config
         Properties combineProperties = getCombineInfo(dsIdList, environment, registry);
 
-        //4:create dataSources by id list
-        Map<String, SpringBootDataSource> dsMap = this.createDataSources(dsIdList, environment, sqlTraceConfig.isSqlTrace());
+        //3:create dataSources by id list
+        Map<String, SpringBootDataSource> dsMap = this.createDataSources(dsIdList, environment);
+
+        //4:read sql statement config
+        SpringBootDataSourceManager.getInstance().setupSqlTraceConfig(environment);
 
         //5:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);
@@ -157,7 +159,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param environment springboot environment
      * @return dataSource holder map
      */
-    private Map<String, SpringBootDataSource> createDataSources(List<String> dsIdList, Environment environment, boolean traceSql) {
+    private Map<String, SpringBootDataSource> createDataSources(List<String> dsIdList, Environment environment) {
         Map<String, SpringBootDataSource> dsMap = new LinkedHashMap<String, SpringBootDataSource>(dsIdList.size());
         try {
             for (String dsId : dsIdList) {
@@ -165,7 +167,6 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
                 SpringBootDataSource ds = createSpringBootDataSource(dsPrefix, dsId, environment);//create datasource instance
                 String primaryText = getConfigValue(dsPrefix, Config_DS_Primary, environment);
                 ds.setPrimary(PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
-                ds.setTraceSql(traceSql);
                 dsMap.put(dsId, ds);
             }
             return dsMap;
@@ -214,7 +215,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         define.setInstanceSupplier(createSupplier(springDs));
         registry.registerBeanDefinition(springDs.getId(), define);
         log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), springDs.getId());
-        SpringBootDataSourceManager.getInstance().addDataSource(springDs);
+        SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
     }
 }
 
