@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.test.util;
 
+import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.pool.PoolStaticCenter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -180,7 +181,7 @@ public class TestUtil {
         paramMap.put("dsId", dsId);
         String getConResult = getRest(mockMvc, url, paramMap, "get");
         log.info("GetConn result:" + getConResult);
-        if (!"OK".equals(getConResult)) throw new Exception("Failed to get connection from dataSource(" + dsId + ")");
+        if (!"OK".equals(getConResult)) throw new SpringBootDataSourceException("Failed to get connection from dataSource(" + dsId + ")");
 
         //2:Get pool list to check ds pool whether exist in list
         String poolInfoListURL = "/beecp/getDataSourceList";
@@ -193,7 +194,7 @@ public class TestUtil {
             log.info("{}-idleSize:{}", pDsId, idleSize);
             if (pDsId.equals(dsId)) exists = true;
         }
-        if (!exists) throw new Exception("Not found dataSource(" + dsId + ")pool in trace list)");
+        if (!exists) throw new SpringBootDataSourceException("Not found dataSource(" + dsId + ")pool in trace list)");
     }
 
 
@@ -220,7 +221,7 @@ public class TestUtil {
                     break;
                 }
             }
-            if (!exists) throw new Exception("target sql not in trace list");
+            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
         } else if (testType == 1) {//error test
             boolean exists = false;
             for (Map map : sqlList) {
@@ -235,7 +236,7 @@ public class TestUtil {
                     break;
                 }
             }
-            if (!exists) throw new Exception("target sql not in trace list");
+            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
         } else if (testType == 2) {//slow test
             boolean exists = false;
             for (Map map : sqlList) {
@@ -250,7 +251,7 @@ public class TestUtil {
                     break;
                 }
             }
-            if (!exists) throw new Exception("target sql not in trace list");
+            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
         }
     }
 }
