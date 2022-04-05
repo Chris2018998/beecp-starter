@@ -15,8 +15,6 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.pool.PoolStaticCenter;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,12 +27,7 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class CombineDataSource implements DataSource {
-    private final String primaryId;
     private boolean isClosed = false;
-
-    CombineDataSource(String primaryId) {
-        this.primaryId = primaryId;
-    }
 
     public boolean isClosed() {
         return isClosed;
@@ -54,10 +47,8 @@ public class CombineDataSource implements DataSource {
 
     private SpringBootDataSource getTraceDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
-        String dsId = SpringBootDataSourceManager.getInstance().getCurrentDsId();
-        dsId = !PoolStaticCenter.isBlank(dsId) ? dsId : primaryId;
-        SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId);
-        if (ds == null) throw new SQLException("Datasource(" + dsId + ") not exists");
+        SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getCombineCurrentDs();
+        if (ds == null) throw new SQLException("DataSource not exists");
         return ds;
     }
 

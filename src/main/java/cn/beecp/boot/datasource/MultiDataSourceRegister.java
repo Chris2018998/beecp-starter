@@ -191,18 +191,19 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
 
         //register combine DataSource
         if (!PoolStaticCenter.isBlank(combineId) && !PoolStaticCenter.isBlank(primaryDsId)) {
-            CombineDataSource combineDataSource = new CombineDataSource(primaryDsId);
+            CombineDataSource combineDataSource = new CombineDataSource();
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
             define.setInstanceSupplier(createSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
             log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineId);
 
-            String dsIdSetterId = DataSourceIdSetter.class.getName();
+            String dsIdSetterId = CombineDataSourceAspect.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
-            dsIdSetDefine.setBeanClass(DataSourceIdSetter.class);
-            dsIdSetDefine.setInstanceSupplier(createSupplier(new DataSourceIdSetter()));
+            dsIdSetDefine.setBeanClass(CombineDataSourceAspect.class);
+            dsIdSetDefine.setInstanceSupplier(createSupplier(new CombineDataSourceAspect()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
+            SpringBootDataSourceManager.getInstance().setCombinePrimaryDsId(primaryDsId);
             log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }

@@ -31,6 +31,7 @@ import java.util.concurrent.*;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
  * @author Chris.Liao
@@ -50,9 +51,10 @@ import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
  */
 public class SpringBootDataSourceManager {
     private final static SpringBootDataSourceManager instance = new SpringBootDataSourceManager();
-    private final ThreadLocal<String> dsIdLocal;
     private final Map<String, SpringBootDataSource> dsMap;
+    private final ThreadLocal<SpringBootDataSource> combineDataSourceLocal;
     private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
+    private String combinePrimaryDsId;
 
     private boolean sqlShow;
     private boolean sqlTrace;
@@ -64,7 +66,7 @@ public class SpringBootDataSourceManager {
     private LinkedBlockingQueue<StatementTrace> sqlTraceQueue;
 
     private SpringBootDataSourceManager() {
-        this.dsIdLocal = new ThreadLocal<>();
+        this.combineDataSourceLocal = new ThreadLocal<>();
         this.dsMap = new ConcurrentHashMap<>(1);
     }
 
@@ -72,20 +74,21 @@ public class SpringBootDataSourceManager {
         return instance;
     }
 
-    void removeCurrentDsId() {
-        dsIdLocal.remove();
+    void setCombinePrimaryDsId(String combinePrimaryDsId) {
+        this.combinePrimaryDsId = combinePrimaryDsId;
     }
 
-    String getCurrentDsId() {
-        return dsIdLocal.get();
+    void removeCurrentDs() {
+        combineDataSourceLocal.remove();
     }
 
-    void setCurrentDsId(String dsId) {
-        dsIdLocal.set(dsId);
+    SpringBootDataSource getCombineCurrentDs() {
+        return combineDataSourceLocal.get();
     }
 
-    SpringBootDataSource getSpringBootDataSource(String dsId) {
-        return dsMap.get(dsId);
+    void getCombineCurrentDs(String dsId) {
+        if (isBlank(dsId)) dsId = combinePrimaryDsId;
+        combineDataSourceLocal.set(dsMap.get(dsId));
     }
 
     void addSpringBootDataSource(SpringBootDataSource ds) {
