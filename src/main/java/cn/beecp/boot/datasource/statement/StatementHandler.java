@@ -31,7 +31,7 @@ class StatementHandler implements InvocationHandler {
     private final String dsUUID;
     private final Statement statement;
     private final String statementType;
-    private SqlExecutionTrace traceVo;
+    private StatementTrace traceVo;
 
     StatementHandler(Statement statement, String statementType, String sql, String dsId, String dsUUID) {
         this.dsId = dsId;
@@ -39,7 +39,7 @@ class StatementHandler implements InvocationHandler {
         this.statement = statement;
         this.statementType = statementType;
         if (!PoolStaticCenter.isBlank(sql))
-            traceVo = new SqlExecutionTrace(dsId, dsUUID, sql, statementType);
+            traceVo = new StatementTrace(dsId, dsUUID, sql, statementType);
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -50,7 +50,7 @@ class StatementHandler implements InvocationHandler {
                 } else
                     return method.invoke(statement, args);
             } else {//Statement.executeXXXX(sql)
-                SqlExecutionTrace sqlVo = new SqlExecutionTrace(dsId, dsUUID, (String) args[0], statementType);
+                StatementTrace sqlVo = new StatementTrace(dsId, dsUUID, (String) args[0], statementType);
                 return SpringBootDataSourceManager.getInstance().traceSqlExecution(sqlVo, statement, method, args);
             }
         } else {
