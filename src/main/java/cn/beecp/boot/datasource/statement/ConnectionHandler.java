@@ -45,11 +45,11 @@ class ConnectionHandler implements InvocationHandler {
         String name = method.getName();
         Object re = method.invoke(connection, args);
         if (Method_Statement.equals(name)) {
-            return ProxyFactory.createStatementProxy((Statement) re, Type_Statement, null, dsId, dsUUID);
+            return JdbcProxyFactory.createStatementProxy((Statement) re, Type_Statement, null, dsId, dsUUID);
         } else if (Method_PreparedStatement.equals(name)) {
-            return ProxyFactory.createStatementProxy((Statement) re, Type_PreparedStatement, (String) args[0], dsId, dsUUID);
+            return JdbcProxyFactory.createStatementProxy((Statement) re, Type_PreparedStatement, (String) args[0], dsId, dsUUID);
         } else if (Method_CallableStatement.equals(name)) {
-            return ProxyFactory.createStatementProxy((Statement) re, Type_CallableStatement, (String) args[0], dsId, dsUUID);
+            return JdbcProxyFactory.createStatementProxy((Statement) re, Type_CallableStatement, (String) args[0], dsId, dsUUID);
         } else {
             return re;
         }

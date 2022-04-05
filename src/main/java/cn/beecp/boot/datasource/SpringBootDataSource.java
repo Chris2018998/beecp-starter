@@ -16,7 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.statement.ProxyFactory;
+import cn.beecp.boot.datasource.statement.JdbcProxyFactory;
 import cn.beecp.jta.BeeJtaDataSource;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
@@ -83,12 +83,12 @@ public class SpringBootDataSource implements DataSource {
 
     public Connection getConnection() throws SQLException {
         Connection con = ds.getConnection();
-        return traceSql ? ProxyFactory.createConnection(con, dsId, dsUUID) : con;
+        return traceSql ? JdbcProxyFactory.createConnection(con, dsId, dsUUID) : con;
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
         Connection con = ds.getConnection(username, password);
-        return traceSql ? ProxyFactory.createConnection(con, dsId, dsUUID) : con;
+        return traceSql ? JdbcProxyFactory.createConnection(con, dsId, dsUUID) : con;
     }
 
     public PrintWriter getLogWriter() throws SQLException {
