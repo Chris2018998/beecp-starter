@@ -15,13 +15,13 @@
  */
 package cn.beecp.boot.test.util;
 
-import cn.beecp.boot.datasource.sqltrace.SqlTraceAlert;
-import cn.beecp.boot.datasource.sqltrace.SqlTraceEntry;
+import cn.beecp.boot.datasource.DataSourceSqlTraceAlert;
+import cn.beecp.boot.datasource.statement.SqlExecutionTrace;
 
 import java.util.List;
 
-public class TestAlert extends SqlTraceAlert {
-    public void alert(List<SqlTraceEntry> alertList) {
+public class TestAlert extends DataSourceSqlTraceAlert {
+    public void alert(List<SqlExecutionTrace> alertList) {
         System.out.println("....test alert siz:" + alertList.size());
     }
 }
