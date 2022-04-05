@@ -15,7 +15,9 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.boot.datasource.statement.SqlExecutionTrace;
+import cn.beecp.boot.datasource.statement.StatementTrace;
+import cn.beecp.boot.datasource.statement.StatementTraceAlert;
+import cn.beecp.boot.datasource.statement.StatementTraceConfig;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +59,9 @@ public class SpringBootDataSourceManager {
     private long sqlExecSlowTime;
     private long sqlTraceTimeout;
     private int sqlTraceMaxSize;
-    private DataSourceSqlTraceAlert sqlTraceAlert;
-    private LinkedList<SqlExecutionTrace> sqlAlertTempList;
-    private LinkedBlockingQueue<SqlExecutionTrace> sqlTraceQueue;
+    private StatementTraceAlert sqlTraceAlert;
+    private LinkedList<StatementTrace> sqlAlertTempList;
+    private LinkedBlockingQueue<StatementTrace> sqlTraceQueue;
 
     private SpringBootDataSourceManager() {
         this.dsIdLocal = new ThreadLocal<>();
@@ -94,7 +96,7 @@ public class SpringBootDataSourceManager {
     //create sql statement pool
     void setupSqlTraceConfig(Environment environment) {
         //1:create sql statement config instance
-        DataSourceSqlTraceConfig config = new DataSourceSqlTraceConfig();
+        StatementTraceConfig config = new StatementTraceConfig();
         //2:set Properties
         setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
         //3:set sql trace properties
@@ -105,7 +107,7 @@ public class SpringBootDataSourceManager {
             this.sqlTraceTimeout = config.getSqlTraceTimeout();
             this.sqlAlertTempList = new LinkedList<>();
             this.sqlTraceAlert = config.getSqlExecAlertAction();
-            this.sqlTraceQueue = new LinkedBlockingQueue<SqlExecutionTrace>(sqlTraceMaxSize);
+            this.sqlTraceQueue = new LinkedBlockingQueue<StatementTrace>(sqlTraceMaxSize);
 
             ScheduledThreadPoolExecutor timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
             timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
@@ -125,7 +127,7 @@ public class SpringBootDataSourceManager {
     }
 
     //get sql statement list
-    public Collection<SqlExecutionTrace> getSqlExecutionList() {
+    public Collection<StatementTrace> getSqlExecutionList() {
         return sqlTraceQueue;
     }
 
@@ -158,7 +160,7 @@ public class SpringBootDataSourceManager {
     }
 
     //add statement sql
-    public Object traceSqlExecution(SqlExecutionTrace vo, Statement statement, Method method, Object[] args) throws Throwable {
+    public Object traceSqlExecution(StatementTrace vo, Statement statement, Method method, Object[] args) throws Throwable {
         if (vo == null) return null;
         vo.setMethodName(method.getName());
         vo.setTraceStartTime(System.currentTimeMillis());
@@ -194,9 +196,9 @@ public class SpringBootDataSourceManager {
 
     private void removeTimeoutTrace() {
         sqlAlertTempList.clear();
-        Iterator<SqlExecutionTrace> iterator = sqlTraceQueue.iterator();
+        Iterator<StatementTrace> iterator = sqlTraceQueue.iterator();
         while (iterator.hasNext()) {
-            SqlExecutionTrace vo = iterator.next();
+            StatementTrace vo = iterator.next();
             if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd()) && !vo.isAlertInd()) {//failed
                 vo.setAlertInd(true);
                 sqlAlertTempList.add(vo);
