@@ -54,6 +54,7 @@ public class SpringBootDataSourceManager {
     private final Map<String, SpringBootDataSource> dsMap;
     private final ThreadLocal<SpringBootDataSource> combineDataSourceLocal;
     private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
+    private final ScheduledThreadPoolExecutor timeoutScanExecutor;
     private String combinePrimaryDsId;
 
     private boolean sqlShow;
@@ -68,6 +69,10 @@ public class SpringBootDataSourceManager {
     private SpringBootDataSourceManager() {
         this.combineDataSourceLocal = new ThreadLocal<>();
         this.dsMap = new ConcurrentHashMap<>(1);
+
+        timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new SpringBootDsThreadFactory());
+        timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
+        timeoutScanExecutor.allowCoreThreadTimeOut(true);
     }
 
     public static SpringBootDataSourceManager getInstance() {
@@ -111,15 +116,7 @@ public class SpringBootDataSourceManager {
             this.sqlAlertTempList = new LinkedList<>();
             this.sqlTraceAlert = config.getSqlExecAlertAction();
             this.sqlTraceQueue = new LinkedBlockingQueue<StatementTrace>(sqlTraceMaxSize);
-
-            ScheduledThreadPoolExecutor timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new TimeoutScanThreadThreadFactory());
-            timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
-            timeoutScanExecutor.allowCoreThreadTimeOut(true);
-            timeoutScanExecutor.scheduleAtFixedRate(new Runnable() {
-                public void run() {// check idle connection
-                    removeTimeoutTrace();
-                }
-            }, 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
+            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -197,6 +194,7 @@ public class SpringBootDataSourceManager {
         }
     }
 
+
     private void removeTimeoutTrace() {
         sqlAlertTempList.clear();
         Iterator<StatementTrace> iterator = sqlTraceQueue.iterator();
@@ -215,11 +213,25 @@ public class SpringBootDataSourceManager {
             sqlTraceAlert.alert(sqlAlertTempList);
     }
 
-    private static final class TimeoutScanThreadThreadFactory implements ThreadFactory {
+    private static final class SpringBootDsThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
-            Thread th = new Thread(r, "SqlTrace-TimeoutScan");
+            Thread th = new Thread(r, "SpringBootDsThreadFactory");
             th.setDaemon(true);
             return th;
+        }
+    }
+
+    private class SqlTraceTimeoutTask implements Runnable {
+        public void run() {// check idle connection
+            removeTimeoutTrace();
+        }
+    }
+
+    private class LocalMonitorInfoPushTask implements Runnable {
+        public void run() {
+            Collection<Map<String, Object>> monitorVoList = getPoolMonitorVoList();
+            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
+
         }
     }
 }
