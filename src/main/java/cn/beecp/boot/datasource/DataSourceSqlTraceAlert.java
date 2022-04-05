@@ -27,5 +27,6 @@ import java.util.List;
 public class DataSourceSqlTraceAlert {
 
     public void alert(List<SqlExecutionTrace> alertList) {
+        //do nothing
     }
 }
