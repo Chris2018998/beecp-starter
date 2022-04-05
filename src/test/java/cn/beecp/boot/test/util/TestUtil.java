@@ -123,7 +123,7 @@ public class TestUtil {
         }
     }
 
-    public static final String getRest(MockMvc mockMvc, String url, Map<String, String> paramMap, String callType) throws Exception {
+    public static String getRest(MockMvc mockMvc, String url, Map<String, String> paramMap, String callType) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = null;
         if ("get".equals(callType))
             requestBuilder = MockMvcRequestBuilders.get(url);
@@ -148,7 +148,7 @@ public class TestUtil {
         return mvcResult.getResponse().getContentAsString();
     }
 
-    public static final <T> T string2Obj(String str, Class<T> clazz) {
+    public static <T> T string2Obj(String str, Class<T> clazz) {
         try {
             if (PoolStaticCenter.isBlank(str) || clazz == null) {
                 return null;
@@ -164,7 +164,7 @@ public class TestUtil {
         }
     }
 
-    public static final <T> T string2Obj(String str, Class<?> collectionClass, Class<?>... elementClasses) {
+    public static <T> T string2Obj(String str, Class<?> collectionClass, Class<?>... elementClasses) {
         try {
             JavaType javaType = objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
             return objectMapper.readValue(str, javaType);
@@ -179,9 +179,10 @@ public class TestUtil {
         //1:Try to get connection
         Map<String, String> paramMap = new HashMap<String, String>(1);
         paramMap.put("dsId", dsId);
-        String getConResult = getRest(mockMvc, url, paramMap, "get");
-        log.info("GetConn result:" + getConResult);
-        if (!"OK".equals(getConResult)) throw new SpringBootDataSourceException("Failed to get connection from dataSource(" + dsId + ")");
+        String restResult = getRest(mockMvc, url, paramMap, "get");
+        log.info("GetConn result:" + restResult);
+        if (!"OK".equals(restResult))
+            throw new SpringBootDataSourceException("Failed to get connection from dataSource(" + dsId + ")");
 
         //2:Get pool list to check ds pool whether exist in list
         String poolInfoListURL = "/beecp/getDataSourceList";
@@ -198,13 +199,13 @@ public class TestUtil {
     }
 
 
-    public static final void testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
-        Map<String, String> paramMap = new HashMap<String, String>(3);
-        paramMap.put("dsId", dsId);
-        paramMap.put("sql", sql);
-        paramMap.put("type", sqlType);
-        paramMap.put("slowInd", (testType == 2) ? "true" : "false");
-        String getConResult = getRest(mockMvc, url, paramMap, "get");
+    public static void testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
+//        Map<String, String> paramMap = new HashMap<String, String>(3);
+//        paramMap.put("dsId", dsId);
+//        paramMap.put("sql", sql);
+//        paramMap.put("type", sqlType);
+//        paramMap.put("slowInd", (testType == 2) ? "true" : "false");
+        //String getConResult = getRest(mockMvc, url, paramMap, "get");
 
         String getSqlListUrl = "/beecp/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
