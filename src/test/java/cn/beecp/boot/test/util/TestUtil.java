@@ -200,12 +200,12 @@ public class TestUtil {
 
 
     public static void testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
-//        Map<String, String> paramMap = new HashMap<String, String>(3);
-//        paramMap.put("dsId", dsId);
-//        paramMap.put("sql", sql);
-//        paramMap.put("type", sqlType);
-//        paramMap.put("slowInd", (testType == 2) ? "true" : "false");
-        //String getConResult = getRest(mockMvc, url, paramMap, "get");
+        Map<String, String> paramMap = new HashMap<String, String>(3);
+        paramMap.put("dsId", dsId);
+        paramMap.put("sql", sql);
+        paramMap.put("type", sqlType);
+        paramMap.put("slowInd", (testType == 2) ? "true" : "false");
+        getRest(mockMvc, url, paramMap, "get");
 
         String getSqlListUrl = "/beecp/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
