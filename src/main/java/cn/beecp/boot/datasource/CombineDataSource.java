@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -38,45 +39,49 @@ public class CombineDataSource implements DataSource {
     }
 
     public Connection getConnection() throws SQLException {
-        return getTraceDataSource().getConnection();
+        return getCurrentDataSource().getConnection();
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        return getTraceDataSource().getConnection(username, password);
+        return getCurrentDataSource().getConnection(username, password);
     }
 
-    private SpringBootDataSource getTraceDataSource() throws SQLException {
+    private SpringBootDataSource getCurrentDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
         SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getCombineCurrentDs();
         if (ds == null) throw new SQLException("DataSource not exists");
         return ds;
     }
 
-    public java.io.PrintWriter getLogWriter() throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+    public PrintWriter getLogWriter() throws SQLException {
+        return getCurrentDataSource().getLogWriter();
     }
 
-    public void setLogWriter(java.io.PrintWriter out) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        getCurrentDataSource().setLogWriter(out);
     }
 
     public int getLoginTimeout() throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+        return getCurrentDataSource().getLoginTimeout();
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+        getCurrentDataSource().setLoginTimeout(seconds);
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+        try {
+            return getCurrentDataSource().getParentLogger();
+        } catch (SQLException e) {
+            throw new SQLFeatureNotSupportedException(e);
+        }
     }
 
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+    public <T> T unwrap(Class<T> face) throws SQLException {
+        return getCurrentDataSource().unwrap(face);
     }
 
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        throw new SQLFeatureNotSupportedException("Not supported");
+    public boolean isWrapperFor(Class<?> face) throws SQLException {
+        return getCurrentDataSource().isWrapperFor(face);
     }
 }
