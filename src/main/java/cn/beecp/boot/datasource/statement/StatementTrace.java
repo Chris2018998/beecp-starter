@@ -16,6 +16,8 @@
 package cn.beecp.boot.datasource.statement;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 
@@ -27,7 +29,9 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 public class StatementTrace {
     private final String dsId;
     private final String dsUUID;
+
     private final String sql;
+    private final String sqlUUID;
     private String statementType;
     private String execStartTime;
     private long execStartTimeMs;
@@ -48,10 +52,12 @@ public class StatementTrace {
         this.dsUUID = dsUUID;
         this.sql = sql;
         this.statementType = statementType;
+        this.sqlUUID = UUID.randomUUID().toString();
 
         Date startTime = new Date();
         this.execStartTimeMs = startTime.getTime();
         this.execStartTime = formatDate(startTime);
+
     }
 
     public String getSql() {
@@ -65,6 +71,8 @@ public class StatementTrace {
     public String getDsUUID() {
         return dsUUID;
     }
+
+    public String getSqlUUID() { return sqlUUID; }
 
     public String getStatementType() {
         return statementType;
@@ -160,5 +168,18 @@ public class StatementTrace {
 
     public String toString() {
         return sql;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StatementTrace that = (StatementTrace) o;
+        return sqlUUID.equals(that.sqlUUID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sqlUUID);
     }
 }
