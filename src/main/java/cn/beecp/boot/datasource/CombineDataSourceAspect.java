@@ -44,7 +44,7 @@ public class CombineDataSourceAspect {
         DsId annotation = methodSignature.getMethod().getAnnotation(DsId.class);
 
         String dsId = annotation.value();
-        SpringBootDataSourceManager.getInstance().getCombineCurrentDs(dsId.trim());
+        SpringBootDataSourceManager.getInstance().setCombineCurrentDs(dsId.trim());
         try {
             return joinPoint.proceed();
         } finally {

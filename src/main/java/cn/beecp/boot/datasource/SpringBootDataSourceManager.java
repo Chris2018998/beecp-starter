@@ -78,7 +78,7 @@ public class SpringBootDataSourceManager {
         return combineDataSourceLocal.get();
     }
 
-    void getCombineCurrentDs(String dsId) {
+    void setCombineCurrentDs(String dsId) {
         if (isBlank(dsId)) dsId = combinePrimaryDsId;
         combineDataSourceLocal.set(dsMap.get(dsId));
     }

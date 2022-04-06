@@ -55,7 +55,7 @@ public class DataSourceMonitorConfig {
     private String monitorUserId;
     private String monitorPassword;
     private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
-    //*********************************monitor config begin************************************************************//
+    //*********************************monitor config end************************************************************//
 
     public boolean isSqlShow() {
         return sqlShow;
