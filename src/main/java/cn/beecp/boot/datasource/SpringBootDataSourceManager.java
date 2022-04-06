@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
@@ -51,7 +52,8 @@ public class SpringBootDataSourceManager {
     private int sqlTraceMaxSize;
     private StatementTraceAlert sqlTraceAlert;
     private LinkedList<StatementTrace> sqlAlertTempList;
-    private LinkedBlockingQueue<StatementTrace> sqlTraceQueue;
+    private AtomicInteger sqlTraceQueueSize;
+    private ConcurrentLinkedDeque<StatementTrace> sqlTraceQueue;
 
     private SpringBootDataSourceManager() {
         this.combineDataSourceLocal = new ThreadLocal<>();
@@ -97,7 +99,8 @@ public class SpringBootDataSourceManager {
             this.sqlTraceTimeout = config.getSqlTraceTimeout();
             this.sqlAlertTempList = new LinkedList<>();
             this.sqlTraceAlert = config.getSqlExecAlertAction();
-            this.sqlTraceQueue = new LinkedBlockingQueue<StatementTrace>(sqlTraceMaxSize);
+            this.sqlTraceQueueSize = new AtomicInteger(0);
+            this.sqlTraceQueue = new ConcurrentLinkedDeque<StatementTrace>();
             timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
         }
     }
@@ -147,8 +150,11 @@ public class SpringBootDataSourceManager {
         vo.setMethodName(method.getName());
         vo.setTraceStartTime(System.currentTimeMillis());
         if (sqlTrace) {
-            while (sqlTraceQueue.size() >= sqlTraceMaxSize) sqlTraceQueue.poll();
-            sqlTraceQueue.offer(vo);
+            sqlTraceQueue.offerFirst(vo);
+            if (sqlTraceQueueSize.incrementAndGet() > sqlTraceMaxSize) {
+                sqlTraceQueue.pollLast();
+                sqlTraceQueueSize.decrementAndGet();
+            }
         }
 
         try {
@@ -179,7 +185,7 @@ public class SpringBootDataSourceManager {
 
     private void removeTimeoutTrace() {
         sqlAlertTempList.clear();
-        Iterator<StatementTrace> iterator = sqlTraceQueue.iterator();
+        Iterator<StatementTrace> iterator = sqlTraceQueue.descendingIterator();
         while (iterator.hasNext()) {
             StatementTrace vo = iterator.next();
             if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd()) && !vo.isAlertInd()) {//failed
@@ -187,8 +193,10 @@ public class SpringBootDataSourceManager {
                 sqlAlertTempList.add(vo);
             }
 
-            if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout)
+            if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout) {
                 iterator.remove();
+                sqlTraceQueueSize.decrementAndGet();
+            }
         }
 
         if (!sqlAlertTempList.isEmpty()) //should be in short time
