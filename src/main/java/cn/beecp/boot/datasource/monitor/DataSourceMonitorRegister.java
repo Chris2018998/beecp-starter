@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.datasource.monitor;
 
+import cn.beecp.boot.datasource.DataSourceMonitorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -49,46 +50,36 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
                                               BeanDefinitionRegistry registry) {
 
-        //1: register monitor controller
+        //1:read datasource monitor
+        DataSourceMonitorConfig config = readMonitorConfig(environment);
+
+        //2:register monitor controller
         String resetControllerRegName = DataSourceMonitor.class.getName();
         if (!existsBeanDefinition(resetControllerRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitor()));
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitor(
+                    config.getMonitorUserId(),
+                    config.getMonitorPassword(),
+                    config.getMonitorValidPassedTagName())));
             registry.registerBeanDefinition(resetControllerRegName, define);
             log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
             log.error("BeanDefinition id {} already exists in spring context", resetControllerRegName);
         }
 
-        //2: register monitor controller filter
+        //3: register monitor controller filter
         String resetControllerFilterRegName = DataSourceMonitorFilter.class.getName();
         if (!existsBeanDefinition(resetControllerFilterRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitorFilter.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitorFilter()));
+            define.setInstanceSupplier(createSupplier(new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName())));
             registry.registerBeanDefinition(resetControllerFilterRegName, define);
             log.info("Register DataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
             log.error("BeanDefinition id {} already exists in spring context", resetControllerFilterRegName);
         }
-
-        //3:read admin account and password
-        setAdminInfo(environment);
-    }
-
-    /**
-     * read admin info
-     *
-     * @param environment Springboot environment
-     */
-    private void setAdminInfo(Environment environment) {
-        String adminName = getConfigValue(Config_DS_Prefix, Config_DS_Monitor_UserId, environment);
-        String adminPassword = getConfigValue(Config_DS_Prefix, Config_DS_Monitor_Password, environment);
-        DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        admin.setUserId(adminName);
-        admin.setPassword(adminPassword);
     }
 }

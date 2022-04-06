@@ -109,8 +109,19 @@ public class SpringBootDataSourceUtil {
     }
 
     //***************************************************************************************************************//
-    //                                2: Spring Boot dataSource create(4)                                            //
+    //                                2: Spring Boot dataSource create(5)                                            //
     //***************************************************************************************************************//
+    public synchronized static DataSourceMonitorConfig readMonitorConfig(Environment environment) {
+        if (DataSourceMonitorConfig.single == null) {
+            //1:create sql statement config instance
+            DataSourceMonitorConfig config = new DataSourceMonitorConfig();
+            //2:set Properties
+            setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
+            DataSourceMonitorConfig.single = config;
+        }
+        return DataSourceMonitorConfig.single;
+    }
+
     static SpringBootDataSource createSpringBootDataSource(String dsPrefix, String dsId, Environment environment) {
         String jndiNameTex = getConfigValue(dsPrefix, Config_DS_Jndi, environment);
         if (!isBlank(jndiNameTex)) {//jndi dataSource

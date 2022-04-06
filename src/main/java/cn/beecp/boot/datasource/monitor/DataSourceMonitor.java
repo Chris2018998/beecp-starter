@@ -40,6 +40,15 @@ public class DataSourceMonitor {
     private final static String chinese_page = "/beecp/chinese.html";
     private final static String english_page = "/beecp/english.html";
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
+    private String monitorUserId;
+    private String monitorPassword;
+    private String monitorValidPassedTagName;
+
+    DataSourceMonitor(String monitorUser, String monitorPassword, String monitorValidPassedTagName) {
+        this.monitorUserId = monitorUser;
+        this.monitorPassword = monitorPassword;
+        this.monitorValidPassedTagName = monitorValidPassedTagName;
+    }
 
     @RequestMapping("/beecp")
     public String welcome1() {
@@ -66,26 +75,25 @@ public class DataSourceMonitor {
         return english_page;
     }
 
+    //*****************************************************************************//
+    //                        Below are Rest methods                               //
+    //*****************************************************************************//
+
     @RequestMapping("/beecp/english")
     public String openEnglishPage2() {
         return english_page;
     }
 
-    //*****************************************************************************//
-    //                        Below are Rest methods                               //
-    //*****************************************************************************//
-
     @ResponseBody
     @PostMapping("/beecp/login")
     public String login(@RequestBody Map<String, String> paramMap) {
-        DataSourceMonitorAdmin admin = DataSourceMonitorAdmin.singleInstance;
-        if (!PoolStaticCenter.isBlank(admin.getUserId())) {
+        if (!PoolStaticCenter.isBlank(monitorUserId)) {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
-            if (admin.getUserId().equals(userId) && PoolStaticCenter.equalsString(admin.getPassword(), password)) {
+            if (monitorUserId.equals(userId) && PoolStaticCenter.equalsString(monitorPassword, password)) {
                 ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = servletRequestAttributes.getRequest();
-                request.getSession().setAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME, "Y");
+                request.getSession().setAttribute(monitorValidPassedTagName, "Y");
                 return "OK";//passed
             } else {
                 return "FAIL";

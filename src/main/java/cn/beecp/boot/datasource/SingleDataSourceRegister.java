@@ -16,9 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.pool.PoolStaticCenter;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -47,19 +45,19 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 @ConditionalOnProperty(name = "spring.datasource.type", havingValue = "cn.beecp.BeeDataSource")
 public class SingleDataSourceRegister {
     @Bean
-    public DataSource beeDataSource(Environment environment, BeanDefinitionRegistry registry) throws Exception {
+    public DataSource beeDataSource(Environment environment) throws Exception {
         //1:read ds Id
         String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsId)) dsId = BeeCP_DS_ID;//default ds Id
-        if (existsBeanDefinition(dsId, registry))
-            throw new SpringBootDataSourceException("Duplicate spring bean id:" + dsId);
 
         //2:create BeeDataSource
         DataSource beesDs = BeeDataSourceFactory.createDataSource(Config_DS_Prefix, dsId, environment);
         SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
 
         //3:add dataSource to manager
-        SpringBootDataSourceManager.getInstance().setupSqlTraceConfig(environment);
+        DataSourceMonitorConfig config = readMonitorConfig(environment);
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(config);
+
         //4:add to manager
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
         return springDs;

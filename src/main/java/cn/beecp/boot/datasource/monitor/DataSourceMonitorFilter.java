@@ -31,6 +31,13 @@ import java.io.IOException;
 @WebFilter(filterName = "beecpMonitorFilter", urlPatterns = "/beecp/*")
 public class DataSourceMonitorFilter implements Filter {
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
+    private String monitorUserId;
+    private String monitorValidPassedTagName;
+
+    DataSourceMonitorFilter(String monitorUser, String monitorValidPassedTagName) {
+        this.monitorUserId = monitorUser;
+        this.monitorValidPassedTagName = monitorValidPassedTagName;
+    }
 
     public void destroy() {
         //do nothing
@@ -43,9 +50,9 @@ public class DataSourceMonitorFilter implements Filter {
     public void doFilter(ServletRequest var1, ServletResponse var2, FilterChain var3) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) var1;
         HttpSession session = req.getSession();
-        Object attributeVal = session.getAttribute(DataSourceMonitorAdmin.PASSED_ATTR_NAME);
+        Object attributeVal = session.getAttribute(monitorValidPassedTagName);
         String servletPath = req.getServletPath();
-        if ("Y".equals(attributeVal) || PoolStaticCenter.isBlank(DataSourceMonitorAdmin.singleInstance.getUserId()) || isExcludeUrl(servletPath)) {
+        if ("Y".equals(attributeVal) || PoolStaticCenter.isBlank(monitorUserId) || isExcludeUrl(servletPath)) {
             var3.doFilter(var1, var2);
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(var1, var2);

@@ -83,7 +83,8 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         Map<String, SpringBootDataSource> dsMap = this.createDataSources(dsIdList, environment);
 
         //4:read sql statement config
-        SpringBootDataSourceManager.getInstance().setupSqlTraceConfig(environment);
+        DataSourceMonitorConfig config = readMonitorConfig(environment);
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(config);
 
         //5:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);

@@ -17,11 +17,9 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.statement.StatementTrace;
 import cn.beecp.boot.datasource.statement.StatementTraceAlert;
-import cn.beecp.boot.datasource.statement.StatementTraceConfig;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,25 +27,14 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
+ * DataSource Manager
+ *
  * @author Chris.Liao
- *
- *  Sql statement pool
- *  spring.datasource.monitor-login=true
- *  spring.datasource.monitor-user=admin
- *  spring.datasource.monitor-password=admin
- *
- *  spring.datasource.sql-statement=true
- *  spring.datasource.sql-show=true
- *  spring.datasource.sql-statement-max-size=100
- *  spring.datasource.sql-exec-slow-time=5000
- *  spring.datasource.sql-statement-timeout=60000
- *  spring.datasource.sql-exec-alert-action=xxxxx
- *  spring.datasource.sql-statement-timeout-scan-period=18000
  */
 public class SpringBootDataSourceManager {
     private final static SpringBootDataSourceManager instance = new SpringBootDataSourceManager();
@@ -102,12 +89,7 @@ public class SpringBootDataSourceManager {
     }
 
     //create sql statement pool
-    void setupSqlTraceConfig(Environment environment) {
-        //1:create sql statement config instance
-        StatementTraceConfig config = new StatementTraceConfig();
-        //2:set Properties
-        setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
-        //3:set sql trace properties
+    void setupMonitorConfig(DataSourceMonitorConfig config) {
         if (sqlTrace = config.isSqlTrace()) {
             this.sqlShow = config.isSqlShow();
             this.sqlExecSlowTime = config.getSqlExecSlowTime();
