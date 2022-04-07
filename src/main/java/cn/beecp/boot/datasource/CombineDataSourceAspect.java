@@ -27,7 +27,7 @@ import org.springframework.core.annotation.Order;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
- *  dyn-dataSourceId setter
+ *  combine DataSource Aspect
  *
  *  @author Chris.Liao
  */
