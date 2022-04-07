@@ -31,19 +31,14 @@ import java.util.*;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
 /*
- *  SpringBoot dataSource config demo
+ *  SpringBoot dataSource config example
  *
- *  spring.datasource.sqlExecutionTrace=true
- *  spring.datasource.sqlExecutionTraceTimeout=18000
- *
- *  spring.datasource.ds-ids=ds1,ds2
- *  spring.datasource.ds1.datasourceType=cn.beecp.BeeDataSoruce
- *  spring.datasource.ds1.propertySetFactory=cn.beecp.boot.BeeDsAttributeSetFactory
+ *  spring.datasource.dsId=ds1,ds2
+ *  spring.datasource.ds1.type=cn.beecp.BeeDataSoruce
  *  spring.datasource.ds1.primary=true
- *  spring.datasource.ds1.attributeX=xxxx
  *
  *  spring.datasource.ds2.primary=false
- *  spring.datasource.ds2.jndiName=PlatformJndi
+ *  spring.datasource.ds2.jndiName=DsJndi
  *
  *   @author Chris.Liao
  */
