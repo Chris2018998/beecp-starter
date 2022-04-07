@@ -43,10 +43,10 @@ public class MessageQueuePusher {
 
 
     public void pushConnectionInfo() {
-
+       //do nothing
     }
 
     public void pushSQLExecuteInfo() {
-
+       //do nothing
     }
 }
