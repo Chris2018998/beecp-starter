@@ -196,7 +196,7 @@ public class SpringBootDataSourceUtil {
             //1:get all set methods
             Map<String, Method> setMethodMap = getClassSetMethodMap(bean.getClass());
             //2:create map to collect config value
-            Map<String, Object> setValueMap = new HashMap<String, Object>(setMethodMap.size());
+            Map<String, Object> setValueMap = new HashMap<>(setMethodMap.size());
             //3:loop to find out properties config value by set methods
             for (String propertyName : setMethodMap.keySet()) {
                 String configVal = getConfigValue(dsPrefix, propertyName, environment);

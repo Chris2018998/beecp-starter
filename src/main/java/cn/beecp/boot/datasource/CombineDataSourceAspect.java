@@ -24,6 +24,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
+
 /*
  *  dyn-dataSourceId setter
  *
@@ -33,6 +35,20 @@ import org.springframework.core.annotation.Order;
 @Aspect
 @Order(1)
 public class CombineDataSourceAspect {
+    //*************************static methods for combine inner dataSource *******************************************//
+    private static String combinePrimaryDsId;
+    private static ThreadLocal<SpringBootDataSource> combineDataSourceLocal = new ThreadLocal<>();
+
+    static void setCombinePrimaryDsId(String primaryDsId) {
+        combinePrimaryDsId = primaryDsId;
+    }
+
+    static SpringBootDataSource getCurrentDs() {
+        return combineDataSourceLocal.get();
+    }
+    //**************************************************************************************************************//
+
+    //*********************************aspect methods begin ********************************************************//
     @Pointcut("@annotation(cn.beecp.boot.DsId)")
     public void pointcut() {
         //do nothing
@@ -42,14 +58,16 @@ public class CombineDataSourceAspect {
     public Object setDataSourceId(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         DsId annotation = methodSignature.getMethod().getAnnotation(DsId.class);
-
         String dsId = annotation.value();
-        SpringBootDataSourceManager.getInstance().setCombineCurrentDs(dsId.trim());
+
         try {
+            if (isBlank(dsId)) dsId = combinePrimaryDsId;
+            combineDataSourceLocal.set(SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId));
             return joinPoint.proceed();
         } finally {
             if (!PoolStaticCenter.isBlank(dsId))
-                SpringBootDataSourceManager.getInstance().removeCurrentDs();
+                combineDataSourceLocal.remove();
         }
     }
+    //***************************************************************************************************************//
 }

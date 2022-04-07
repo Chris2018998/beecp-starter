@@ -40,7 +40,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  * @author Chris.Liao
  */
 public class DataSourceMonitorConfig {
-    public static DataSourceMonitorConfig single;
+    static DataSourceMonitorConfig single;
     //*********************************sql trace config begin *********************************************************//
     private boolean sqlShow;
     private boolean sqlTrace;

@@ -161,7 +161,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @return dataSource holder map
      */
     private Map<String, SpringBootDataSource> createDataSources(List<String> dsIdList, Environment environment) {
-        Map<String, SpringBootDataSource> dsMap = new LinkedHashMap<String, SpringBootDataSource>(dsIdList.size());
+        Map<String, SpringBootDataSource> dsMap = new LinkedHashMap<>(dsIdList.size());
         try {
             for (String dsId : dsIdList) {
                 String dsPrefix = Config_DS_Prefix + "." + dsId;
@@ -204,7 +204,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             dsIdSetDefine.setBeanClass(CombineDataSourceAspect.class);
             dsIdSetDefine.setInstanceSupplier(createSupplier(new CombineDataSourceAspect()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            SpringBootDataSourceManager.getInstance().setCombinePrimaryDsId(primaryDsId);
+            CombineDataSourceAspect.setCombinePrimaryDsId(primaryDsId);
             log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }

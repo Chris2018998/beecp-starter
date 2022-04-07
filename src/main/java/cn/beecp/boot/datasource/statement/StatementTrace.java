@@ -72,7 +72,9 @@ public class StatementTrace {
         return dsUUID;
     }
 
-    public String getSqlUUID() { return sqlUUID; }
+    public String getSqlUUID() {
+        return sqlUUID;
+    }
 
     public String getStatementType() {
         return statementType;

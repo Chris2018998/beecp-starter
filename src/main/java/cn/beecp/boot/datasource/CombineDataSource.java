@@ -48,7 +48,7 @@ public class CombineDataSource implements DataSource {
 
     private SpringBootDataSource getCurrentDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
-        SpringBootDataSource ds = SpringBootDataSourceManager.getInstance().getCombineCurrentDs();
+        SpringBootDataSource ds = CombineDataSourceAspect.getCurrentDs();
         if (ds == null) throw new SQLException("DataSource not exists");
         return ds;
     }

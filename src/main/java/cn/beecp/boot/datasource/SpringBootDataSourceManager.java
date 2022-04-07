@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
-import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
  * DataSource Manager
@@ -40,10 +39,8 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
 public class SpringBootDataSourceManager {
     private final static SpringBootDataSourceManager instance = new SpringBootDataSourceManager();
     private final Map<String, SpringBootDataSource> dsMap;
-    private final ThreadLocal<SpringBootDataSource> combineDataSourceLocal;
-    private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
     private final ScheduledThreadPoolExecutor timeoutScanExecutor;
-    private String combinePrimaryDsId;
+    private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
 
     private boolean sqlShow;
     private boolean sqlTrace;
@@ -56,9 +53,7 @@ public class SpringBootDataSourceManager {
     private ConcurrentLinkedDeque<StatementTrace> sqlTraceQueue;
 
     private SpringBootDataSourceManager() {
-        this.combineDataSourceLocal = new ThreadLocal<>();
         this.dsMap = new ConcurrentHashMap<>(1);
-
         timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new SpringBootDsThreadFactory());
         timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
         timeoutScanExecutor.allowCoreThreadTimeOut(true);
@@ -68,21 +63,8 @@ public class SpringBootDataSourceManager {
         return instance;
     }
 
-    void setCombinePrimaryDsId(String combinePrimaryDsId) {
-        this.combinePrimaryDsId = combinePrimaryDsId;
-    }
-
-    void removeCurrentDs() {
-        combineDataSourceLocal.remove();
-    }
-
-    SpringBootDataSource getCombineCurrentDs() {
-        return combineDataSourceLocal.get();
-    }
-
-    void setCombineCurrentDs(String dsId) {
-        if (isBlank(dsId)) dsId = combinePrimaryDsId;
-        combineDataSourceLocal.set(dsMap.get(dsId));
+    SpringBootDataSource getSpringBootDataSource(String dsId) {
+        return dsMap.get(dsId);
     }
 
     void addSpringBootDataSource(SpringBootDataSource ds) {
@@ -100,7 +82,7 @@ public class SpringBootDataSourceManager {
             this.sqlAlertTempList = new LinkedList<>();
             this.sqlTraceAlert = config.getSqlExecAlertAction();
             this.sqlTraceQueueSize = new AtomicInteger(0);
-            this.sqlTraceQueue = new ConcurrentLinkedDeque<StatementTrace>();
+            this.sqlTraceQueue = new ConcurrentLinkedDeque<>();
             timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
         }
     }
