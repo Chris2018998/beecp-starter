@@ -44,33 +44,32 @@ public class TestCombineDs {
     private WebApplicationContext webApplicationContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    public void test1_GetDs1Conn() throws Exception {
+    public void test1GetDs1Conn() throws Exception {
         testGetConnection("ds1", mockMvc, "/testGetConnection1");
     }
 
     @Test
-    public void test2_GetDs2Conn() throws Exception {
+    public void test2GetDs2Conn() throws Exception {
         testGetConnection("ds2", mockMvc, "/testGetConnection2");
     }
 
     @Test
-    public void test3_Sql_Statement() throws Exception {
+    public void test3Sql_Statement() throws Exception {
         testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, "/testExecSQL1");
     }
 
     @Test
-    public void test4_Sql_PreparedStatement() throws Exception {
+    public void test4Sql_PreparedStatement() throws Exception {
         testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, "/testExecSQL1");
     }
 
     @Test
-    public void test5_Sql_CallableStatement() throws Exception {
+    public void test5Sql_CallableStatement() throws Exception {
         testExecuteSQL("ds2", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, "/testExecSQL2");
     }
-
 }

@@ -51,37 +51,37 @@ public class TestYmlConfig {
     }
 
     @Test
-    public void test1_GetDs1Conn() throws Exception {
+    public void test1GetDs1Conn() throws Exception {
         testGetConnection("ds1", mockMvc, connTakeTestURL);
     }
 
     @Test
-    public void test2_GetDs2Conn() throws Exception {
+    public void test2GetDs2Conn() throws Exception {
         testGetConnection("ds2", mockMvc, connTakeTestURL);
     }
 
     @Test
-    public void test3_Sql_Statement() throws Exception {
+    public void test3SqlStatement() throws Exception {
         testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    public void test4_Sql_PreparedStatement() throws Exception {
+    public void test4SqlPreparedStatement() throws Exception {
         testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    public void test5_Sql_CallableStatement() throws Exception {
+    public void test5SqlCallableStatement() throws Exception {
         testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, executeSQLUrl);
     }
 
     @Test
-    public void test6_Sql_Error() throws Exception {
+    public void test6SqlError() throws Exception {
         testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc, 1, executeSQLUrl);
     }
 
     @Test
-    public void test7_Sql_Slow() throws Exception {
+    public void test7SqlSlow() throws Exception {
         testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", mockMvc, 2, executeSQLUrl);
     }
 }
