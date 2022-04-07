@@ -16,7 +16,6 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.DsId;
-import cn.beecp.pool.PoolStaticCenter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -65,8 +64,7 @@ public class CombineDataSourceAspect {
             combineDataSourceLocal.set(SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId));
             return joinPoint.proceed();
         } finally {
-            if (!PoolStaticCenter.isBlank(dsId))
-                combineDataSourceLocal.remove();
+            if (!isBlank(dsId)) combineDataSourceLocal.remove();
         }
     }
     //***************************************************************************************************************//
