@@ -201,8 +201,9 @@ public class SpringBootDataSourceManager {
 
     private class LocalMonitorInfoPushTask implements Runnable {
         public void run() {
-            Collection<Map<String, Object>> monitorVoList = getPoolMonitorVoList();
-            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
+            //do nothing
+//            Collection<Map<String, Object>> monitorVoList = getPoolMonitorVoList();
+//            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
 
         }
     }
