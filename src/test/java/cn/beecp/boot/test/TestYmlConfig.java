@@ -16,6 +16,7 @@
 package cn.beecp.boot.test;
 
 import cn.beecp.boot.test.controller.MultiDsController;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -52,36 +53,36 @@ public class TestYmlConfig {
 
     @Test
     public void test1GetDs1Conn() throws Exception {
-        testGetConnection("ds1", mockMvc, connTakeTestURL);
+        Assert.assertTrue("Not found dataSource(ds1) in trace list", testGetConnection("ds1", mockMvc, connTakeTestURL));
     }
 
     @Test
     public void test2GetDs2Conn() throws Exception {
-        testGetConnection("ds2", mockMvc, connTakeTestURL);
+        Assert.assertTrue("Not found dataSource(ds2) in trace list", testGetConnection("ds2", mockMvc, connTakeTestURL));
     }
 
     @Test
     public void test3SqlStatement() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, executeSQLUrl);
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, executeSQLUrl));
     }
 
     @Test
     public void test4SqlPreparedStatement() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, executeSQLUrl);
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, executeSQLUrl));
     }
 
     @Test
     public void test5SqlCallableStatement() throws Exception {
-        testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, executeSQLUrl);
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, executeSQLUrl));
     }
 
     @Test
     public void test6SqlError() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc, 1, executeSQLUrl);
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc, 1, executeSQLUrl));
     }
 
     @Test
     public void test7SqlSlow() throws Exception {
-        testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", mockMvc, 2, executeSQLUrl);
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", mockMvc, 2, executeSQLUrl));
     }
 }

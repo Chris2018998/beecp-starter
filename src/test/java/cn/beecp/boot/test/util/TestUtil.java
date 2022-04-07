@@ -15,7 +15,6 @@
  */
 package cn.beecp.boot.test.util;
 
-import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.pool.PoolStaticCenter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -175,31 +174,29 @@ public class TestUtil {
         }
     }
 
-    public static final void testGetConnection(String dsId, MockMvc mockMvc, String url) throws Exception {
+    public static final boolean testGetConnection(String dsId, MockMvc mockMvc, String url) throws Exception {
         //1:Try to get connection
         Map<String, String> paramMap = new HashMap<String, String>(1);
         paramMap.put("dsId", dsId);
         String restResult = getRest(mockMvc, url, paramMap, "get");
-        log.info("GetConn result:" + restResult);
-        if (!"OK".equals(restResult))
-            throw new SpringBootDataSourceException("Failed to get connection from dataSource(" + dsId + ")");
+        //log.info("GetConn result:" + restResult);
+        if (!"OK".equals(restResult)) return false;
 
         //2:Get pool list to check ds pool whether exist in list
         String poolInfoListURL = "/beecp/getDataSourceList";
         String response = getRest(mockMvc, poolInfoListURL, null, "post");
         List<Map<String, Object>> poolList = string2Obj(response, List.class, Map.class);
-        boolean exists = false;
         for (Map map : poolList) {
             String pDsId = map.get("dsId").toString();
             String idleSize = map.get("idleSize").toString();
             log.info("{}-idleSize:{}", pDsId, idleSize);
-            if (pDsId.equals(dsId)) exists = true;
+            if (pDsId.equals(dsId)) return true;
         }
-        if (!exists) throw new SpringBootDataSourceException("Not found dataSource(" + dsId + ")pool in trace list)");
+        return false;
     }
 
 
-    public static void testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
+    public static boolean testExecuteSQL(String dsId, String sql, String sqlType, MockMvc mockMvc, int testType, String url) throws Exception {
         Map<String, String> paramMap = new HashMap<String, String>(3);
         paramMap.put("dsId", dsId);
         paramMap.put("sql", sql);
@@ -210,21 +207,19 @@ public class TestUtil {
         String getSqlListUrl = "/beecp/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
         List<Map<String, Object>> sqlList = string2Obj(response, List.class, Map.class);
+
         if (testType == 0) {//normal
-            boolean exists = false;
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
                 if (dsId.equals(pDsId) && sql.equals(exeSql)) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
-                    exists = true;
-                    break;
+                    return true;
                 }
             }
-            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
+            return false;
         } else if (testType == 1) {//error test
-            boolean exists = false;
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
@@ -233,13 +228,11 @@ public class TestUtil {
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && !execSuccessInd) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
-                    exists = true;
-                    break;
+                    return true;
                 }
             }
-            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
+            return false;
         } else if (testType == 2) {//slow test
-            boolean exists = false;
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
@@ -248,11 +241,11 @@ public class TestUtil {
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
                     String tookTimeMs = map.get("execTookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
-                    exists = true;
-                    break;
+                    return true;
                 }
             }
-            if (!exists) throw new SpringBootDataSourceException("target sql not in trace list");
+            return false;
         }
+        return false;
     }
 }

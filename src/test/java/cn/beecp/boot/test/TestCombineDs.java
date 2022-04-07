@@ -16,6 +16,7 @@
 package cn.beecp.boot.test;
 
 import cn.beecp.boot.test.controller.MultiDsController;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -50,26 +51,26 @@ public class TestCombineDs {
 
     @Test
     public void test1GetDs1Conn() throws Exception {
-        testGetConnection("ds1", mockMvc, "/testGetConnection1");
+        Assert.assertTrue("Not found dataSource(ds1) in trace list", testGetConnection("ds1", mockMvc, "/testGetConnection1"));
     }
 
     @Test
     public void test2GetDs2Conn() throws Exception {
-        testGetConnection("ds2", mockMvc, "/testGetConnection2");
+        Assert.assertTrue("Not found dataSource(ds2) in trace list", testGetConnection("ds2", mockMvc, "/testGetConnection2"));
     }
 
     @Test
-    public void test3Sql_Statement() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, "/testExecSQL1");
+    public void test3SqlStatement() throws Exception {
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, "/testExecSQL1"));
     }
 
     @Test
-    public void test4Sql_PreparedStatement() throws Exception {
-        testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, "/testExecSQL1");
+    public void test4SqlPreparedStatement() throws Exception {
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, "/testExecSQL1"));
     }
 
     @Test
-    public void test5Sql_CallableStatement() throws Exception {
-        testExecuteSQL("ds2", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, "/testExecSQL2");
+    public void test5SqlCallableStatement() throws Exception {
+        Assert.assertTrue("target sql not in trace list", testExecuteSQL("ds2", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, "/testExecSQL2"));
     }
 }

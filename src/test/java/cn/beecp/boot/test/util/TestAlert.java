@@ -15,8 +15,8 @@
  */
 package cn.beecp.boot.test.util;
 
-import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 import cn.beecp.boot.datasource.statement.StatementTrace;
+import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 
 import java.util.List;
 
