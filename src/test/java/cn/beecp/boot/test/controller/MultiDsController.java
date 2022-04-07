@@ -51,26 +51,29 @@ public class MultiDsController {
 
     @GetMapping("/testGetConnection")
     public String testGetConnection(String dsId) throws Exception {
-        if (PoolStaticCenter.isBlank(dsId)) throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
+        if (PoolStaticCenter.isBlank(dsId))
+            throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
         if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
             throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
 
-        DataSource ds = (dsId == "ds1") ? ds1 : ds2;
+        DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
         return TestUtil.testGetConnection(ds);
     }
 
 
     @GetMapping("/testSQL")
     public String testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
-        if (PoolStaticCenter.isBlank(dsId)) throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
+        if (PoolStaticCenter.isBlank(dsId))
+            throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
         if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
             throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
-        if (PoolStaticCenter.isBlank(sql)) throw new SpringBootDataSourceException("Execute SQL can't be null or empty");
+        if (PoolStaticCenter.isBlank(sql))
+            throw new SpringBootDataSourceException("Execute SQL can't be null or empty");
         if (PoolStaticCenter.isBlank(type)) throw new SpringBootDataSourceException("Execute type't be null or empty");
         if (!"Statement".equalsIgnoreCase(type) && !"PreparedStatement".equalsIgnoreCase(type) && !"CallableStatement".equalsIgnoreCase(type))
             throw new SpringBootDataSourceException("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
 
-        DataSource ds = (dsId == "ds1") ? ds1 : ds2;
+        DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
         return TestUtil.testSQL(ds, sql, type, slowInd);
     }
 
