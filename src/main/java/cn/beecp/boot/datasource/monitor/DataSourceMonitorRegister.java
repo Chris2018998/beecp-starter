@@ -37,18 +37,13 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
     //springboot environment
     private Environment environment;
 
-    /**
-     * Read dataSource configuration from environment and create DataSource
-     *
-     * @param environment SpringBoot Environment
-     */
     public final void setEnvironment(Environment environment) {
         this.environment = environment;
     }
 
-    //Register self bean to ioc
-    public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-                                              BeanDefinitionRegistry registry) {
+
+    //Register monitor bean to ioc
+    public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
         //1:read datasource monitor
         DataSourceMonitorConfig config = readMonitorConfig(environment);
