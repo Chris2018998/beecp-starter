@@ -29,10 +29,10 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 public class StatementTrace {
     private final String dsId;
     private final String dsUUID;
-
     private final String sql;
     private final String sqlUUID;
-    private String statementType;
+    private final String statementType;
+
     private String execStartTime;
     private long execStartTimeMs;
 
