@@ -144,16 +144,15 @@ public class SpringBootDataSourceManager {
             Object re = method.invoke(statement, args);
             vo.setExecSuccessInd(true);
             return re;
-        } catch (Throwable e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             vo.setExecSuccessInd(false);
+            Throwable failedCause = e;
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException ee = (InvocationTargetException) e;
-                if (ee.getCause() != null) {
-                    e = ee.getCause();
-                }
+                if (ee.getCause() != null) failedCause = ee.getCause();
             }
-            vo.setFailCause(e);
-            throw e;
+            vo.setFailCause(failedCause);
+            throw failedCause;
         } finally {
             vo.setExecInd(true);
             Date endDate = new Date();
