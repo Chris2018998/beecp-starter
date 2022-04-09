@@ -2,6 +2,7 @@ $(function() {
     var language = $("html").attr("lang");
     var dsURL = getContextPath() + '/beecp/getDataSourceList';
     var sqlURL = getContextPath() + '/beecp/getSqlTraceList';
+    var refreshMsg = language=='cn'? '刷新成功':'Refresh successful';
 
     var sqlTraceList = []; //empty array
     var curSqlPageSize = 10;
@@ -13,10 +14,12 @@ $(function() {
     $('#sql_monitorTable').tablesorter();
 
     $("#ds_refresh_button").click(function() {
-        getDataSourceListFromServer();
+        getDsListFromServer();
+        alert(refreshMsg);
     });
     $("#sql_refresh_button").click(function() {
         getSqlListFromServer();
+        alert(refreshMsg);
     });
 	
 	$("#ds_timer_button").click(function() {
@@ -26,7 +29,7 @@ $(function() {
 			var name=(language=='cn')?'启动定时':'Run Timer';
 			$("#ds_timer_button").val(name)
 		}else{//run
-			dsRefreshTask = setInterval(getDataSourceListFromServer, $("#ds_refresh_interval").val());
+			dsRefreshTask = setInterval(getDsListFromServer, $("#ds_refresh_interval").val());
 			var name=(language=='cn')?'停止定时':'Stop Timer';
 			$("#ds_timer_button").val(name);
 		}
@@ -46,7 +49,7 @@ $(function() {
     $("#ds_refresh_interval").click(function() {
         if (dsRefreshTask != null){ 
 		  clearInterval(dsRefreshTask);
-          dsRefreshTask = setInterval(getDataSourceListFromServer, $("#ds_refresh_interval").val());
+          dsRefreshTask = setInterval(getDsListFromServer, $("#ds_refresh_interval").val());
 		}
     });
     $("#sql_refresh_interval").click(function() {
@@ -113,7 +116,7 @@ $(function() {
         });
     };
 
-    function getDataSourceListFromServer() {
+    function getDsListFromServer() {
         $.ajax({
             type: 'POST',
             url: dsURL,
@@ -223,7 +226,8 @@ $(function() {
         }
         $('#sql_monitorTable').trigger("update");
     }
-
-    $("#ds_refresh_button").trigger("click");
-    $("#sql_refresh_button").trigger("click");
+    //$("#ds_refresh_button").trigger("click");
+    //$("#sql_refresh_button").trigger("click");
+    getDsListFromServer();
+    getSqlListFromServer();
 });
