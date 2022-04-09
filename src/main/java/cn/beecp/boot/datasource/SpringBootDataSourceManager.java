@@ -144,9 +144,9 @@ public class SpringBootDataSourceManager {
             Object re = method.invoke(statement, args);
             vo.setExecSuccessInd(true);
             return re;
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            vo.setExecSuccessInd(false);
+        } catch (Throwable e) {
             Throwable failedCause = e;
+            vo.setExecSuccessInd(false);
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException ee = (InvocationTargetException) e;
                 if (ee.getCause() != null) failedCause = ee.getCause();
