@@ -204,7 +204,6 @@ public class SpringBootDataSourceManager {
             //do nothing
 //            Collection<Map<String, Object>> monitorVoList = getPoolMonitorVoList();
 //            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
-
         }
     }
 }

@@ -59,7 +59,7 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitor.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitor(
+            define.setInstanceSupplier(createSpringSupplier(new DataSourceMonitor(
                     config.getMonitorUserId(),
                     config.getMonitorPassword(),
                     config.getMonitorValidPassedTagName())));
@@ -75,7 +75,7 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(DataSourceMonitorFilter.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSupplier(new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName())));
+            define.setInstanceSupplier(createSpringSupplier(new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName())));
             registry.registerBeanDefinition(resetControllerFilterRegName, define);
             log.info("Register DataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {

@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
+import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,17 +49,16 @@ public class SingleDataSourceRegister {
     public DataSource beeDataSource(Environment environment) throws Exception {
         //1:read ds Id
         String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
-        if (PoolStaticCenter.isBlank(dsId)) dsId = BeeCP_DS_ID;//default ds Id
+        if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDataSource";//default ds Id
 
         //2:create BeeDataSource
-        DataSource beesDs = BeeDataSourceFactory.createDataSource(Config_DS_Prefix, dsId, environment);
+        DataSource beesDs = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
         SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
 
-        //3:add dataSource to manager
-        DataSourceMonitorConfig config = readMonitorConfig(environment);
-        SpringBootDataSourceManager.getInstance().setupMonitorConfig(config);
+        //3:setup monitor config
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(readMonitorConfig(environment));
 
-        //4:add to manager
+        //4:add ds to manager
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
         return springDs;
     }

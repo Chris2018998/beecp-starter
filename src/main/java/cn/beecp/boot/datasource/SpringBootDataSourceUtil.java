@@ -19,6 +19,7 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
+import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -45,48 +46,29 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  */
 public class SpringBootDataSourceUtil {
     //Spring dataSource configuration prefix-key name
-    public static final String Config_DS_Prefix = "spring.datasource";
-    //monitor admin user id
-    public static final String Config_DS_Monitor_UserId = "monitorUserId";
-    //monitor admin user password
-    public static final String Config_DS_Monitor_Password = "monitorPassword";
+    static final String Config_DS_Prefix = "spring.datasource";
     //DataSource config id list on springboot
     static final String Config_DS_Id = "dsId";
-    //Datasource class name
-    static final String Config_DS_Type = "type";
-    //Spring jndi dataSource configuration key name
-    static final String Config_DS_Jndi = "jndiName";
-    //indicator:Spring dataSource register as primary datasource
-    static final String Config_DS_Primary = "primary";
     //combineId
     static final String Config_DS_CombineId = "combineId";
     //combineDefaultDs
     static final String Config_DS_Combine_PrimaryDs = "combinePrimaryId";
 
-    //monitor queue server
-    static final String Config_Queue_Server = "queueServer";
-    //monitor queue server port
-    static final String Config_Queue_Server_Port = "queueServerPort";
-    //monitor queue server userId
-    static final String Config_Queue_Server_UserId = "queueServerUserId";
-    //monitor queue server password
-    static final String Config_Queue_Server_Password = "queueServerPassword";
-    //monitor queue server password
-    static final String Config_Queue_Server_Push_Interval = "queueServerPushInterval";
-
-    //BeeCP dataSource Id
-    static final String BeeCP_DS_ID = "beeDs";
+    //indicator:Spring dataSource register as primary datasource
+    private static final String Config_DS_Primary = "primary";
+    //Datasource class name
+    private static final String Config_DS_Type = "type";
+    //Spring jndi dataSource configuration key name
+    private static final String Config_DS_Jndi = "jndiName";
     //BeeCP DataSource class name
-    static final String BeeCP_DS_Class = "cn.beecp.BeeDataSource";
-    //Bee DataSource Factory
-    static final BeeDataSourceFactory BeeDataSourceFactory = new BeeDataSourceFactory();
+    private static final String BeeCP_DS_Class_Name = BeeDataSource.class.getName();
     //logger
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
-    //Spring  DsAttributeSetFactory map
+    //Springboot dataSource factory map
     private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
 
     static {
-        factoryMap.put(BeeDataSource.class, BeeDataSourceFactory);
+        factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
     }
 
     //***************************************************************************************************************//
@@ -96,8 +78,8 @@ public class SpringBootDataSourceUtil {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
     }
 
-    public static Supplier createSupplier(Object bean) {
-        return new RegSupplier(bean);
+    public static Supplier createSpringSupplier(Object bean) {
+        return new SpringRegSupplier(bean);
     }
 
     public static boolean existsBeanDefinition(String beanName, BeanDefinitionRegistry registry) {
@@ -124,11 +106,16 @@ public class SpringBootDataSourceUtil {
 
     static SpringBootDataSource createSpringBootDataSource(String dsPrefix, String dsId, Environment environment) {
         String jndiNameTex = getConfigValue(dsPrefix, Config_DS_Jndi, environment);
+        SpringBootDataSource ds;
         if (!isBlank(jndiNameTex)) {//jndi dataSource
-            return lookupJndiDataSource(dsId, jndiNameTex);
+            ds = lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
-            return createDataSourceByDsType(dsPrefix, dsId, environment);
+            ds = createDataSourceByDsType(dsPrefix, dsId, environment);
         }
+
+        String primaryText = getConfigValue(dsPrefix, Config_DS_Primary, environment);
+        ds.setPrimary(PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
+        return ds;
     }
 
     private static SpringBootDataSource lookupJndiDataSource(String dsId, String jndiName) {
@@ -147,7 +134,7 @@ public class SpringBootDataSourceUtil {
     private static SpringBootDataSource createDataSourceByDsType(String dsPrefix, String dsId, Environment environment) {
         //1:load dataSource class
         String dsClassName = getConfigValue(dsPrefix, Config_DS_Type, environment);
-        dsClassName = isBlank(dsClassName) ? BeeCP_DS_Class : dsClassName.trim();
+        dsClassName = isBlank(dsClassName) ? BeeCP_DS_Class_Name : dsClassName.trim();
 
         //2:create dataSource class
         Class dsClass;
@@ -252,10 +239,10 @@ public class SpringBootDataSourceUtil {
         }
     }
 
-    private static final class RegSupplier implements Supplier {
+    private static final class SpringRegSupplier implements Supplier {
         private final Object ds;
 
-        RegSupplier(Object ds) {
+        SpringRegSupplier(Object ds) {
             this.ds = ds;
         }
 

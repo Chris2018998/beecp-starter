@@ -49,13 +49,26 @@ public class DataSourceMonitorConfig {
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
     private long sqlTraceTimeoutScanPeriod = TimeUnit.MINUTES.toMillis(3);
     private StatementTraceAlert sqlExecAlertAction;
-    //*********************************sql trace config end************************************************************//
+    //*********************************sql trace config end***********************************************************//
 
-    //*********************************monitor config begin ***********************************************************//
+    //*********************************monitor config begin **********************************************************//
     private String monitorUserId;
     private String monitorPassword;
     private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
+
+
+    //    //monitor queue server
+//    static final String Config_Queue_Server = "queueServer";
+//    //monitor queue server port
+//    static final String Config_Queue_Server_Port = "queueServerPort";
+//    //monitor queue server userId
+//    static final String Config_Queue_Server_UserId = "queueServerUserId";
+//    //monitor queue server password
+//    static final String Config_Queue_Server_Password = "queueServerPassword";
+//    //monitor queue server password
+//    static final String Config_Queue_Server_Push_Interval = "queueServerPushInterval";
+
 
     public boolean isSqlShow() {
         return sqlShow;

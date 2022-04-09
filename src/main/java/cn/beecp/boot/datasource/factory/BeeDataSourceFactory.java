@@ -42,6 +42,16 @@ import static cn.beecp.pool.PoolStaticCenter.*;
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
+    private static void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+        config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
+        String connectPropertiesCount = getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
+        if (!isBlank(connectPropertiesCount)) {
+            int count = Integer.parseInt(connectPropertiesCount.trim());
+            for (int i = 1; i <= count; i++)
+                config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i, environment));
+        }
+    }
+
     public DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception {
         //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
@@ -59,15 +69,5 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         //3:create dataSource instance
         BeeDataSource ds = new BeeDataSource(config);
         return (tm != null) ? new BeeJtaDataSource(ds, tm) : ds;
-    }
-
-    private void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
-        config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
-        String connectPropertiesCount = getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
-        if (!isBlank(connectPropertiesCount)) {
-            int count = Integer.parseInt(connectPropertiesCount.trim());
-            for (int i = 1; i <= count; i++)
-                config.addConnectProperty(getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i, environment));
-        }
     }
 }

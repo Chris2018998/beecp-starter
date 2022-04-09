@@ -64,22 +64,19 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param classMetadata Annotation use class meta
      * @param registry      springboot bean definition registry factory
      */
-    public final void registerBeanDefinitions(AnnotationMetadata classMetadata,
-                                              BeanDefinitionRegistry registry) {
-
+    public final void registerBeanDefinitions(AnnotationMetadata classMetadata, BeanDefinitionRegistry registry) {
 
         //1:read multi-dataSource id list
-        List<String> dsIdList = this.getIdList(environment, registry);
+        List<String> dsIdList = getDsIdList(environment, registry);
 
         //2:read combine-ds config
-        Properties combineProperties = getCombineInfo(dsIdList, environment, registry);
+        Properties combineProperties = getCombineDsInfo(dsIdList, environment, registry);
 
         //3:create dataSources by id list
-        Map<String, SpringBootDataSource> dsMap = this.createDataSources(dsIdList, environment);
+        Map<String, SpringBootDataSource> dsMap = createDataSources(dsIdList, environment);
 
         //4:read sql statement config
-        DataSourceMonitorConfig config = readMonitorConfig(environment);
-        SpringBootDataSourceManager.getInstance().setupMonitorConfig(config);
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(readMonitorConfig(environment));
 
         //5:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);
@@ -92,7 +89,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param registry    springboot registry
      * @return datasource name list
      */
-    private List<String> getIdList(Environment environment, BeanDefinitionRegistry registry) {
+    private List<String> getDsIdList(Environment environment, BeanDefinitionRegistry registry) {
         String dsIdsText = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsIdsText))
             throw new SpringBootDataSourceException("Missed or not found config item:" + Config_DS_Prefix + "." + Config_DS_Id);
@@ -123,7 +120,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param environment springboot environment
      * @return datasource name list
      */
-    private Properties getCombineInfo(List<String> dsIdList, Environment environment, BeanDefinitionRegistry registry) {
+    private Properties getCombineDsInfo(List<String> dsIdList, Environment environment, BeanDefinitionRegistry registry) {
         String combineId = getConfigValue(Config_DS_Prefix, Config_DS_CombineId, environment);
         String primaryDs = getConfigValue(Config_DS_Prefix, Config_DS_Combine_PrimaryDs, environment);
 
@@ -160,10 +157,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         try {
             for (String dsId : dsIdList) {
                 String dsPrefix = Config_DS_Prefix + "." + dsId;
-                SpringBootDataSource ds = createSpringBootDataSource(dsPrefix, dsId, environment);//create datasource instance
-                String primaryText = getConfigValue(dsPrefix, Config_DS_Primary, environment);
-                ds.setPrimary(PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
-                dsMap.put(dsId, ds);
+                dsMap.put(dsId, createSpringBootDataSource(dsPrefix, dsId, environment));//create datasource instance
             }
             return dsMap;
         } catch (Throwable e) {//failed then close all created dataSource
@@ -190,14 +184,14 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             CombineDataSource combineDataSource = new CombineDataSource();
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(combineDataSource.getClass());
-            define.setInstanceSupplier(createSupplier(combineDataSource));
+            define.setInstanceSupplier(createSpringSupplier(combineDataSource));
             registry.registerBeanDefinition(combineId, define);
             log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineId);
 
             String dsIdSetterId = CombineDataSourceAspect.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(CombineDataSourceAspect.class);
-            dsIdSetDefine.setInstanceSupplier(createSupplier(new CombineDataSourceAspect()));
+            dsIdSetDefine.setInstanceSupplier(createSpringSupplier(new CombineDataSourceAspect()));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
             CombineDataSourceAspect.setCombinePrimaryDsId(primaryDsId);
             log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
@@ -209,7 +203,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         GenericBeanDefinition define = new GenericBeanDefinition();
         define.setPrimary(springDs.isPrimary());
         define.setBeanClass(springDs.getClass());
-        define.setInstanceSupplier(createSupplier(springDs));
+        define.setInstanceSupplier(createSpringSupplier(springDs));
         registry.registerBeanDefinition(springDs.getId(), define);
         log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), springDs.getId());
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
