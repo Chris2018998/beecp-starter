@@ -16,7 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
-import cn.beecp.boot.datasource.statement.JdbcObjectProxyUtil;
+import cn.beecp.boot.datasource.statement.StatementTraceUtil;
 import cn.beecp.jta.BeeJtaDataSource;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,6 +50,7 @@ public class SpringBootDataSource implements DataSource {
     private boolean traceSql;
     private Method poolClearMethod;
     private Method poolMonitorVoMethod;
+    private boolean notSetBeeDsId = true;
 
     SpringBootDataSource(String dsId, DataSource ds, boolean jndiDs) {
         this.dsId = dsId;
@@ -61,12 +63,9 @@ public class SpringBootDataSource implements DataSource {
         this.dsUUID = dsType + UUID.randomUUID().toString();
     }
 
+
     String getId() {
         return dsId;
-    }
-
-    String getDsUUID() {
-        return dsUUID;
     }
 
     boolean isPrimary() {
@@ -83,12 +82,12 @@ public class SpringBootDataSource implements DataSource {
 
     public Connection getConnection() throws SQLException {
         Connection con = ds.getConnection();
-        return traceSql ? JdbcObjectProxyUtil.createConnection(con, dsId, dsUUID) : con;
+        return traceSql ? StatementTraceUtil.createConnection(con, dsId, dsUUID) : con;
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
         Connection con = ds.getConnection(username, password);
-        return traceSql ? JdbcObjectProxyUtil.createConnection(con, dsId, dsUUID) : con;
+        return traceSql ? StatementTraceUtil.createConnection(con, dsId, dsUUID) : con;
     }
 
     public PrintWriter getLogWriter() throws SQLException {
@@ -139,12 +138,34 @@ public class SpringBootDataSource implements DataSource {
     ConnectionPoolMonitorVo getPoolMonitorVo() {
         if (poolMonitorVoMethod != null) {
             try {
-                return (ConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
+                ConnectionPoolMonitorVo vo = (ConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
+                if (notSetBeeDsId) setBeeDsIdToMonitorSingletonVo(vo);
+                return vo;
             } catch (Throwable e) {
                 Log.warn("Failed to execute dataSource 'getPoolMonitorVo' method", e);
             }
         }
         return null;
+    }
+
+    private synchronized void setBeeDsIdToMonitorSingletonVo(ConnectionPoolMonitorVo vo) {
+        setValueToField(vo, "dsId", dsId);
+        setValueToField(vo, "dsUUID", dsUUID);
+        notSetBeeDsId = false;
+    }
+
+    private void setValueToField(ConnectionPoolMonitorVo vo, String fieldId, String value) {
+        Field field = null;
+        try {
+            Class monitorVoClass = ConnectionPoolMonitorVo.class;
+            field = monitorVoClass.getDeclaredField(fieldId);
+            field.setAccessible(true);
+            field.set(vo, value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            //do nothing
+        } finally {
+            if (field != null) field.setAccessible(false);
+        }
     }
 
     private void readBeeDsMethods() {

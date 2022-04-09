@@ -99,8 +99,8 @@ public class SpringBootDataSourceManager {
     }
 
     //get pool connection monitor
-    public List<Map<String, Object>> getPoolMonitorVoList() {
-        List<Map<String, Object>> poolMonitorVoList = new ArrayList<>(dsMap.size());
+    public List<ConnectionPoolMonitorVo> getPoolMonitorVoList() {
+        List<ConnectionPoolMonitorVo> poolMonitorVoList = new ArrayList<>(dsMap.size());
         Iterator<SpringBootDataSource> iterator = dsMap.values().iterator();
         while (iterator.hasNext()) {
             SpringBootDataSource ds = iterator.next();
@@ -109,18 +109,7 @@ public class SpringBootDataSourceManager {
             if (vo.getPoolState() == POOL_CLOSED) {//POOL_CLOSED
                 iterator.remove();
             } else {
-                Map<String, Object> monitorMap = new HashMap<>(9);
-                monitorMap.put("dsId", ds.getId());
-                monitorMap.put("dsUUID", ds.getDsUUID());
-                monitorMap.put("poolName", vo.getPoolName());
-                monitorMap.put("poolMode", vo.getPoolMode());
-                monitorMap.put("poolState", vo.getPoolState());
-                monitorMap.put("poolMaxSize", vo.getPoolMaxSize());
-                monitorMap.put("idleSize", vo.getIdleSize());
-                monitorMap.put("usingSize", vo.getUsingSize());
-                monitorMap.put("semaphoreWaitingSize", vo.getSemaphoreWaitingSize());
-                monitorMap.put("transferWaitingSize", vo.getTransferWaitingSize());
-                poolMonitorVoList.add(monitorMap);
+                poolMonitorVoList.add(vo);
             }
         }
         return poolMonitorVoList;

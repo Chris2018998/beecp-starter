@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource.monitor;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
+import cn.beecp.pool.ConnectionPoolMonitorVo;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,7 +112,7 @@ public class DataSourceMonitor {
 
     @ResponseBody
     @PostMapping("/beecp/getDataSourceList")
-    public List<Map<String, Object>> getDataSourceList() {
+    public List<ConnectionPoolMonitorVo> getDataSourceList() {
         return dsManager.getPoolMonitorVoList();
     }
 
