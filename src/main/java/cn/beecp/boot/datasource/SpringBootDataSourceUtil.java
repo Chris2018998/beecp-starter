@@ -19,7 +19,6 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
-import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -114,7 +113,7 @@ public class SpringBootDataSourceUtil {
         }
 
         String primaryText = getConfigValue(dsPrefix, Config_DS_Primary, environment);
-        ds.setPrimary(PoolStaticCenter.isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
+        ds.setPrimary(isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
         return ds;
     }
 
