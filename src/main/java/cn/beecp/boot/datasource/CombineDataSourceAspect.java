@@ -45,9 +45,10 @@ public class CombineDataSourceAspect {
     static SpringBootDataSource getCurrentDs() {
         return combineDataSourceLocal.get();
     }
-    //**************************************************************************************************************//
+    //****************************************************************************************************************//
 
-    //*********************************aspect methods begin ********************************************************//
+
+    //*********************************aspect methods begin **********************************************************//
     @Pointcut("@annotation(cn.beecp.boot.DsId)")
     public void pointcut() {
         //do nothing

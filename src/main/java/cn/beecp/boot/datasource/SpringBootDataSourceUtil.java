@@ -63,25 +63,24 @@ public class SpringBootDataSourceUtil {
     private static final String Config_DS_Jndi = "jndiName";
     //BeeCP DataSource class name
     private static final String BeeCP_DS_Class_Name = BeeDataSource.class.getName();
-    //logger
+
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
-    //Springboot dataSource factory map
-    private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
-    private static final ThreadLocal<WeakReference<DateFormat>> threadLocal = new ThreadLocal<WeakReference<DateFormat>>();
+    private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
+    private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
     //***************************************************************************************************************//
     //                                1: spring register or base (3)                                                //
     //***************************************************************************************************************//
 
     static {
-        factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
+        DataSourceFactoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
     }
 
     public static String formatDate(Date date) {
-        WeakReference<DateFormat> reference = threadLocal.get();
+        WeakReference<DateFormat> reference = DateFormatThreadLocal.get();
         DateFormat dateFormat = reference != null ? reference.get() : null;
         if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-            threadLocal.set(new WeakReference<>(dateFormat));
+            DateFormatThreadLocal.set(new WeakReference<>(dateFormat));
         }
         return dateFormat.format(date);
     }
@@ -154,7 +153,7 @@ public class SpringBootDataSourceUtil {
 
         //3:create dataSource
         DataSource ds;
-        SpringBootDataSourceFactory dsFactory = factoryMap.get(dsClass);
+        SpringBootDataSourceFactory dsFactory = DataSourceFactoryMap.get(dsClass);
         if (dsFactory == null && SpringBootDataSourceFactory.class.isAssignableFrom(dsClass))
             dsFactory = (SpringBootDataSourceFactory) createInstanceByClassName(dsId, dsClass);
         if (dsFactory != null) {//create by factory

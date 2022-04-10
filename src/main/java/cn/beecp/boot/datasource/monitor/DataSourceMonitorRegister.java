@@ -41,10 +41,8 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
         this.environment = environment;
     }
 
-
     //Register monitor bean to ioc
     public final void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-
         //1:read datasource monitor
         DataSourceMonitorConfig config = readMonitorConfig(environment);
 

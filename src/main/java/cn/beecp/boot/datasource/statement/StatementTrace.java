@@ -105,7 +105,9 @@ public class StatementTrace {
         return endTime;
     }
 
-    public void setEndTime(String endTime) { this.endTime = endTime; }
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
     public long getTookTimeMs() {
         return tookTimeMs;

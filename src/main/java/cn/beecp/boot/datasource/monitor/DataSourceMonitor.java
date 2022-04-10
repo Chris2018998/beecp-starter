@@ -16,39 +16,43 @@
 package cn.beecp.boot.datasource.monitor;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
-import cn.beecp.pool.ConnectionPoolMonitorVo;
+import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
+
+import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_FAILED;
+import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SUCCESS;
 
 /**
  * Controller
  *
  * @author Chris.Liao
  */
-
 @Controller
 public class DataSourceMonitor {
-    private final static String chinese_page = "/beecp/chinese.html";
-    private final static String english_page = "/beecp/english.html";
+    private final static String CN_PAGE = "/beecp/chinese.html";
+    private final static String EN_PAGE = "/beecp/english.html";
+    private final String monitorUserId;
+    private final String monitorPassword;
+    private final String monitorValidPassedTagName;
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
-    private String monitorUserId;
-    private String monitorPassword;
-    private String monitorValidPassedTagName;
+    private HttpSession session;
 
     DataSourceMonitor(String monitorUser, String monitorPassword, String monitorValidPassedTagName) {
         this.monitorUserId = monitorUser;
         this.monitorPassword = monitorPassword;
         this.monitorValidPassedTagName = monitorValidPassedTagName;
+    }
+
+    @ModelAttribute
+    public void setReqAndRes(HttpServletRequest req, HttpServletResponse res) {
+        this.session = req.getSession();
     }
 
     @RequestMapping("/beecp")
@@ -58,68 +62,82 @@ public class DataSourceMonitor {
 
     @RequestMapping("/beecp/")
     public String welcome2() {
-        return chinese_page;
+        return CN_PAGE;
     }
 
     @RequestMapping("/beecp/cn")
     public String openChinesePage1() {
-        return chinese_page;
+        return CN_PAGE;
     }
 
     @RequestMapping("/beecp/chinese")
     public String openChinesePage2() {
-        return chinese_page;
+        return CN_PAGE;
     }
 
     @RequestMapping("/beecp/en")
     public String openEnglishPage1() {
-        return english_page;
+        return EN_PAGE;
     }
-
-    //*****************************************************************************//
-    //                        Below are Rest methods                               //
-    //*****************************************************************************//
 
     @RequestMapping("/beecp/english")
     public String openEnglishPage2() {
-        return english_page;
+        return EN_PAGE;
+    }
+
+    //****************************************************************************************************************//
+    //                                         Below are Rest methods                                                 //
+    //****************************************************************************************************************//
+    @ResponseBody
+    @PostMapping("/beecp/login")
+    public SpringBootRestResponse login(@RequestBody Map<String, String> paramMap) {
+        if ("Y".equals(session.getAttribute(monitorValidPassedTagName)))//has validated
+            return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
+        if (PoolStaticCenter.isBlank(monitorUserId))
+            return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
+
+        try {
+            String userId = paramMap.get("userId");
+            String password = paramMap.get("password");
+            if (monitorUserId.equals(userId) && PoolStaticCenter.equalsString(monitorPassword, password)) {//checked pass
+                session.setAttribute(monitorValidPassedTagName, "Y");
+                return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
+            } else
+                return new SpringBootRestResponse(CODE_FAILED, null, "Login Failed");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Login Failed");
+        }
     }
 
     @ResponseBody
-    @PostMapping("/beecp/login")
-    public String login(@RequestBody Map<String, String> paramMap) {
-        if (!PoolStaticCenter.isBlank(monitorUserId)) {
-            String userId = paramMap.get("userId");
-            String password = paramMap.get("password");
-            if (monitorUserId.equals(userId) && PoolStaticCenter.equalsString(monitorPassword, password)) {
-                ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                HttpServletRequest request = servletRequestAttributes.getRequest();
-                request.getSession().setAttribute(monitorValidPassedTagName, "Y");
-                return "OK";//passed
-            } else {
-                return "FAIL";
-            }
-        } else {
-            return "OK";//passed
+    @PostMapping("/beecp/getDataSourceList")
+    public SpringBootRestResponse getDataSourceList() {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, dsManager.getPoolMonitorVoList(), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed to 'getDataSourceList'");
         }
     }
 
     @ResponseBody
     @PostMapping("/beecp/getSqlTraceList")
-    public Object getSqTraceList() {
-        return dsManager.getSqlExecutionList();
+    public SpringBootRestResponse getSqTraceList() {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, dsManager.getSqlExecutionList(), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed to 'getSqlTraceList'");
+        }
     }
 
     @ResponseBody
-    @PostMapping("/beecp/getDataSourceList")
-    public List<ConnectionPoolMonitorVo> getDataSourceList() {
-        return dsManager.getPoolMonitorVoList();
-    }
-
-    @ResponseBody
-    @PostMapping("/beecp/clearDsConnections")
-    public void clearDsConnections(@RequestBody Map<String, String> parameterMap) {
-        if (parameterMap != null)
-            dsManager.clearDsConnections(parameterMap.get("dsId"));
+    @PostMapping("/beecp/clearDataSource")
+    public SpringBootRestResponse clearDsConnections(@RequestBody Map<String, String> parameterMap) {
+        try {
+            String dsId = parameterMap != null ? parameterMap.get("dsId") : null;
+            dsManager.clearDsConnections(dsId);
+            return new SpringBootRestResponse(CODE_SUCCESS, null, "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed to 'clearDsConnections'");
+        }
     }
 }
