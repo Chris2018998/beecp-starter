@@ -206,20 +206,20 @@ $(function() {
             var element = sqlTraceList[i];
             var bgcolor = "";
 
-            if (element.execInd) {
-                if (!element.execSuccessInd) { //fail
+            if (element.endTimeMs>0) {
+                if (!element.successInd) { //fail
                     bgcolor = " class='sqlExecFail'";
-                } else if (element.execSlowInd) { //slow
+                } else if (element.slowInd) { //slow
                     bgcolor = " class='sqlExecSlow'";
                 }
             }
 
             var tableHtml = "<tr " + bgcolor + ">" + "<td>"
                 + element.sql + "</td>" + "<td>" + element.dsId
-                + "</td>" + "<td>" + element.execStartTime
-                + "</td>" + "<td>" + element.execEndTime
-                + "</td>" + "<td>" + element.execTookTimeMs
-                + "</td>" + "<td>" + element.execSuccessInd
+                + "</td>" + "<td>" + element.startTime
+                + "</td>" + "<td>" + element.endTime
+                + "</td>" + "<td>" + element.tookTimeMs
+                + "</td>" + "<td>" + element.successInd
                 + "</td>" + "<td>" + element.statementType + '.' + element.methodName + "</td>" + "</tr>";
             $("#sql_monitorTable").append(tableHtml);
             if (++count > curSqlPageSize) break;

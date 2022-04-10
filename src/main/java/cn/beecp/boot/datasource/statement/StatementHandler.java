@@ -45,9 +45,9 @@ class StatementHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {//PreparedStatement.executeXXX();
-                if (traceVo != null) {
+                if (traceVo != null)
                     return SpringBootDataSourceManager.getInstance().traceSqlExecution(traceVo, statement, method, args);
-                } else
+                else
                     return method.invoke(statement, args);
             } else {//Statement.executeXXXX(sql)
                 StatementTrace sqlVo = new StatementTrace(dsId, dsUUID, (String) args[0], statementType);

@@ -119,7 +119,6 @@ public class SpringBootDataSourceManager {
     public Object traceSqlExecution(StatementTrace vo, Statement statement, Method method, Object[] args) throws Throwable {
         if (vo == null) return null;
         vo.setMethodName(method.getName());
-        vo.setTraceStartTime(System.currentTimeMillis());
         if (sqlTrace) {
             sqlTraceQueue.offerFirst(vo);
             if (sqlTraceQueueSize.incrementAndGet() > sqlTraceMaxSize) {
@@ -131,11 +130,11 @@ public class SpringBootDataSourceManager {
         try {
             if (sqlShow) Log.info("Executing sql:{}", vo.getSql());
             Object re = method.invoke(statement, args);
-            vo.setExecSuccessInd(true);
+            vo.setSuccessInd(true);
             return re;
         } catch (Throwable e) {
             Throwable failedCause = e;
-            vo.setExecSuccessInd(false);
+            vo.setSuccessInd(false);
             if (e instanceof InvocationTargetException) {
                 InvocationTargetException ee = (InvocationTargetException) e;
                 if (ee.getCause() != null) failedCause = ee.getCause();
@@ -143,12 +142,12 @@ public class SpringBootDataSourceManager {
             vo.setFailCause(failedCause);
             throw failedCause;
         } finally {
-            vo.setExecInd(true);
             Date endDate = new Date();
-            vo.setExecEndTime(formatDate(endDate));
-            vo.setExecTookTimeMs(endDate.getTime() - vo.getExecStartTimeMs());
-            if (vo.getExecTookTimeMs() >= sqlExecSlowTime)//alert
-                vo.setExecSlowInd(true);
+            vo.setEndTimeMs(endDate.getTime());
+            vo.setEndTime(formatDate(endDate));
+            vo.setTookTimeMs(vo.getEndTimeMs() - vo.getStartTimeMs());
+            if (vo.getTookTimeMs() >= sqlExecSlowTime)//alert
+                vo.setSlowInd(true);
         }
     }
 
@@ -158,12 +157,12 @@ public class SpringBootDataSourceManager {
         Iterator<StatementTrace> iterator = sqlTraceQueue.descendingIterator();
         while (iterator.hasNext()) {
             StatementTrace vo = iterator.next();
-            if (vo.isExecInd() && (!vo.isExecSuccessInd() || vo.isExecSlowInd()) && !vo.isAlertInd()) {//failed
-                vo.setAlertInd(true);
+            if (vo.getEndTimeMs() > 0 && (!vo.isSuccessInd() || vo.isSlowInd()) && !vo.isAlertedInd()) {//failed or slow
+                vo.setAlertedInd(true);
                 sqlAlertTempList.add(vo);
             }
 
-            if (System.currentTimeMillis() - vo.getTraceStartTime() > sqlTraceTimeout) {
+            if (System.currentTimeMillis() - vo.getStartTimeMs() >= sqlTraceTimeout) {
                 iterator.remove();
                 sqlTraceQueueSize.decrementAndGet();
             }

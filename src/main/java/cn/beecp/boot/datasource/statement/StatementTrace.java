@@ -27,23 +27,21 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
  *  @author Chris.Liao
  */
 public class StatementTrace {
+    private final String sql;
     private final String dsId;
     private final String dsUUID;
-    private final String sql;
     private final String sqlUUID;
     private final String statementType;
 
-    private String execStartTime;
-    private long execStartTimeMs;
+    private long startTimeMs;
+    private String startTime;
+    private long endTimeMs;
+    private String endTime;
+    private long tookTimeMs;
 
-    private String execEndTime;
-    private long execTookTimeMs;
-    private long traceStartTime;
-
-    private boolean execInd;
-    private boolean execSlowInd;
-    private boolean execSuccessInd;
-    private boolean alertInd;
+    private boolean slowInd;
+    private boolean successInd;
+    private boolean alertedInd;
     private Throwable failCause;
     private String methodName;
 
@@ -55,9 +53,8 @@ public class StatementTrace {
         this.sqlUUID = UUID.randomUUID().toString();
 
         Date startTime = new Date();
-        this.execStartTimeMs = startTime.getTime();
-        this.execStartTime = formatDate(startTime);
-
+        this.startTimeMs = startTime.getTime();
+        this.startTime = formatDate(startTime);
     }
 
     public String getSql() {
@@ -80,76 +77,66 @@ public class StatementTrace {
         return statementType;
     }
 
-    public String getExecStartTime() {
-        return execStartTime;
+    public long getStartTimeMs() {
+        return startTimeMs;
     }
 
-    public void setExecStartTime(String execStartTime) {
-        this.execStartTime = execStartTime;
+    public void setStartTimeMs(long startTimeMs) {
+        this.startTimeMs = startTimeMs;
     }
 
-    public long getExecStartTimeMs() {
-        return execStartTimeMs;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setExecStartTimeMs(long execStartTimeMs) {
-        this.execStartTimeMs = execStartTimeMs;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getExecEndTime() {
-        return execEndTime;
+    public long getEndTimeMs() {
+        return endTimeMs;
     }
 
-    public void setExecEndTime(String execEndTime) {
-        this.execEndTime = execEndTime;
+    public void setEndTimeMs(long endTimeMs) {
+        this.endTimeMs = endTimeMs;
     }
 
-    public long getExecTookTimeMs() {
-        return execTookTimeMs;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setExecTookTimeMs(long execTookTimeMs) {
-        this.execTookTimeMs = execTookTimeMs;
+    public void setEndTime(String endTime) { this.endTime = endTime; }
+
+    public long getTookTimeMs() {
+        return tookTimeMs;
     }
 
-    public long getTraceStartTime() {
-        return traceStartTime;
+    public void setTookTimeMs(long tookTimeMs) {
+        this.tookTimeMs = tookTimeMs;
     }
 
-    public void setTraceStartTime(long traceStartTime) {
-        this.traceStartTime = traceStartTime;
+    public boolean isSlowInd() {
+        return slowInd;
     }
 
-    public boolean isExecInd() {
-        return execInd;
+    public void setSlowInd(boolean slowInd) {
+        this.slowInd = slowInd;
     }
 
-    public void setExecInd(boolean execInd) {
-        this.execInd = execInd;
+    public boolean isSuccessInd() {
+        return successInd;
     }
 
-    public boolean isExecSuccessInd() {
-        return execSuccessInd;
+    public void setSuccessInd(boolean successInd) {
+        this.successInd = successInd;
     }
 
-    public void setExecSuccessInd(boolean execSuccessInd) {
-        this.execSuccessInd = execSuccessInd;
+    public boolean isAlertedInd() {
+        return alertedInd;
     }
 
-    public boolean isExecSlowInd() {
-        return execSlowInd;
-    }
-
-    public void setExecSlowInd(boolean execSlowInd) {
-        this.execSlowInd = execSlowInd;
-    }
-
-    public boolean isAlertInd() {
-        return alertInd;
-    }
-
-    public void setAlertInd(boolean alertInd) {
-        this.alertInd = alertInd;
+    public void setAlertedInd(boolean alertedInd) {
+        this.alertedInd = alertedInd;
     }
 
     public Throwable getFailCause() {

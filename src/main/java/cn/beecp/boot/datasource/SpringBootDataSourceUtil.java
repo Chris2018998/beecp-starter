@@ -28,7 +28,9 @@ import org.springframework.core.env.Environment;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,16 +67,23 @@ public class SpringBootDataSourceUtil {
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     //Springboot dataSource factory map
     private static final Map<Class, SpringBootDataSourceFactory> factoryMap = new HashMap<>(1);
+    private static final ThreadLocal<WeakReference<DateFormat>> threadLocal = new ThreadLocal<WeakReference<DateFormat>>();
+    //***************************************************************************************************************//
+    //                                1: spring register or base (3)                                                //
+    //***************************************************************************************************************//
 
     static {
         factoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
     }
 
-    //***************************************************************************************************************//
-    //                                1: spring register or base (3)                                                //
-    //***************************************************************************************************************//
     public static String formatDate(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(date);
+        WeakReference<DateFormat> reference = threadLocal.get();
+        DateFormat dateFormat = reference != null ? reference.get() : null;
+        if (dateFormat == null) {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+            threadLocal.set(new WeakReference<>(dateFormat));
+        }
+        return dateFormat.format(date);
     }
 
     public static Supplier createSpringSupplier(Object bean) {

@@ -212,8 +212,9 @@ public class TestUtil {
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
-                if (dsId.equals(pDsId) && sql.equals(exeSql)) {
-                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                boolean execInd = map.get("endTime")!=null;
+                if (dsId.equals(pDsId) && execInd && sql.equals(exeSql)) {
+                    String tookTimeMs = map.get("tookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     return true;
                 }
@@ -223,10 +224,10 @@ public class TestUtil {
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
-                boolean execInd = (boolean) map.get("execInd");
-                boolean execSuccessInd = (boolean) map.get("execSuccessInd");
+                boolean execInd = map.get("endTime")!=null;
+                boolean execSuccessInd = (boolean) map.get("successInd");
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && !execSuccessInd) {
-                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                    String tookTimeMs = map.get("tookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     return true;
                 }
@@ -236,10 +237,10 @@ public class TestUtil {
             for (Map map : sqlList) {
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
-                boolean execInd = (boolean) map.get("execInd");
-                boolean execSlowInd = (boolean) map.get("execSlowInd");
+                boolean execInd = map.get("endTime")!=null;
+                boolean execSlowInd = (boolean) map.get("slowInd");
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
-                    String tookTimeMs = map.get("execTookTimeMs").toString();
+                    String tookTimeMs = map.get("tookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     return true;
                 }
