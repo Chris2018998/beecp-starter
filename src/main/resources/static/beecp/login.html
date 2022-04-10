@@ -181,11 +181,11 @@
         var xmlHttp = createXMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var result = this.responseText;
-                if ("OK" == result) {
+                var result =JSON.parse(this.responseText)
+                if (result.code==1) {
 					var language = document.getElementById("language").value;
 					if(language=='en'){
-					    alert("Login successful");
+                        alert("Login success");
 					    window.location.href = contextPath + "/beecp/english.html";
 					}else{
 						alert("登陆成功");

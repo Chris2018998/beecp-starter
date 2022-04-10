@@ -2,7 +2,7 @@ $(function() {
     var language = $("html").attr("lang");
     var dsURL = getContextPath() + '/beecp/getDataSourceList';
     var sqlURL = getContextPath() + '/beecp/getSqlTraceList';
-    var refreshMsg = language=='cn'? '刷新成功':'Refresh successful';
+    var refreshMsg = language=='cn'? '刷新成功':'Refresh success';
 
     var sqlTraceList = []; //empty array
     var curSqlPageSize = 10;
@@ -103,15 +103,21 @@ $(function() {
             url: sqlURL,
             dataType: 'json',
             success: function(data) {
-                curSqlPageNo = 1;
-                maxSqlPageNo = 0;
-                sqlTraceList = [];
-                $("#sql_first").attr("disabled", true);
-                $("#sql_pre").attr("disabled", true);
-                $("#sql_next").attr("disabled", true);
-                $("#sql_last").attr("disabled", true);
-                $("#sql_monitorTable tr:not(:first)").remove();
-                afterLoadSqlTraceList(data);
+                if(data.code==3) {
+                    window.location.href = getContextPath() + "/beecp/login.html";
+                }else if(data.code==2) {
+                    alert("Error:"+data.message);
+                }else if(data.code==1) {
+                    curSqlPageNo = 1;
+                    maxSqlPageNo = 0;
+                    sqlTraceList = [];
+                    $("#sql_first").attr("disabled", true);
+                    $("#sql_pre").attr("disabled", true);
+                    $("#sql_next").attr("disabled", true);
+                    $("#sql_last").attr("disabled", true);
+                    $("#sql_monitorTable tr:not(:first)").remove();
+                    afterLoadSqlTraceList(data.result);
+                }
             }
         });
     };
@@ -125,34 +131,40 @@ $(function() {
                 console.info(data);
                 $("#ds_monitorTable tr:not(:first)").remove();
                 if (data) {
-                    $.each(data,
-                        function(i, element) {
-                            var mode = element.poolMode;
-                            var state = element.poolState;
+                    if(data.code==3) {
+                        window.location.href = getContextPath() + "/beecp/login.html";
+                    }else if(data.code==2) {
+                        alert("Error:"+data.message);
+                    }else if(data.code==1) {
+                        $.each(data.result,
+                            function (i, element) {
+                                var mode = element.poolMode;
+                                var state = element.poolState;
 
-                            if (language == 'cn') {
-                                mode = (mode == 'compete') ? '竞争': '公平';
-                                if (state == 0) state = "未初始化";
-                                else if (state == 1) state = "已启动";
-                                else if (state == 2) state = "已关闭";
-                                else if (state == 3) state = "重置中";
-                            }else{
-                                if (state == 0) state = "uninitialized";
-                                else if (state == 1) state = "started";
-                                else if (state == 2) state = "closed";
-                                else if (state == 3) state = "clearing";
-                            }
+                                if (language == 'cn') {
+                                    mode = (mode == 'compete') ? '竞争' : '公平';
+                                    if (state == 0) state = "未初始化";
+                                    else if (state == 1) state = "已启动";
+                                    else if (state == 2) state = "已关闭";
+                                    else if (state == 3) state = "重置中";
+                                } else {
+                                    if (state == 0) state = "uninitialized";
+                                    else if (state == 1) state = "started";
+                                    else if (state == 2) state = "closed";
+                                    else if (state == 3) state = "clearing";
+                                }
 
-                            var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
-                                + "<td>" + mode + "</td>" + "<td>" + state + "</td>"
-                                + "<td>" + element.poolMaxSize + "</td>"
-                                + "<td>" + element.idleSize + "</td>"
-                                + "<td>" + element.usingSize + "</td>"
-                                + "<td>" + element.semaphoreWaitingSize + "</td>"
-                                + "<td>" + element.transferWaitingSize + "</td>" + "</tr>";
-                            $("#ds_monitorTable").append(tableHtml);
-                        });
-                    $('#ds_monitorTable').trigger("update");
+                                var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
+                                    + "<td>" + mode + "</td>" + "<td>" + state + "</td>"
+                                    + "<td>" + element.poolMaxSize + "</td>"
+                                    + "<td>" + element.idleSize + "</td>"
+                                    + "<td>" + element.usingSize + "</td>"
+                                    + "<td>" + element.semaphoreWaitingSize + "</td>"
+                                    + "<td>" + element.transferWaitingSize + "</td>" + "</tr>";
+                                $("#ds_monitorTable").append(tableHtml);
+                            });
+                        $('#ds_monitorTable').trigger("update");
+                    }
                 }
             }
         });
