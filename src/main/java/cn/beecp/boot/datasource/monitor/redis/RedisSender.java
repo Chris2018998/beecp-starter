@@ -16,9 +16,11 @@
 package cn.beecp.boot.datasource.monitor.redis;
 
 /**
- * Redis Client
+ * Redis send
  *
  * @author Chris.Liao
  */
 public class RedisSender {
+
 }
+

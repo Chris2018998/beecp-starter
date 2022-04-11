@@ -16,9 +16,11 @@
 package cn.beecp.boot.datasource.monitor.redis;
 
 /**
- * Redis read
+ * DataSource center monitor UI
  *
  * @author Chris.Liao
  */
-public class RedisReader {
+public class MonitorUI {
+
+
 }
