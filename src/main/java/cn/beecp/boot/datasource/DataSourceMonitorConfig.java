@@ -67,8 +67,8 @@ public class DataSourceMonitorConfig {
     private String redisHost;
     private int redisPort = 6379;
     private String redisPassword;
-    private long redisSendPeriod = TimeUnit.MINUTES.toMillis(3);//client
-    private long redisReadPeriod = TimeUnit.MINUTES.toMillis(3);//server
+    private long redisSendPeriod = TimeUnit.MINUTES.toMillis(3);//send
+    private long redisReadPeriod = TimeUnit.MINUTES.toMillis(3);//read
     //*********************************redis config end***************************************************************//
 
     public boolean isSqlShow() {
