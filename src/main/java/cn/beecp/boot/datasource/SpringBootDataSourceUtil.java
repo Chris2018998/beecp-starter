@@ -19,6 +19,8 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -64,15 +66,24 @@ public class SpringBootDataSourceUtil {
     //BeeCP DataSource class name
     private static final String BeeCP_DS_Class_Name = BeeDataSource.class.getName();
 
-    private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
+    private static final ObjectMapper JacksonObjectMapper = new ObjectMapper();
     private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
     private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
+    private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     //***************************************************************************************************************//
     //                                1: spring register or base (3)                                                //
     //***************************************************************************************************************//
 
     static {
         DataSourceFactoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
+    }
+
+    public static String object2String(Object obj) throws JsonProcessingException {
+        return JacksonObjectMapper.writeValueAsString(obj);
+    }
+
+    public static <T> T string2Object(String str, Class<T> clazz) throws JsonProcessingException {
+        return JacksonObjectMapper.readerFor(clazz).readValue(str);
     }
 
     public static String formatDate(Date date) {

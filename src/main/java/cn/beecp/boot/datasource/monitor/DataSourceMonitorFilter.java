@@ -15,9 +15,9 @@
  */
 package cn.beecp.boot.datasource.monitor;
 
+import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.pool.PoolStaticCenter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -37,7 +37,6 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SECURITY;
 public class DataSourceMonitorFilter implements Filter {
     private final String monitorUserId;
     private final String monitorValidPassedTagName;
-    private final ObjectMapper JacksonObjectMapper = new ObjectMapper();
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
     private final String[] restUrls = {"/beecp/login", "/beecp/getSqlTraceList", "/beecp/getDataSourceList", "/beecp/clearDataSource"};
 
@@ -64,7 +63,7 @@ public class DataSourceMonitorFilter implements Filter {
             res.setContentType("application/json");
             OutputStream ps = res.getOutputStream();
             SpringBootRestResponse restResponse = new SpringBootRestResponse(CODE_SECURITY, null, "unauthorized");
-            ps.write(JacksonObjectMapper.writeValueAsString(restResponse).getBytes(StandardCharsets.UTF_8));
+            ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(req, res);
         }
