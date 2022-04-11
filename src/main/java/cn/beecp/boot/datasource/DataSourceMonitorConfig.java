@@ -25,8 +25,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
 /*
  *  monitor config
  *
- *  spring.datasource.monitor-login=true
- *  spring.datasource.monitor-user=admin
+ *  spring.datasource.monitor-userId=admin
  *  spring.datasource.monitor-password=admin
  *
  *  spring.datasource.sql-trace=true
@@ -36,6 +35,13 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  *  spring.datasource.sql-trace-timeout=60000
  *  spring.datasource.sql-exec-alert-action=xxxxx
  *  spring.datasource.sql-trace-timeout-scan-period=18000
+ *
+ * spring.datasource.redis-host=192.168.1.1
+ * spring.datasource.redis-port=6379
+ * spring.datasource.redis-password=redis
+ * spring.datasource.redis-send-period=18000
+ * spring.datasource.redis-read-period=18000
+ *
  *
  * @author Chris.Liao
  */
@@ -57,18 +63,13 @@ public class DataSourceMonitorConfig {
     private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
 
-
-    //    //monitor queue server
-//    static final String Config_Queue_Server = "queueServer";
-//    //monitor queue server port
-//    static final String Config_Queue_Server_Port = "queueServerPort";
-//    //monitor queue server userId
-//    static final String Config_Queue_Server_UserId = "queueServerUserId";
-//    //monitor queue server password
-//    static final String Config_Queue_Server_Password = "queueServerPassword";
-//    //monitor queue server password
-//    static final String Config_Queue_Server_Push_Interval = "queueServerPushInterval";
-
+    //*********************************redis config begin ************************************************************//
+    private String redisHost;
+    private int redisPort = 6379;
+    private String redisPassword;
+    private long redisSendPeriod = TimeUnit.MINUTES.toMillis(3);//client
+    private long redisReadPeriod = TimeUnit.MINUTES.toMillis(3);//server
+    //*********************************redis config end***************************************************************//
 
     public boolean isSqlShow() {
         return sqlShow;
@@ -152,5 +153,47 @@ public class DataSourceMonitorConfig {
     public void setMonitorValidPassedTagName(String monitorValidPassedTagName) {
         if (!isBlank(monitorValidPassedTagName))
             this.monitorValidPassedTagName = monitorValidPassedTagName;
+    }
+
+    public String getRedisHost() {
+        return redisHost;
+    }
+
+    public void setRedisHost(String redisHost) {
+        this.redisHost = redisHost;
+    }
+
+    public int getRedisPort() {
+        return redisPort;
+    }
+
+    public void setRedisPort(int redisPort) {
+        if (redisPort > 0) this.redisPort = redisPort;
+    }
+
+    public String getRedisPassword() {
+        return redisPassword;
+    }
+
+    public void setRedisPassword(String redisPassword) {
+        this.redisPassword = redisPassword;
+    }
+
+    public long getRedisSendPeriod() {
+        return redisSendPeriod;
+    }
+
+    public void setRedisSendPeriod(long redisSendPeriod) {
+        if (redisSendPeriod > 0)
+            this.redisSendPeriod = redisSendPeriod;
+    }
+
+    public long getRedisReadPeriod() {
+        return redisReadPeriod;
+    }
+
+    public void setRedisReadPeriod(long redisReadPeriod) {
+        if (redisReadPeriod > 0)
+            this.redisReadPeriod = redisReadPeriod;
     }
 }
