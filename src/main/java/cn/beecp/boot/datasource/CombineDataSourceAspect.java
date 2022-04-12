@@ -34,12 +34,10 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
 @Aspect
 @Order(1)
 public class CombineDataSourceAspect {
-    private final String combineDsId;
     private final String primaryDsId;
     private final ThreadLocal<SpringBootDataSource> dsThreadLocal;
 
-    CombineDataSourceAspect(String combineDsId, String primaryDsId, ThreadLocal<SpringBootDataSource> dsThreadLocal) {
-        this.combineDsId = combineDsId;
+    CombineDataSourceAspect(String primaryDsId, ThreadLocal<SpringBootDataSource> dsThreadLocal) {
         this.primaryDsId = primaryDsId;
         this.dsThreadLocal = dsThreadLocal;
     }

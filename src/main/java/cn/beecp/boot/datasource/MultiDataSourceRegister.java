@@ -192,7 +192,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             String dsIdSetterId = CombineDataSourceAspect.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(CombineDataSourceAspect.class);
-            dsIdSetDefine.setInstanceSupplier(createSpringSupplier(new CombineDataSourceAspect(combineDsId, primaryDsId, dsThreadLocal)));
+            dsIdSetDefine.setInstanceSupplier(createSpringSupplier(new CombineDataSourceAspect(primaryDsId, dsThreadLocal)));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
 
             log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
