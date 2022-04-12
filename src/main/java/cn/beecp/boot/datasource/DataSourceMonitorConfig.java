@@ -25,16 +25,16 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
 /*
  *  monitor config
  *
- *  spring.datasource.monitor-userId=admin
- *  spring.datasource.monitor-password=admin
+ * spring.datasource.monitor-userId=admin
+ * spring.datasource.monitor-password=admin
  *
- *  spring.datasource.sql-trace=true
- *  spring.datasource.sql-show=true
- *  spring.datasource.sql-trace-max-size=100
- *  spring.datasource.sql-exec-slow-time=5000
- *  spring.datasource.sql-trace-timeout=60000
- *  spring.datasource.sql-exec-alert-action=xxxxx
- *  spring.datasource.sql-trace-timeout-scan-period=18000
+ * spring.datasource.sql-trace=true
+ * spring.datasource.sql-show=true
+ * spring.datasource.sql-trace-max-size=100
+ * spring.datasource.sql-exec-slow-time=5000
+ * spring.datasource.sql-trace-timeout=60000
+ * spring.datasource.sql-exec-alert-action=xxxxx
+ * spring.datasource.sql-trace-timeout-scan-period=18000
  *
  * spring.datasource.redis-host=192.168.1.1
  * spring.datasource.redis-port=6379
