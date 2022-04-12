@@ -24,7 +24,7 @@ public class SpringBootRestResponse {
     public static final int CODE_SUCCESS = 1;
     public static final int CODE_FAILED = 2;
     public static final int CODE_SECURITY = 3;
-    private int code;//0:success,1:exception,2:security
+    private int code;
     private Object result;
     private String message;
 
