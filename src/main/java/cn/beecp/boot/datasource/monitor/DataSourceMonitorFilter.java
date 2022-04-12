@@ -35,14 +35,15 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SECURITY;
  */
 @WebFilter(filterName = "beecpMonitorFilter", urlPatterns = "/beecp/*")
 public class DataSourceMonitorFilter implements Filter {
-    private final String monitorUserId;
-    private final String monitorValidPassedTagName;
+    private final String userId;
+    private final String validPassedTagName;
+
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
     private final String[] restUrls = {"/beecp/login", "/beecp/getSqlTraceList", "/beecp/getDataSourceList", "/beecp/clearDataSource"};
 
-    DataSourceMonitorFilter(String monitorUserId, String monitorValidPassedTagName) {
-        this.monitorUserId = monitorUserId;
-        this.monitorValidPassedTagName = monitorValidPassedTagName;
+    DataSourceMonitorFilter(String userId, String validPassedTagName) {
+        this.userId = userId;
+        this.validPassedTagName = validPassedTagName;
     }
 
     public void destroy() {
@@ -54,10 +55,10 @@ public class DataSourceMonitorFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (PoolStaticCenter.isBlank(monitorUserId)) chain.doFilter(req, res);
+        if (PoolStaticCenter.isBlank(userId)) chain.doFilter(req, res);
         HttpServletRequest httpReq = (HttpServletRequest) req;
         String requestPath = httpReq.getServletPath();
-        if ("Y".equals(httpReq.getSession().getAttribute(monitorValidPassedTagName)) || isExcludeUrl(requestPath)) {
+        if ("Y".equals(httpReq.getSession().getAttribute(validPassedTagName)) || isExcludeUrl(requestPath)) {
             chain.doFilter(req, res);
         } else if (isRestUrl(requestPath)) {
             res.setContentType("application/json");

@@ -173,27 +173,28 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param dsMap datasource list
      */
     private void registerDataSources(Map<String, SpringBootDataSource> dsMap, Properties combineProperties, BeanDefinitionRegistry registry) {
-        String combineId = combineProperties.getProperty(Config_DS_CombineId);
+        String combineDsId = combineProperties.getProperty(Config_DS_CombineId);
         String primaryDsId = combineProperties.getProperty(Config_DS_Combine_PrimaryDs);
 
         for (SpringBootDataSource ds : dsMap.values())
             registerDataSourceBean(ds, registry);
 
         //register combine DataSource
-        if (!PoolStaticCenter.isBlank(combineId) && !PoolStaticCenter.isBlank(primaryDsId)) {
-            CombineDataSource combineDataSource = new CombineDataSource();
+        if (!PoolStaticCenter.isBlank(combineDsId) && !PoolStaticCenter.isBlank(primaryDsId)) {
+            ThreadLocal<SpringBootDataSource> dsThreadLocal = new ThreadLocal<>();
+
             GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(combineDataSource.getClass());
-            define.setInstanceSupplier(createSpringSupplier(combineDataSource));
-            registry.registerBeanDefinition(combineId, define);
-            log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineId);
+            define.setBeanClass(CombineDataSource.class);
+            define.setInstanceSupplier(createSpringSupplier(new CombineDataSource(dsThreadLocal)));
+            registry.registerBeanDefinition(combineDsId, define);
+            log.info("Registered Combine-DataSource({})with id:{}", define.getBeanClassName(), combineDsId);
 
             String dsIdSetterId = CombineDataSourceAspect.class.getName();
             GenericBeanDefinition dsIdSetDefine = new GenericBeanDefinition();
             dsIdSetDefine.setBeanClass(CombineDataSourceAspect.class);
-            dsIdSetDefine.setInstanceSupplier(createSpringSupplier(new CombineDataSourceAspect()));
+            dsIdSetDefine.setInstanceSupplier(createSpringSupplier(new CombineDataSourceAspect(combineDsId, primaryDsId, dsThreadLocal)));
             registry.registerBeanDefinition(dsIdSetterId, dsIdSetDefine);
-            CombineDataSourceAspect.setCombinePrimaryDsId(primaryDsId);
+
             log.info("Registered DsId-setter({})with id:{}", dsIdSetDefine.getBeanClassName(), dsIdSetterId);
         }
     }

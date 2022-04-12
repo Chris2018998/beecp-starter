@@ -28,7 +28,12 @@ import java.util.logging.Logger;
  * @author Chris.Liao
  */
 public class CombineDataSource implements DataSource {
+    private final ThreadLocal<SpringBootDataSource> dsThreadLocal;
     private boolean isClosed = false;
+
+    CombineDataSource(ThreadLocal<SpringBootDataSource> dsThreadLocal) {
+        this.dsThreadLocal = dsThreadLocal;
+    }
 
     public boolean isClosed() {
         return isClosed;
@@ -48,7 +53,7 @@ public class CombineDataSource implements DataSource {
 
     private SpringBootDataSource getCurrentDataSource() throws SQLException {
         if (isClosed) throw new SQLException("DataSource has closed");
-        SpringBootDataSource ds = CombineDataSourceAspect.getCurrentDs();
+        SpringBootDataSource ds = dsThreadLocal.get();
         if (ds == null) throw new SQLException("DataSource not exists");
         return ds;
     }

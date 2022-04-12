@@ -38,16 +38,16 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SUCCESS;
 public class DataSourceMonitor {
     private final static String CN_PAGE = "/beecp/chinese.html";
     private final static String EN_PAGE = "/beecp/english.html";
-    private final String monitorUserId;
-    private final String monitorPassword;
-    private final String monitorValidPassedTagName;
+    private final String userId;
+    private final String password;
+    private final String validPassedTagName;
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
     private HttpSession session;
 
-    DataSourceMonitor(String monitorUser, String monitorPassword, String monitorValidPassedTagName) {
-        this.monitorUserId = monitorUser;
-        this.monitorPassword = monitorPassword;
-        this.monitorValidPassedTagName = monitorValidPassedTagName;
+    DataSourceMonitor(String userId, String password, String validPassedTagName) {
+        this.userId = userId;
+        this.password = password;
+        this.validPassedTagName = validPassedTagName;
     }
 
     @ModelAttribute
@@ -91,16 +91,16 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/login")
     public SpringBootRestResponse login(@RequestBody Map<String, String> paramMap) {
-        if ("Y".equals(session.getAttribute(monitorValidPassedTagName)))//has validated
+        if ("Y".equals(session.getAttribute(validPassedTagName)))//has validated
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
-        if (PoolStaticCenter.isBlank(monitorUserId))
+        if (PoolStaticCenter.isBlank(userId))
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
 
         try {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
-            if (monitorUserId.equals(userId) && PoolStaticCenter.equalsString(monitorPassword, password)) {//checked pass
-                session.setAttribute(monitorValidPassedTagName, "Y");
+            if (this.userId.equals(userId) && PoolStaticCenter.equalsString(this.password, password)) {//checked pass
+                session.setAttribute(validPassedTagName, "Y");
                 return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
             } else
                 return new SpringBootRestResponse(CODE_FAILED, null, "Login Failed");

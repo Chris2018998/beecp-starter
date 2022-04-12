@@ -34,19 +34,15 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
 @Aspect
 @Order(1)
 public class CombineDataSourceAspect {
-    //*************************static methods for combine inner dataSource *******************************************//
-    private static String combinePrimaryDsId;
-    private static ThreadLocal<SpringBootDataSource> combineDataSourceLocal = new ThreadLocal<>();
+    private final String combineDsId;
+    private final String primaryDsId;
+    private final ThreadLocal<SpringBootDataSource> dsThreadLocal;
 
-    static void setCombinePrimaryDsId(String primaryDsId) {
-        combinePrimaryDsId = primaryDsId;
+    CombineDataSourceAspect(String combineDsId, String primaryDsId, ThreadLocal<SpringBootDataSource> dsThreadLocal) {
+        this.combineDsId = combineDsId;
+        this.primaryDsId = primaryDsId;
+        this.dsThreadLocal = dsThreadLocal;
     }
-
-    static SpringBootDataSource getCurrentDs() {
-        return combineDataSourceLocal.get();
-    }
-    //****************************************************************************************************************//
-
 
     //*********************************aspect methods begin **********************************************************//
     @Pointcut("@annotation(cn.beecp.boot.DsId)")
@@ -61,11 +57,11 @@ public class CombineDataSourceAspect {
         String dsId = annotation.value();
 
         try {
-            if (isBlank(dsId)) dsId = combinePrimaryDsId;
-            combineDataSourceLocal.set(SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId));
+            if (isBlank(dsId)) dsId = primaryDsId;
+            dsThreadLocal.set(SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId));
             return joinPoint.proceed();
         } finally {
-            if (!isBlank(dsId)) combineDataSourceLocal.remove();
+            if (!isBlank(dsId)) dsThreadLocal.remove();
         }
     }
     //***************************************************************************************************************//
