@@ -57,7 +57,7 @@ public class SpringBootDataSourceManager {
 
     private SpringBootDataSourceManager() {
         this.dsMap = new ConcurrentHashMap<>(1);
-        timeoutScanExecutor = new ScheduledThreadPoolExecutor(1, new SpringBootDsThreadFactory());
+        timeoutScanExecutor = new ScheduledThreadPoolExecutor(2, new SpringBootDsThreadFactory());
         timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
         timeoutScanExecutor.allowCoreThreadTimeOut(true);
     }
@@ -86,21 +86,16 @@ public class SpringBootDataSourceManager {
             this.sqlTraceAlert = config.getSqlExecAlertAction();
             this.sqlTraceQueueSize = new AtomicInteger(0);
             this.sqlTraceQueue = new ConcurrentLinkedDeque<>();
-            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);//sql trace timeout
+            //sql trace timeout scan
+            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
 
             String redisHost = config.getRedisHost();
-            if (!isBlank(redisHost)) {
+            if (!isBlank(redisHost)) {//send datasource info to redis
                 JedisPoolConfig redisConfig = new JedisPoolConfig();
                 redisConfig.setMinIdle(0);
                 redisConfig.setMaxTotal(1);
-                JedisPool pool = new JedisPool(
-                        redisConfig,
-                        redisHost,
-                        config.getRedisPort(),
-                        config.getRedisTimeout(),
-                        config.getRedisUserId(),
-                        config.getRedisPassword());
-                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool), 0, config.getRedisSendPeriod(), TimeUnit.MILLISECONDS);//send to redis
+                JedisPool pool = new JedisPool(redisConfig, redisHost, config.getRedisPort(), config.getRedisTimeout(), config.getRedisUserId(), config.getRedisPassword());
+                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool), 0, config.getRedisSendPeriod(), TimeUnit.MILLISECONDS);
             }
         }
     }
