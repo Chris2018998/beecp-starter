@@ -20,6 +20,8 @@ import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
  * DataSource Manager
@@ -83,7 +86,22 @@ public class SpringBootDataSourceManager {
             this.sqlTraceAlert = config.getSqlExecAlertAction();
             this.sqlTraceQueueSize = new AtomicInteger(0);
             this.sqlTraceQueue = new ConcurrentLinkedDeque<>();
-            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
+            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);//sql trace timeout
+
+            String redisHost = config.getRedisHost();
+            if (!isBlank(redisHost)) {
+                JedisPoolConfig redisConfig = new JedisPoolConfig();
+                redisConfig.setMinIdle(0);
+                redisConfig.setMaxTotal(1);
+                JedisPool pool = new JedisPool(
+                        redisConfig,
+                        redisHost,
+                        config.getRedisPort(),
+                        config.getRedisTimeout(),
+                        config.getRedisUserId(),
+                        config.getRedisPassword());
+                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool), 0, config.getRedisSendPeriod(), TimeUnit.MILLISECONDS);//send to redis
+            }
         }
     }
 
@@ -187,11 +205,16 @@ public class SpringBootDataSourceManager {
         }
     }
 
-    private class LocalMonitorInfoPushTask implements Runnable {
+    private class RedisPushTask implements Runnable {
+        private JedisPool pool;
+
+        RedisPushTask(JedisPool pool) {
+            this.pool = pool;
+        }
+
         public void run() {
-            //do nothing
-//            Collection<Map<String, Object>> monitorVoList = getPoolMonitorVoList();
-//            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
+            List<ConnectionPoolMonitorVo> monitorVoList = getPoolMonitorVoList();
+            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
         }
     }
 }
