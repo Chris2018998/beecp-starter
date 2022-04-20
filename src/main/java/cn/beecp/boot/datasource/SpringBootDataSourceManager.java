@@ -15,13 +15,12 @@
  */
 package cn.beecp.boot.datasource;
 
-import cn.beecp.boot.datasource.monitor.redis.RedisPackage;
+import cn.beecp.boot.datasource.monitor.redis.RedisPushTask;
 import cn.beecp.boot.datasource.statement.StatementTrace;
 import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -33,7 +32,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.object2String;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -203,33 +201,6 @@ public class SpringBootDataSourceManager {
     private class SqlTraceTimeoutTask implements Runnable {
         public void run() {// check idle connection
             removeTimeoutTrace();
-        }
-    }
-
-    private class RedisPushTask implements Runnable {
-        private final JedisPool pool;
-        private final int expireSeconds;
-        private final RedisPackage dataPackage;
-
-        RedisPushTask(JedisPool pool, int expireSeconds) {
-            this.pool = pool;
-            this.expireSeconds = expireSeconds;
-            this.dataPackage = new RedisPackage();
-        }
-
-        public void run() {
-            Jedis jedis = null;
-            try {
-                dataPackage.setDsList(getPoolMonitorVoList());
-                dataPackage.setSqlList(getSqlExecutionList());
-                String jsonPackage = object2String(dataPackage);
-                jedis = pool.getResource();
-                jedis.setex(dataPackage.getPackageUUID(), expireSeconds, jsonPackage);
-            } catch (Throwable e) {
-                Log.error("Failed to send to redis,cause:", e);
-            } finally {
-                if (jedis != null) jedis.close();
-            }
         }
     }
 }
