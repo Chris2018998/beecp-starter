@@ -15,11 +15,13 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.boot.datasource.monitor.redis.RedisPackage;
 import cn.beecp.boot.datasource.statement.StatementTrace;
 import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 import cn.beecp.pool.ConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -31,8 +33,10 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.object2String;
 import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /*
  * DataSource Manager
@@ -87,15 +91,17 @@ public class SpringBootDataSourceManager {
             this.sqlTraceQueueSize = new AtomicInteger(0);
             this.sqlTraceQueue = new ConcurrentLinkedDeque<>();
             //sql trace timeout scan
-            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), TimeUnit.MILLISECONDS);
+            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), MILLISECONDS);
 
             String redisHost = config.getRedisHost();
             if (!isBlank(redisHost)) {//send datasource info to redis
                 JedisPoolConfig redisConfig = new JedisPoolConfig();
                 redisConfig.setMinIdle(0);
                 redisConfig.setMaxTotal(1);
-                JedisPool pool = new JedisPool(redisConfig, redisHost, config.getRedisPort(), config.getRedisTimeout(), config.getRedisUserId(), config.getRedisPassword());
-                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool), 0, config.getRedisSendPeriod(), TimeUnit.MILLISECONDS);
+                JedisPool pool = new JedisPool(redisConfig, redisHost, config.getRedisPort(), config.getRedisTimeoutMs(), config.getRedisUserId(), config.getRedisPassword());
+
+                int expireSeconds = (int) MILLISECONDS.toSeconds(config.getRedisExpireMs());
+                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool, expireSeconds), 0, config.getRedisSendPeriod(), MILLISECONDS);
             }
         }
     }
@@ -201,15 +207,29 @@ public class SpringBootDataSourceManager {
     }
 
     private class RedisPushTask implements Runnable {
-        private JedisPool pool;
+        private final JedisPool pool;
+        private final int expireSeconds;
+        private final RedisPackage dataPackage;
 
-        RedisPushTask(JedisPool pool) {
+        RedisPushTask(JedisPool pool, int expireSeconds) {
             this.pool = pool;
+            this.expireSeconds = expireSeconds;
+            this.dataPackage = new RedisPackage();
         }
 
         public void run() {
-            List<ConnectionPoolMonitorVo> monitorVoList = getPoolMonitorVoList();
-            Collection<StatementTrace> sqlTraceQueue = getSqlExecutionList();
+            Jedis jedis = null;
+            try {
+                dataPackage.setDsList(getPoolMonitorVoList());
+                dataPackage.setSqlList(getSqlExecutionList());
+                String jsonPackage = object2String(dataPackage);
+                jedis = pool.getResource();
+                jedis.setex(dataPackage.getPackageUUID(), expireSeconds, jsonPackage);
+            } catch (Throwable e) {
+                Log.error("Failed to send to redis,cause:", e);
+            } finally {
+                if (jedis != null) jedis.close();
+            }
         }
     }
 }

@@ -66,7 +66,8 @@ public class DataSourceMonitorConfig {
     //*********************************redis config begin ************************************************************//
     private String redisHost;
     private int redisPort = 6379;
-    private int redisTimeout = 2000;
+    private int redisTimeoutMs = 2000;
+    private int redisExpireMs = 2000;
     private String redisUserId;
     private String redisPassword;
     private long redisSendPeriod = TimeUnit.MINUTES.toMillis(3);//node send
@@ -173,12 +174,20 @@ public class DataSourceMonitorConfig {
         if (redisPort > 0) this.redisPort = redisPort;
     }
 
-    public int getRedisTimeout() {
-        return redisTimeout;
+    public int getRedisTimeoutMs() {
+        return redisTimeoutMs;
     }
 
-    public void setRedisTimeout(int redisTimeout) {
-        if (redisTimeout > 0) this.redisTimeout = redisTimeout;
+    public void setRedisTimeoutMs(int redisTimeoutMs) {
+        if (redisTimeoutMs > 0) this.redisTimeoutMs = redisTimeoutMs;
+    }
+
+    public int getRedisExpireMs() {
+        return redisExpireMs;
+    }
+
+    public void setRedisExpireMs(int redisExpireMs) {
+        if (redisExpireMs > 0) this.redisExpireMs = redisExpireMs;
     }
 
     public String getRedisUserId() {
