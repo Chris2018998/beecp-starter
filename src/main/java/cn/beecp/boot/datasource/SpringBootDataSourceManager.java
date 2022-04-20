@@ -100,7 +100,7 @@ public class SpringBootDataSourceManager {
                 redisConfig.setMaxTotal(1);
                 JedisPool pool = new JedisPool(redisConfig, redisHost, config.getRedisPort(), config.getRedisTimeoutMs(), config.getRedisUserId(), config.getRedisPassword());
 
-                int expireSeconds = (int) MILLISECONDS.toSeconds(config.getRedisExpireMs());
+                int expireSeconds = (int) MILLISECONDS.toSeconds(config.getRedisSendPeriod());
                 timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool, expireSeconds), 0, config.getRedisSendPeriod(), MILLISECONDS);
             }
         }
