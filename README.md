@@ -66,7 +66,7 @@ sql处于监控池的最大时间，单位：毫秒
 ### :capital_abcd: spring.datasource.sql-trace-timeout-scan-period
 sql监控池定时扫描间隔时间，在池中时间大于sql-trace-timeout则被清理，单位：毫秒
 ### :1234: spring.datasource.sql-exec-alert-action
-sql执行预警触发类名（需要扩展类：cn.beecp.boot.datasource.sqltrace.SqlTraceAlert），低效与错误sql触发
+sql执行预警触发类名（需要扩展类：cn.beecp.boot.datasource.statement.StatementTraceAlert），低效与错误sql触发
 
 ## :point_right: 参考例子
 ```yml
@@ -76,7 +76,7 @@ spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
 spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
 spring.datasource.sql-exec-slow-time=5000             #SQL执行时间警告值（毫秒） 
 spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
-spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.datasource.sqltrace.SqlTraceAlert)
+spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.datasource.statement.StatementTraceAlert)
 
 ```
 
