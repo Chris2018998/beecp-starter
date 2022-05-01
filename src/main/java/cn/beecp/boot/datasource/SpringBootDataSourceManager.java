@@ -73,7 +73,7 @@ public class SpringBootDataSourceManager {
     }
 
     void addSpringBootDataSource(SpringBootDataSource ds) {
-        dsMap.put(ds.getId(), ds);
+        dsMap.put(ds.getDsId(), ds);
         ds.setTraceSql(sqlTrace);
     }
 

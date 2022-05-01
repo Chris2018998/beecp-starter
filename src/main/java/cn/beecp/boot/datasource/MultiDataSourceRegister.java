@@ -65,20 +65,22 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      * @param registry      springboot bean definition registry factory
      */
     public final void registerBeanDefinitions(AnnotationMetadata classMetadata, BeanDefinitionRegistry registry) {
-
         //1:read multi-dataSource id list
         List<String> dsIdList = getDsIdList(environment, registry);
 
-        //2:read combine-ds config
+        //2:read datasource monitor config
+        DataSourceMonitorConfig dataSourceMonitorConfig = readMonitorConfig(environment);
+
+        //3:read combine-ds config
         Properties combineProperties = getCombineDsInfo(dsIdList, environment, registry);
 
-        //3:create dataSources by id list
+        //4:create dataSources by id list
         Map<String, SpringBootDataSource> dsMap = createDataSources(dsIdList, environment);
 
-        //4:read sql statement config
-        SpringBootDataSourceManager.getInstance().setupMonitorConfig(readMonitorConfig(environment));
+        //5:read sql statement config
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(dataSourceMonitorConfig);
 
-        //5:register datasource to spring container
+        //6:register datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);
     }
 
@@ -205,8 +207,8 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         define.setPrimary(springDs.isPrimary());
         define.setBeanClass(springDs.getClass());
         define.setInstanceSupplier(createSpringSupplier(springDs));
-        registry.registerBeanDefinition(springDs.getId(), define);
-        log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), springDs.getId());
+        registry.registerBeanDefinition(springDs.getDsId(), define);
+        log.info("Registered DataSource({})with id:{}", define.getBeanClassName(), springDs.getDsId());
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
     }
 }

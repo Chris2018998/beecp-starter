@@ -39,12 +39,12 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.tryToCloseDataSo
  * @author Chris.Liao
  */
 public class SpringBootDataSource implements DataSource {
+    private final static Logger Log = LoggerFactory.getLogger(SpringBootDataSource.class);
     private final String dsId;
     private final String dsUUID;
     private final DataSource ds;
     private final boolean jndiDs;
     private final boolean isBeeDs;
-    private final Logger Log = LoggerFactory.getLogger(SpringBootDataSource.class);
 
     private boolean primary;
     private boolean traceSql;
@@ -59,11 +59,10 @@ public class SpringBootDataSource implements DataSource {
 
         this.isBeeDs = ds instanceof BeeDataSource || ds instanceof BeeJtaDataSource;
         if (isBeeDs) readBeeDsMethods();
-        this.dsUUID = "DataSource_" + UUID.randomUUID().toString();
+        this.dsUUID = "SpringDs_" + UUID.randomUUID().toString();
     }
 
-
-    String getId() {
+    String getDsId() {
         return dsId;
     }
 

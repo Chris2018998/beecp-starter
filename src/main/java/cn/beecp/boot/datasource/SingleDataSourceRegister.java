@@ -51,15 +51,16 @@ public class SingleDataSourceRegister {
         String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
         if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDataSource";//default ds Id
 
-        //2:create BeeDataSource
-        DataSource beesDs = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
-        SpringBootDataSource springDs = new SpringBootDataSource(dsId, beesDs, false);
+        //2:read datasource monitor config
+        DataSourceMonitorConfig dataSourceMonitorConfig = readMonitorConfig(environment);
 
-        //3:setup monitor config
-        SpringBootDataSourceManager.getInstance().setupMonitorConfig(readMonitorConfig(environment));
-
-        //4:add ds to manager
+        //3:create BeeDataSource
+        DataSource ds = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
+        SpringBootDataSource springDs = new SpringBootDataSource(dsId, ds, false);
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
+
+        //4:setup monitor config
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(dataSourceMonitorConfig);
         return springDs;
     }
 }

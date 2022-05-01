@@ -47,6 +47,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  */
 public class DataSourceMonitorConfig {
     static DataSourceMonitorConfig single;
+
     //*********************************sql trace config begin *********************************************************//
     private boolean sqlShow;
     private boolean sqlTrace;
@@ -62,6 +63,7 @@ public class DataSourceMonitorConfig {
     private String monitorPassword;
     private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
+
 
     //*********************************redis config begin ************************************************************//
     private String redisHost;
