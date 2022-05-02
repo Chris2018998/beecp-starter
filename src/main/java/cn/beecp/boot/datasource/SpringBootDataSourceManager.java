@@ -44,7 +44,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class SpringBootDataSourceManager {
     private final static SpringBootDataSourceManager instance = new SpringBootDataSourceManager();
     private final Map<String, SpringBootDataSource> dsMap;
-    private final ScheduledThreadPoolExecutor timeoutScanExecutor;
+    private final ScheduledThreadPoolExecutor timerExecutor;
     private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
 
     private boolean sqlShow;
@@ -53,15 +53,14 @@ public class SpringBootDataSourceManager {
     private long sqlTraceTimeout;
     private int sqlTraceMaxSize;
     private StatementTraceAlert sqlTraceAlert;
-    private LinkedList<StatementTrace> sqlAlertTempList;
-    private AtomicInteger sqlTraceQueueSize;
+    private AtomicInteger sqlTracedSize;
     private ConcurrentLinkedDeque<StatementTrace> sqlTraceQueue;
 
     private SpringBootDataSourceManager() {
         this.dsMap = new ConcurrentHashMap<>(1);
-        timeoutScanExecutor = new ScheduledThreadPoolExecutor(2, new SpringBootDsThreadFactory());
-        timeoutScanExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
-        timeoutScanExecutor.allowCoreThreadTimeOut(true);
+        timerExecutor = new ScheduledThreadPoolExecutor(2, new SpringBootDsThreadFactory());
+        timerExecutor.setKeepAliveTime(15, TimeUnit.SECONDS);
+        timerExecutor.allowCoreThreadTimeOut(true);
     }
 
     public static SpringBootDataSourceManager getInstance() {
@@ -84,12 +83,11 @@ public class SpringBootDataSourceManager {
             this.sqlExecSlowTime = config.getSqlExecSlowTime();
             this.sqlTraceMaxSize = config.getSqlTraceMaxSize();
             this.sqlTraceTimeout = config.getSqlTraceTimeout();
-            this.sqlAlertTempList = new LinkedList<>();
             this.sqlTraceAlert = config.getSqlExecAlertAction();
-            this.sqlTraceQueueSize = new AtomicInteger(0);
+            this.sqlTracedSize = new AtomicInteger(0);
             this.sqlTraceQueue = new ConcurrentLinkedDeque<>();
             //sql trace timeout scan
-            timeoutScanExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), MILLISECONDS);
+            timerExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), MILLISECONDS);
 
             String redisHost = config.getRedisHost();
             if (!isBlank(redisHost)) {//send datasource info to redis
@@ -99,7 +97,7 @@ public class SpringBootDataSourceManager {
                 JedisPool pool = new JedisPool(redisConfig, redisHost, config.getRedisPort(), config.getRedisTimeoutMs(), config.getRedisUserId(), config.getRedisPassword());
 
                 int expireSeconds = (int) MILLISECONDS.toSeconds(config.getRedisSendPeriod());
-                timeoutScanExecutor.scheduleAtFixedRate(new RedisPushTask(pool, expireSeconds), 0, config.getRedisSendPeriod(), MILLISECONDS);
+                timerExecutor.scheduleAtFixedRate(new RedisPushTask(pool, expireSeconds), 0, config.getRedisSendPeriod(), MILLISECONDS);
             }
         }
     }
@@ -134,13 +132,12 @@ public class SpringBootDataSourceManager {
 
     //add statement sql
     public Object traceSqlExecution(StatementTrace vo, Statement statement, Method method, Object[] args) throws Throwable {
-        if (vo == null) return null;
         vo.setMethodName(method.getName());
         if (sqlTrace) {
             sqlTraceQueue.offerFirst(vo);
-            if (sqlTraceQueueSize.incrementAndGet() > sqlTraceMaxSize) {
+            if (sqlTracedSize.incrementAndGet() > sqlTraceMaxSize) {
                 sqlTraceQueue.pollLast();
-                sqlTraceQueueSize.decrementAndGet();
+                sqlTracedSize.decrementAndGet();
             }
         }
 
@@ -169,9 +166,7 @@ public class SpringBootDataSourceManager {
         }
     }
 
-
-    private void removeTimeoutTrace() {
-        sqlAlertTempList.clear();
+    private void removeTimeoutTrace(LinkedList<StatementTrace> sqlAlertTempList) {
         Iterator<StatementTrace> iterator = sqlTraceQueue.descendingIterator();
         while (iterator.hasNext()) {
             StatementTrace vo = iterator.next();
@@ -182,12 +177,17 @@ public class SpringBootDataSourceManager {
 
             if (System.currentTimeMillis() - vo.getStartTimeMs() >= sqlTraceTimeout) {
                 iterator.remove();
-                sqlTraceQueueSize.decrementAndGet();
+                sqlTracedSize.decrementAndGet();
             }
         }
 
-        if (!sqlAlertTempList.isEmpty()) //should be in short time
-            sqlTraceAlert.alert(sqlAlertTempList);
+        if (!sqlAlertTempList.isEmpty()) { //should be in short time
+            try {
+                sqlTraceAlert.alert(sqlAlertTempList);
+            } finally {
+                sqlAlertTempList.clear();
+            }
+        }
     }
 
     private static final class SpringBootDsThreadFactory implements ThreadFactory {
@@ -198,9 +198,11 @@ public class SpringBootDataSourceManager {
         }
     }
 
-    private class SqlTraceTimeoutTask implements Runnable {
+    private static final class SqlTraceTimeoutTask implements Runnable {
+        private LinkedList<StatementTrace> sqlAlertTempList = new LinkedList<>();
+
         public void run() {// check idle connection
-            removeTimeoutTrace();
+            instance.removeTimeoutTrace(sqlAlertTempList);
         }
     }
 }

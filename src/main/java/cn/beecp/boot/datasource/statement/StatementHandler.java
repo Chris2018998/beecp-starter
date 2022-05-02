@@ -31,6 +31,7 @@ class StatementHandler implements InvocationHandler {
     private final String dsUUID;
     private final Statement statement;
     private final String statementType;
+    private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
     private StatementTrace traceVo;
 
     StatementHandler(Statement statement, String statementType, String sql, String dsId, String dsUUID) {
@@ -46,12 +47,12 @@ class StatementHandler implements InvocationHandler {
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {//PreparedStatement.executeXXX();
                 if (traceVo != null)
-                    return SpringBootDataSourceManager.getInstance().traceSqlExecution(traceVo, statement, method, args);
+                    return dsManager.traceSqlExecution(traceVo, statement, method, args);
                 else
                     return method.invoke(statement, args);
             } else {//Statement.executeXXXX(sql)
                 StatementTrace traceVo = new StatementTrace(dsId, dsUUID, (String) args[0], statementType);
-                return SpringBootDataSourceManager.getInstance().traceSqlExecution(traceVo, statement, method, args);
+                return dsManager.traceSqlExecution(traceVo, statement, method, args);
             }
         } else {
             return method.invoke(statement, args);
