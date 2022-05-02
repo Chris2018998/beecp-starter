@@ -20,7 +20,6 @@ import cn.beecp.pool.ConnectionPoolMonitorVo;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Redis Package object
@@ -33,8 +32,11 @@ public class RedisPackage {
     private List<ConnectionPoolMonitorVo> dsList;
     private Collection<StatementTrace> sqlList;
 
-    public RedisPackage() {
-        this.packageUUID = "BeeMonitor_Package_" + UUID.randomUUID().toString();
+    RedisPackage() {
+    }
+
+    RedisPackage(String packageUUID) {
+        this.packageUUID = packageUUID;
     }
 
     public String getPackageUUID() {

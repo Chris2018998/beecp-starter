@@ -15,41 +15,43 @@
  */
 package cn.beecp.boot.datasource.monitor.redis;
 
-import cn.beecp.boot.datasource.SpringBootDataSourceManager;
+import cn.beecp.pool.PoolStaticCenter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.UUID;
+import java.util.LinkedList;
+import java.util.List;
 
-import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.object2String;
+import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.string2Object;
 
 /**
- * Redis push task
+ * Redis read task
  *
  * @author Chris.Liao
  */
+public class RedisReadTask extends RedisBaseTask {
 
-public class RedisPushTask extends RedisBaseTask {
-    private final int expireSeconds;
-    private final RedisPackage dataPackage;
-    private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
-
-    public RedisPushTask(JedisPool pool, int expireSeconds) {
+    RedisReadTask(JedisPool pool) {
         super(pool);
-        this.expireSeconds = expireSeconds;
-        this.dataPackage = new RedisPackage(RedisKeyPrefix + UUID.randomUUID().toString());
     }
 
     public void run() {
         Jedis jedis = null;
         try {
-            dataPackage.setDsList(dsManager.getPoolMonitorVoList());
-            dataPackage.setSqlList(dsManager.getSqlExecutionList());
-            String jsonPackage = object2String(dataPackage);
             jedis = pool.getResource();
-            jedis.setex(dataPackage.getPackageUUID(), expireSeconds, jsonPackage);
+            List<RedisPackage> redisPackageList = new LinkedList<>();
+            for (String redisKey : jedis.keys(RedisKeyPrefix)) {
+                String monitorJson = jedis.get(redisKey);
+                if (!PoolStaticCenter.isBlank(monitorJson)) {
+                    redisPackageList.add(string2Object(monitorJson, RedisPackage.class));
+                }
+            }
+
+            if (!redisPackageList.isEmpty()) {
+
+            }
         } catch (Throwable e) {
-            Log.error("Failed send monitor-package to redis,cause:", e);
+            Log.error("Failed read monitor-package from redis,cause:", e);
         } finally {
             if (jedis != null) jedis.close();
         }
