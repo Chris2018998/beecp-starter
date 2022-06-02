@@ -20,7 +20,6 @@ import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.pool.PoolStaticCenter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,7 +32,6 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SECURITY;
  *
  * @author Chris.Liao
  */
-@WebFilter(filterName = "beecpMonitorFilter", urlPatterns = "/beecp/*")
 public class DataSourceMonitorFilter implements Filter {
     private final String userId;
     private final String validPassedTagName;

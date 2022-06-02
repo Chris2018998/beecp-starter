@@ -20,10 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
+
+import javax.servlet.Filter;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
 
@@ -65,10 +68,15 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
         //3: register monitor controller filter
         String resetControllerFilterRegName = DataSourceMonitorFilter.class.getName();
         if (!existsBeanDefinition(resetControllerFilterRegName, registry)) {
+            DataSourceMonitorFilter dsFilter = new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName());
+            FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(dsFilter);
+            registration.setName("beecpMonitorFilter");
+            registration.addUrlPatterns("/beecp/*");
+
             GenericBeanDefinition define = new GenericBeanDefinition();
-            define.setBeanClass(DataSourceMonitorFilter.class);
+            define.setBeanClass(FilterRegistrationBean.class);
             define.setPrimary(true);
-            define.setInstanceSupplier(createSpringSupplier(new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName())));
+            define.setInstanceSupplier(createSpringSupplier(registration));
             registry.registerBeanDefinition(resetControllerFilterRegName, define);
             log.info("Register DataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
