@@ -6,7 +6,7 @@
     <artifactId>beecp-spring-boot-starter</artifactId>
     <version>1.6.7</version>
     <name>beecp-starter</name>
-    <url>https://github.com/Chris2018998/BeeCP-Starter</url>
+    <url>https://github.com/Chris2018998/BeeCP-Starter https://github.com/Chris2018998/BeeCP-Starter</url>
     <description>beecp starter on springboot</description>
     <properties>
         <gpg.skip>false</gpg.skip>
