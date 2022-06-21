@@ -161,7 +161,7 @@ public class SpringBootDataSourceManager {
             vo.setEndTimeMs(endDate.getTime());
             vo.setEndTime(formatDate(endDate));
             vo.setTookTimeMs(vo.getEndTimeMs() - vo.getStartTimeMs());
-            if (vo.getTookTimeMs() >= sqlExecSlowTime)//alert
+            if (vo.isSuccessInd() && vo.getTookTimeMs() >= sqlExecSlowTime)//alert
                 vo.setSlowInd(true);
         }
     }
@@ -173,6 +173,7 @@ public class SpringBootDataSourceManager {
             if (vo.getEndTimeMs() > 0 && (!vo.isSuccessInd() || vo.isSlowInd()) && !vo.isAlertedInd()) {//failed or slow
                 vo.setAlertedInd(true);
                 sqlAlertTempList.add(vo);
+                if (sqlShow) Log.info("{} sql:{}", vo.isSlowInd() ? "Slow" : "Error", vo.getSql());
             }
 
             if (System.currentTimeMillis() - vo.getStartTimeMs() >= sqlTraceTimeout) {
