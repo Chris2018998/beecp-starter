@@ -98,7 +98,7 @@ public class SpringBootDataSourceUtil {
                 log.warn("Failed to create json tool by class:{}", jsonClassName);
             }
         }
-        jsonTool = new JackSonJsonTool();
+        if (jsonTool == null) jsonTool = new JackSonJsonTool();
     }
 
 
