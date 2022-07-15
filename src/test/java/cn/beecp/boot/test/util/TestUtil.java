@@ -15,6 +15,7 @@
  */
 package cn.beecp.boot.test.util;
 
+import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.pool.PoolStaticCenter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,6 +177,7 @@ public class TestUtil {
 
     public static final boolean testGetConnection(String dsId, MockMvc mockMvc, String url) throws Exception {
         //1:Try to get connection
+        //1:Try to get connection
         Map<String, String> paramMap = new HashMap<String, String>(1);
         paramMap.put("dsId", dsId);
         String restResult = getRest(mockMvc, url, paramMap, "get");
@@ -185,7 +187,10 @@ public class TestUtil {
         //2:Get pool list to check ds pool whether exist in list
         String poolInfoListURL = "/beecp/getDataSourceList";
         String response = getRest(mockMvc, poolInfoListURL, null, "post");
-        List<Map<String, Object>> poolList = string2Obj(response, List.class, Map.class);
+        System.out.println("getDataSourceList:"+response);
+        SpringBootRestResponse restResponse=string2Obj(response, SpringBootRestResponse.class);
+        if(restResponse.getCode()!=SpringBootRestResponse.CODE_SUCCESS)return false;
+        List<Map<String, Object>> poolList =(List<Map<String, Object>>)restResponse.getResult();
         for (Map map : poolList) {
             String pDsId = map.get("dsId").toString();
             String idleSize = map.get("idleSize").toString();
@@ -206,7 +211,9 @@ public class TestUtil {
 
         String getSqlListUrl = "/beecp/getSqlTraceList";
         String response = getRest(mockMvc, getSqlListUrl, null, "post");
-        List<Map<String, Object>> sqlList = string2Obj(response, List.class, Map.class);
+        SpringBootRestResponse restResponse=string2Obj(response, SpringBootRestResponse.class);
+        if(restResponse.getCode()!=SpringBootRestResponse.CODE_SUCCESS)return false;
+        List<Map<String, Object>> sqlList =(List<Map<String, Object>>)restResponse.getResult();
 
         if (testType == 0) {//normal
             for (Map map : sqlList) {
@@ -234,11 +241,15 @@ public class TestUtil {
             }
             return false;
         } else if (testType == 2) {//slow test
+            System.out.println("test sql:" +sql);
             for (Map map : sqlList) {
+                System.out.println("test map:" +map);
                 String pDsId = map.get("dsId").toString();
                 String exeSql = map.get("sql").toString();
                 boolean execInd = map.get("endTime")!=null;
-                boolean execSlowInd = (boolean) map.get("slowInd");
+                boolean execSlowInd =false;
+                if(execInd)execSlowInd=(Boolean)map.get("slowInd");
+
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
                     String tookTimeMs = map.get("tookTimeMs").toString();
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
