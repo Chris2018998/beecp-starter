@@ -42,6 +42,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  * spring.datasource.redis-send-period=18000
  * spring.datasource.redis-read-period=18000
  *
+ * spring.datasource.jsonToolClassName=cn.beecp.boot.datasource.util.JackSonJsonTool
  *
  * @author Chris.Liao
  */
@@ -56,6 +57,7 @@ public class DataSourceMonitorConfig {
     private long sqlTraceTimeout = TimeUnit.MINUTES.toMillis(3);
     private long sqlTraceTimeoutScanPeriod = TimeUnit.MINUTES.toMillis(3);
     private StatementTraceAlert sqlExecAlertAction;
+
     //*********************************sql trace config end***********************************************************//
 
     //*********************************monitor config begin **********************************************************//
@@ -63,7 +65,6 @@ public class DataSourceMonitorConfig {
     private String monitorPassword;
     private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
-
 
     //*********************************redis config begin ************************************************************//
     private String redisHost;
@@ -74,6 +75,10 @@ public class DataSourceMonitorConfig {
     private long redisSendPeriod = TimeUnit.MINUTES.toMillis(3);//node send
     private long redisReadPeriod = TimeUnit.MINUTES.toMillis(3);//center read
     //*********************************redis config end***************************************************************//
+
+    //*********************************other config begin ************************************************************//
+    private String jsonToolClassName;
+    //*********************************other config end**********************************************************
 
     public boolean isSqlShow() {
         return sqlShow;
@@ -215,5 +220,13 @@ public class DataSourceMonitorConfig {
     public void setRedisReadPeriod(long redisReadPeriod) {
         if (redisReadPeriod > 0)
             this.redisReadPeriod = redisReadPeriod;
+    }
+
+    public String getJsonToolClassName() {
+        return jsonToolClassName;
+    }
+
+    public void setJsonToolClassName(String jsonToolClassName) {
+        this.jsonToolClassName = jsonToolClassName;
     }
 }

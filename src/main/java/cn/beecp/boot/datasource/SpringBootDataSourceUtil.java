@@ -19,8 +19,9 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
+import cn.beecp.boot.datasource.util.JackSonJsonTool;
+import cn.beecp.boot.datasource.util.SpringBootJsonTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -65,11 +66,10 @@ public class SpringBootDataSourceUtil {
     private static final String Config_DS_Jndi = "jndiName";
     //BeeCP DataSource class name
     private static final String BeeCP_DS_Class_Name = BeeDataSource.class.getName();
-
-    private static final ObjectMapper JacksonObjectMapper = new ObjectMapper();
     private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
     private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
+    private static SpringBootJsonTool jsonTool;
     //***************************************************************************************************************//
     //                                1: spring register or base (3)                                                //
     //***************************************************************************************************************//
@@ -79,12 +79,28 @@ public class SpringBootDataSourceUtil {
     }
 
     public static String object2String(Object obj) throws JsonProcessingException {
-        return JacksonObjectMapper.writeValueAsString(obj);
+        return jsonTool.object2String(obj);
     }
 
     public static <T> T string2Object(String str, Class<T> clazz) throws JsonProcessingException {
-        return JacksonObjectMapper.readerFor(clazz).readValue(str);
+        return jsonTool.string2Object(str, clazz);
     }
+
+    //create json tool implementation
+    static void createJsonTool(String jsonClassName) {
+        if (!isBlank(jsonClassName)) {
+            try {
+                Class jsonToolClass = Class.forName(jsonClassName);
+                SpringBootJsonTool tool = (SpringBootJsonTool) jsonToolClass.newInstance();
+                tool.init();
+                jsonTool = tool;
+            } catch (Throwable e) {
+                log.warn("Failed to create json tool by class:{}", jsonClassName);
+            }
+        }
+        jsonTool = new JackSonJsonTool();
+    }
+
 
     public static String formatDate(Date date) {
         WeakReference<DateFormat> reference = DateFormatThreadLocal.get();
@@ -118,6 +134,8 @@ public class SpringBootDataSourceUtil {
             //2:set Properties
             setConfigPropertiesValue(config, Config_DS_Prefix, null, environment);
             DataSourceMonitorConfig.single = config;
+            //3:create global json tool()
+            createJsonTool(config.getJsonToolClassName());
         }
         return DataSourceMonitorConfig.single;
     }
