@@ -42,14 +42,25 @@ class ConnectionHandler implements InvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String name = method.getName();
+        //1:create trace for method 'prepareStatement' or 'prepareCall'
+        StatementTrace trace = null;
+        String methodName = method.getName();
+        if (Method_PreparedStatement.equals(methodName)) {
+            trace = new StatementTrace(dsId, dsUUID, (String) args[0], Type_PreparedStatement);
+        } else if (Method_CallableStatement.equals(methodName)) {
+            trace = new StatementTrace(dsId, dsUUID, (String) args[0], Type_CallableStatement);
+        }
+
+        //2:execute connection method
         Object re = method.invoke(connection, args);
-        if (Method_Statement.equals(name)) {
-            return StatementTraceUtil.createStatementProxy((Statement) re, Type_Statement, null, dsId, dsUUID);
-        } else if (Method_PreparedStatement.equals(name)) {
-            return StatementTraceUtil.createStatementProxy((Statement) re, Type_PreparedStatement, (String) args[0], dsId, dsUUID);
-        } else if (Method_CallableStatement.equals(name)) {
-            return StatementTraceUtil.createStatementProxy((Statement) re, Type_CallableStatement, (String) args[0], dsId, dsUUID);
+
+        //3:create statement proxy
+        if (Method_Statement.equals(methodName)) {
+            return StatementTraceUtil.createStatementProxy((Statement) re, Type_Statement, dsId, dsUUID, null);
+        } else if (Method_PreparedStatement.equals(methodName)) {
+            return StatementTraceUtil.createStatementProxy((Statement) re, Type_PreparedStatement, dsId, dsUUID, trace);
+        } else if (Method_CallableStatement.equals(methodName)) {
+            return StatementTraceUtil.createStatementProxy((Statement) re, Type_CallableStatement, dsId, dsUUID, trace);
         } else {
             return re;
         }

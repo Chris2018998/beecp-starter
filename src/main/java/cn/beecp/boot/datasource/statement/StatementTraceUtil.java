@@ -35,10 +35,10 @@ public class StatementTraceUtil {
                 new ConnectionHandler(delegate, dsId, dsUUID));
     }
 
-    static Statement createStatementProxy(Statement delegate, String statementType, String SQL, String dsId, String dsUUID) {
+    static Statement createStatementProxy(Statement delegate, String statementType, String dsId, String dsUUID, StatementTrace trace) {
         return (Statement) Proxy.newProxyInstance(
                 classLoader,
                 INTF_CallableStatement,
-                new StatementHandler(delegate, statementType, SQL, dsId, dsUUID));
+                new StatementHandler(delegate, statementType, dsId, dsUUID, trace));
     }
 }

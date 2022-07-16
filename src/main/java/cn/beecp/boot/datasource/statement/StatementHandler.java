@@ -16,10 +16,10 @@
 package cn.beecp.boot.datasource.statement;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
-import cn.beecp.pool.PoolStaticCenter;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 /**
@@ -34,16 +34,16 @@ class StatementHandler implements InvocationHandler {
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
     private StatementTrace traceVo;
 
-    StatementHandler(Statement statement, String statementType, String sql, String dsId, String dsUUID) {
+    StatementHandler(Statement statement, String statementType, String dsId, String dsUUID, StatementTrace traceVo) {
         this.dsId = dsId;
         this.dsUUID = dsUUID;
         this.statement = statement;
         this.statementType = statementType;
-        if (!PoolStaticCenter.isBlank(sql))
-            traceVo = new StatementTrace(dsId, dsUUID, sql, statementType);
+        this.traceVo = traceVo;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        PreparedStatement statement2;
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {//PreparedStatement.executeXXX();
                 if (traceVo != null)
