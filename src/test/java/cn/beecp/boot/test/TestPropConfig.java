@@ -31,8 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static cn.beecp.boot.test.util.TestUtil.testExecuteSQL;
-import static cn.beecp.boot.test.util.TestUtil.testGetConnection;
+import static cn.beecp.boot.test.util.ClientSideUtil.testExecuteSQL;
+import static cn.beecp.boot.test.util.ClientSideUtil.testGetConnection;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MultiDsController.class)

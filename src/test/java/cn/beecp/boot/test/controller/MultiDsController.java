@@ -18,8 +18,9 @@ package cn.beecp.boot.test.controller;
 import cn.beecp.boot.DsId;
 import cn.beecp.boot.EnableDsMonitor;
 import cn.beecp.boot.EnableMultiDs;
+import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
-import cn.beecp.boot.test.util.TestUtil;
+import cn.beecp.boot.test.util.ServerSideUtil;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +29,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.sql.DataSource;
+
+import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_FAILED;
+import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SUCCESS;
 
 /*
  *  DataSource Tester Controller
@@ -50,54 +54,78 @@ public class MultiDsController {
     private DataSource combineDs;
 
     @GetMapping("/testGetConnection")
-    public String testGetConnection(String dsId) throws Exception {
-        if (PoolStaticCenter.isBlank(dsId))
-            throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
-        if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
-            throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
+    public SpringBootRestResponse testGetConnection(String dsId) throws Exception {
+        try {
+            if (PoolStaticCenter.isBlank(dsId))
+                throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
+            if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
+                throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
 
-        DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
-        return TestUtil.testGetConnection(ds);
+            DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testGetConnection(ds), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 
-
     @GetMapping("/testSQL")
-    public String testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
-        if (PoolStaticCenter.isBlank(dsId))
-            throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
-        if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
-            throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
-        if (PoolStaticCenter.isBlank(sql))
-            throw new SpringBootDataSourceException("Execute SQL can't be null or empty");
-        if (PoolStaticCenter.isBlank(type)) throw new SpringBootDataSourceException("Execute type't be null or empty");
-        if (!"Statement".equalsIgnoreCase(type) && !"PreparedStatement".equalsIgnoreCase(type) && !"CallableStatement".equalsIgnoreCase(type))
-            throw new SpringBootDataSourceException("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
+    public SpringBootRestResponse testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
+        try {
+            if (PoolStaticCenter.isBlank(dsId))
+                throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
+            if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
+                throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
+            if (PoolStaticCenter.isBlank(sql))
+                throw new SpringBootDataSourceException("Execute SQL can't be null or empty");
+            if (PoolStaticCenter.isBlank(type))
+                throw new SpringBootDataSourceException("Execute type't be null or empty");
+            if (!"Statement".equalsIgnoreCase(type) && !"PreparedStatement".equalsIgnoreCase(type) && !"CallableStatement".equalsIgnoreCase(type))
+                throw new SpringBootDataSourceException("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
 
-        DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
-        return TestUtil.testSQL(ds, sql, type, slowInd);
+            DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(ds, sql, type, slowInd), "Ok");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 
     @GetMapping("/testGetConnection1")
     @DsId("ds1")
-    public String testCombineDs1() throws Exception {
-        return TestUtil.testGetConnection(combineDs);
+    public SpringBootRestResponse testCombineDs1() throws Exception {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testGetConnection(combineDs), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 
     @GetMapping("/testGetConnection2")
     @DsId("ds2")
-    public String testCombineDs2() throws Exception {
-        return TestUtil.testGetConnection(combineDs);
+    public SpringBootRestResponse testCombineDs2() throws Exception {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testGetConnection(combineDs), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 
     @GetMapping("/testExecSQL1")
     @DsId("ds1")
-    public String testExecSQL1(String sql, String type, String slowInd) throws Exception {
-        return TestUtil.testSQL(combineDs, sql, type, slowInd);
+    public SpringBootRestResponse testExecSQL1(String sql, String type, String slowInd) throws Exception {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(combineDs, sql, type, slowInd), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 
     @GetMapping("/testExecSQL2")
     @DsId("ds2")
-    public String testExecSQL2(String sql, String type, String slowInd) throws Exception {
-        return TestUtil.testSQL(combineDs, sql, type, slowInd);
+    public SpringBootRestResponse testExecSQL2(String sql, String type, String slowInd) throws Exception {
+        try {
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(combineDs, sql, type, slowInd), "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
+        }
     }
 }
