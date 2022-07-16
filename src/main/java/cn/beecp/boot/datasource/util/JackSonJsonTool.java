@@ -19,11 +19,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * define util tool interface,
+ * Json tool implementation by Jackson tool
  *
  * @author Chris.Liao
  */
-public class JackSonJsonTool implements SpringBootJsonTool {
+public class JackSonJsonTool<T> implements SpringBootJsonTool{
 
     private final ObjectMapper JacksonObjectMapper = new ObjectMapper();
 

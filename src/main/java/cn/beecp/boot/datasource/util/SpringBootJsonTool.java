@@ -18,7 +18,7 @@ package cn.beecp.boot.datasource.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * define util tool interface,
+ * json tool interface
  *
  * @author Chris.Liao
  */
