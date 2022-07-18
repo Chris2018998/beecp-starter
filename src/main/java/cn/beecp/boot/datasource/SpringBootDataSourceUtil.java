@@ -19,7 +19,7 @@ import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
-import cn.beecp.boot.datasource.util.JackSonJsonTool;
+import cn.beecp.boot.datasource.util.JackSonTool;
 import cn.beecp.boot.datasource.util.SpringBootJsonTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class SpringBootDataSourceUtil {
                 log.warn("Failed to create json tool by class:{}", jsonClassName);
             }
         }
-        if (jsonTool == null) jsonTool = new JackSonJsonTool();
+        if (jsonTool == null) jsonTool = new JackSonTool();
     }
 
 

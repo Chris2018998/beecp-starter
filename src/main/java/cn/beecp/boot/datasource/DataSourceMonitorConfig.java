@@ -42,7 +42,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  * spring.datasource.redis-send-period=18000
  * spring.datasource.redis-read-period=18000
  *
- * spring.datasource.jsonToolClassName=cn.beecp.boot.datasource.util.JackSonJsonTool
+ * spring.datasource.jsonToolClassName=cn.beecp.boot.datasource.util.JackSonTool
  *
  * @author Chris.Liao
  */
