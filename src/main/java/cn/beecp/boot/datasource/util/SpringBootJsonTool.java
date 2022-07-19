@@ -15,8 +15,6 @@
  */
 package cn.beecp.boot.datasource.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 /**
  * json tool interface
  *
@@ -24,10 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 public interface SpringBootJsonTool {
 
-    void init() throws JsonProcessingException;
+    void init() throws Exception;
 
-    String object2String(Object obj) throws JsonProcessingException;
+    String object2String(Object obj) throws Exception;
 
-    <T> T string2Object(String str, Class<T> clazz) throws JsonProcessingException;
+    <T> T string2Object(String str, Class<T> clazz) throws Exception;
 
 }
