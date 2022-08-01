@@ -21,7 +21,6 @@ import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceFactory;
 import cn.beecp.boot.datasource.util.JackSonTool;
 import cn.beecp.boot.datasource.util.SpringBootJsonTool;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -31,6 +30,7 @@ import org.springframework.core.env.Environment;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -78,11 +78,11 @@ public class SpringBootDataSourceUtil {
         DataSourceFactoryMap.put(BeeDataSource.class, new BeeDataSourceFactory());
     }
 
-    public static String object2String(Object obj) throws JsonProcessingException {
+    public static String object2String(Object obj) throws IOException {
         return jsonTool.object2String(obj);
     }
 
-    public static <T> T string2Object(String str, Class<T> clazz) throws JsonProcessingException {
+    public static <T> T string2Object(String str, Class<T> clazz) throws IOException {
         return jsonTool.string2Object(str, clazz);
     }
 
