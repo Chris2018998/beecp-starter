@@ -65,6 +65,7 @@ public class DataSourceMonitorFilter implements Filter {
             ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
         } else {
             req.getRequestDispatcher("/beecp/login.html").forward(req, res);
+            return;
         }
     }
 
