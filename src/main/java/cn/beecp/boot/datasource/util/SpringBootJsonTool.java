@@ -15,6 +15,8 @@
  */
 package cn.beecp.boot.datasource.util;
 
+import java.io.IOException;
+
 /**
  * json tool interface
  *
@@ -22,10 +24,10 @@ package cn.beecp.boot.datasource.util;
  */
 public interface SpringBootJsonTool {
 
-    void init() throws Exception;
+    void init() throws IOException;
 
-    String object2String(Object obj) throws Exception;
+    String object2String(Object obj) throws IOException;
 
-    <T> T string2Object(String str, Class<T> clazz) throws Exception;
+    <T> T string2Object(String str, Class<T> clazz) throws IOException;
 
 }

@@ -17,6 +17,8 @@ package cn.beecp.boot.datasource.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+
 /**
  * Json tool implementation by Jackson tool
  *
@@ -29,11 +31,11 @@ public class JackSonTool<T> implements SpringBootJsonTool {
     public void init() {
     }
 
-    public String object2String(Object obj) throws Exception {
+    public String object2String(Object obj) throws IOException {
         return JacksonObjectMapper.writeValueAsString(obj);
     }
 
-    public <T> T string2Object(String str, Class<T> clazz) throws Exception {
+    public <T> T string2Object(String str, Class<T> clazz) throws IOException {
         return JacksonObjectMapper.readerFor(clazz).readValue(str);
     }
 }
