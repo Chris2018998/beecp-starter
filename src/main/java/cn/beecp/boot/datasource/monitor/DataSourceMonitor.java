@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource.monitor;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
+import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.pool.PoolStaticCenter;
 import org.springframework.stereotype.Controller;
@@ -99,7 +100,7 @@ public class DataSourceMonitor {
         try {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
-            if (this.userId.equals(userId) && PoolStaticCenter.equalsString(this.password, password)) {//checked pass
+            if (this.userId.equals(userId) && SpringBootDataSourceUtil.stringEquals(this.password, password)) {//checked pass
                 session.setAttribute(validPassedTagName, "Y");
                 return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
             } else
