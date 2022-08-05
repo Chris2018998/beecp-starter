@@ -86,6 +86,11 @@ public class SpringBootDataSourceUtil {
         return jsonTool.string2Object(str, clazz);
     }
 
+    public static boolean stringEquals(String a, String b) {
+        return a != null ? a.equals(b) : b == null;
+    }
+
+
     //create json tool implementation
     static void createJsonTool(String jsonClassName) {
         if (!isBlank(jsonClassName)) {
