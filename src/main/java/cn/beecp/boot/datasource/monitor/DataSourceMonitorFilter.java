@@ -53,19 +53,22 @@ public class DataSourceMonitorFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (PoolStaticCenter.isBlank(userId)) chain.doFilter(req, res);
-        HttpServletRequest httpReq = (HttpServletRequest) req;
-        String requestPath = httpReq.getServletPath();
-        if ("Y".equals(httpReq.getSession().getAttribute(validPassedTagName)) || isExcludeUrl(requestPath)) {
+        if (PoolStaticCenter.isBlank(userId)){
             chain.doFilter(req, res);
-        } else if (isRestUrl(requestPath)) {
-            res.setContentType("application/json");
-            OutputStream ps = res.getOutputStream();
-            SpringBootRestResponse restResponse = new SpringBootRestResponse(CODE_SECURITY, null, "unauthorized");
-            ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
-        } else {
-            req.getRequestDispatcher("/beecp/login.html").forward(req, res);
-            return;
+        }else {
+            HttpServletRequest httpReq = (HttpServletRequest) req;
+            String requestPath = httpReq.getServletPath();
+
+            if ("Y".equals(httpReq.getSession().getAttribute(validPassedTagName)) || isExcludeUrl(requestPath)) {
+                chain.doFilter(req, res);
+            } else if (isRestUrl(requestPath)) {
+                res.setContentType("application/json");
+                OutputStream ps = res.getOutputStream();
+                SpringBootRestResponse restResponse = new SpringBootRestResponse(CODE_SECURITY, null, "unauthorized");
+                ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
+            } else {
+                req.getRequestDispatcher("/beecp/login.html").forward(req, res);
+            }
         }
     }
 
