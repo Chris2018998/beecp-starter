@@ -54,13 +54,14 @@ public class SingleDataSourceRegister {
         //2:read datasource monitor config
         DataSourceMonitorConfig dataSourceMonitorConfig = readMonitorConfig(environment);
 
-        //3:create BeeDataSource
+        //3:setup monitor config
+        SpringBootDataSourceManager.getInstance().setupMonitorConfig(dataSourceMonitorConfig);
+
+        //4:create BeeDataSource
         DataSource ds = new BeeDataSourceFactory().createDataSource(Config_DS_Prefix, dsId, environment);
         SpringBootDataSource springDs = new SpringBootDataSource(dsId, ds, false);
         SpringBootDataSourceManager.getInstance().addSpringBootDataSource(springDs);
 
-        //4:setup monitor config
-        SpringBootDataSourceManager.getInstance().setupMonitorConfig(dataSourceMonitorConfig);
         return springDs;
     }
 }
