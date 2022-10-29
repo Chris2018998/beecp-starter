@@ -63,7 +63,7 @@ public class DataSourceMonitorConfig {
     //*********************************monitor config begin **********************************************************//
     private String monitorUserId;
     private String monitorPassword;
-    private String monitorValidPassedTagName = DataSourceMonitor.class.getName();
+    private String monitorLoggedInTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
 
     //*********************************redis config begin ************************************************************//
@@ -155,13 +155,13 @@ public class DataSourceMonitorConfig {
         this.monitorPassword = monitorPassword;
     }
 
-    public String getMonitorValidPassedTagName() {
-        return monitorValidPassedTagName;
+    public String getMonitorLoggedInTagName() {
+        return monitorLoggedInTagName;
     }
 
-    public void setMonitorValidPassedTagName(String monitorValidPassedTagName) {
-        if (!isBlank(monitorValidPassedTagName))
-            this.monitorValidPassedTagName = monitorValidPassedTagName;
+    public void setMonitorLoggedInTagName(String monitorLoggedInTagName) {
+        if (!isBlank(monitorLoggedInTagName))
+            this.monitorLoggedInTagName = monitorLoggedInTagName;
     }
 
     public String getRedisHost() {

@@ -133,12 +133,10 @@ public class SpringBootDataSourceManager {
     //add statement sql
     public Object traceSqlExecution(StatementTrace vo, Statement statement, Method method, Object[] args) throws Throwable {
         vo.setMethodName(method.getName());
-        if (sqlTrace) {
-            sqlTraceQueue.offerFirst(vo);
-            if (sqlTracedSize.incrementAndGet() > sqlTraceMaxSize) {
-                sqlTraceQueue.pollLast();
-                sqlTracedSize.decrementAndGet();
-            }
+        sqlTraceQueue.offerFirst(vo);
+        if (sqlTracedSize.incrementAndGet() > sqlTraceMaxSize) {
+            sqlTraceQueue.pollLast();
+            sqlTracedSize.decrementAndGet();
         }
 
         try {

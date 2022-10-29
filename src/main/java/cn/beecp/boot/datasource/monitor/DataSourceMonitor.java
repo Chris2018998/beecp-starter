@@ -41,14 +41,14 @@ public class DataSourceMonitor {
     private final static String EN_PAGE = "/beecp/english.html";
     private final String userId;
     private final String password;
-    private final String validPassedTagName;
+    private final String loggedInTagName;
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
     private HttpSession session;
 
-    DataSourceMonitor(String userId, String password, String validPassedTagName) {
+    DataSourceMonitor(String userId, String password, String loggedInTagName) {
         this.userId = userId;
         this.password = password;
-        this.validPassedTagName = validPassedTagName;
+        this.loggedInTagName = loggedInTagName;
     }
 
     @ModelAttribute
@@ -92,7 +92,7 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/login")
     public SpringBootRestResponse login(@RequestBody Map<String, String> paramMap) {
-        if ("Y".equals(session.getAttribute(validPassedTagName)))//has validated
+        if ("Y".equals(session.getAttribute(loggedInTagName)))//has logined
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
         if (PoolStaticCenter.isBlank(userId))
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
@@ -101,7 +101,7 @@ public class DataSourceMonitor {
             String userId = paramMap.get("userId");
             String password = paramMap.get("password");
             if (this.userId.equals(userId) && SpringBootDataSourceUtil.stringEquals(this.password, password)) {//checked pass
-                session.setAttribute(validPassedTagName, "Y");
+                session.setAttribute(loggedInTagName, "Y");
                 return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
             } else
                 return new SpringBootRestResponse(CODE_FAILED, null, "Login Failed");

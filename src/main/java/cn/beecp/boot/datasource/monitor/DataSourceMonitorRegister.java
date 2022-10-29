@@ -58,7 +58,7 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             define.setInstanceSupplier(createSpringSupplier(new DataSourceMonitor(
                     config.getMonitorUserId(),
                     config.getMonitorPassword(),
-                    config.getMonitorValidPassedTagName())));
+                    config.getMonitorLoggedInTagName())));
             registry.registerBeanDefinition(resetControllerRegName, define);
             log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
@@ -68,7 +68,8 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
         //3: register monitor controller filter
         String resetControllerFilterRegName = DataSourceMonitorFilter.class.getName();
         if (!existsBeanDefinition(resetControllerFilterRegName, registry)) {
-            DataSourceMonitorFilter dsFilter = new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorValidPassedTagName());
+
+            DataSourceMonitorFilter dsFilter = new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorLoggedInTagName());
             FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(dsFilter);
             registration.setName("beecpMonitorFilter");
             registration.addUrlPatterns("/beecp/*");

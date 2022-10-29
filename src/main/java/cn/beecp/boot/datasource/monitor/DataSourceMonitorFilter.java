@@ -34,14 +34,14 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SECURITY;
  */
 public class DataSourceMonitorFilter implements Filter {
     private final String userId;
-    private final String validPassedTagName;
+    private final String loggedInTagName;
 
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
     private final String[] restUrls = {"/beecp/login", "/beecp/getSqlTraceList", "/beecp/getDataSourceList", "/beecp/clearDataSource"};
 
-    DataSourceMonitorFilter(String userId, String validPassedTagName) {
+    DataSourceMonitorFilter(String userId, String loggedInTagName) {
         this.userId = userId;
-        this.validPassedTagName = validPassedTagName;
+        this.loggedInTagName = loggedInTagName;
     }
 
     public void destroy() {
@@ -53,13 +53,13 @@ public class DataSourceMonitorFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (PoolStaticCenter.isBlank(userId)){
+        if (PoolStaticCenter.isBlank(userId)) {
             chain.doFilter(req, res);
-        }else {
+        } else {
             HttpServletRequest httpReq = (HttpServletRequest) req;
             String requestPath = httpReq.getServletPath();
 
-            if ("Y".equals(httpReq.getSession().getAttribute(validPassedTagName)) || isExcludeUrl(requestPath)) {
+            if ("Y".equals(httpReq.getSession().getAttribute(loggedInTagName)) || isExcludeUrl(requestPath)) {
                 chain.doFilter(req, res);
             } else if (isRestUrl(requestPath)) {
                 res.setContentType("application/json");

@@ -19,7 +19,6 @@ import cn.beecp.boot.datasource.SpringBootDataSourceManager;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 /**
@@ -43,7 +42,6 @@ class StatementHandler implements InvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        PreparedStatement statement2;
         if (method.getName().startsWith(Execute)) {//execute method
             if (args == null || args.length == 0) {//PreparedStatement.executeXXX();
                 if (traceVo != null)
