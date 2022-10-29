@@ -113,19 +113,19 @@
 <div class="wrapper">
     <div class="loginBox">
         <div class="loginHead">
-           BeeCP Monitor 
+            <label id="titleLable">BeeCP Monitor</label>
         </div>
         <div class="loginBoxCenter">
-            <p><label>UserId：</label></p>
+            <p><label id="userIdLable">UserId：</label></p>
             <p><input autocomplete="off" autofocus="autofocus" class="loginInput" id="userId" maxlength="50"
                       name="userId"
                       required="required" type="text"/></p>
-            <p><label>Password：</label></p>
+            <p><label id="passwordLable">Password：</label></p>
             <p><input class="loginInput" id="password" maxlength="50" name="password" type="password"/></p>
 			
 			<p>
-			    <label>Language：</label>
-				<select id="language">
+			    <label id="languageLable">Language：</label>
+				<select id="language" autocomplete="off" onchange="languageChanged(this)">
 					<option value="en" selected>English</option>
 					<option value="cn">中文</option>
 				</select>
@@ -165,6 +165,22 @@
             }
         }
         return null;
+    }
+
+    function languageChanged(language) {
+        if(language.value=='cn'){
+            document.getElementById("titleLable").innerHTML="BeeCP监控";
+            document.getElementById("userIdLable").innerHTML="用户：";
+            document.getElementById("passwordLable").innerHTML="密码：";
+            document.getElementById("languageLable").innerHTML="语言：";
+            document.getElementById("loginButton").value="登陆";
+        }else{
+            document.getElementById("titleLable").innerHTML="BeeCP Monitor";
+            document.getElementById("userIdLable").innerHTML="UserId：";
+            document.getElementById("passwordLable").innerHTML="Password：";
+            document.getElementById("languageLable").innerHTML="Language：";
+            document.getElementById("loginButton").value="Login";
+        }
     }
 
     function login() {
