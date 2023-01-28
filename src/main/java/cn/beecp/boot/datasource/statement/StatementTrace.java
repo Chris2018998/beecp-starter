@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
 
 /*
@@ -42,6 +43,8 @@ public class StatementTrace {
     private boolean slowInd;
     private boolean successInd;
     private boolean alertedInd;
+    
+    @JsonIgnore
     private Throwable failCause;
     private String methodName;
 
