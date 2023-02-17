@@ -49,7 +49,7 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
         //1:read datasource monitor
         DataSourceMonitorConfig config = readMonitorConfig(environment);
 
-        //2:register monitor controller
+        //2:assembly monitor controller
         String resetControllerRegName = DataSourceMonitor.class.getName();
         if (!existsBeanDefinition(resetControllerRegName, registry)) {
             GenericBeanDefinition define = new GenericBeanDefinition();
@@ -65,14 +65,14 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             log.error("BeanDefinition id {} already exists in spring context", resetControllerRegName);
         }
 
-        //3: register monitor controller filter
+        //3: assembly monitor controller filter
         String resetControllerFilterRegName = DataSourceMonitorFilter.class.getName();
         if (!existsBeanDefinition(resetControllerFilterRegName, registry)) {
 
             DataSourceMonitorFilter dsFilter = new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorLoggedInTagName());
             FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(dsFilter);
             registration.setName("beecpMonitorFilter");
-            registration.addUrlPatterns("/beecp/*");
+            registration.addUrlPatterns("/stone/*");
 
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(FilterRegistrationBean.class);

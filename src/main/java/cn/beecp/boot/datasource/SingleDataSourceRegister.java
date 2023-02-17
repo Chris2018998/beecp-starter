@@ -31,7 +31,7 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
  * config example
  *
  * spring.datasource.dsId=beeDs
- * spring.datasource.type=cn.beecp.BeeDataSource
+ * spring.datasource.type=cn.stone.BeeDataSource
  * spring.datasource.username=root
  * spring.datasource.password=
  * spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test

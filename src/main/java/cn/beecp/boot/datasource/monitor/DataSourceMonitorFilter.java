@@ -37,7 +37,7 @@ public class DataSourceMonitorFilter implements Filter {
     private final String loggedInTagName;
 
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
-    private final String[] restUrls = {"/beecp/login", "/beecp/getSqlTraceList", "/beecp/getDataSourceList", "/beecp/clearDataSource"};
+    private final String[] restUrls = {"/stone/login", "/stone/getSqlTraceList", "/stone/getDataSourceList", "/stone/clearDataSource"};
 
     DataSourceMonitorFilter(String userId, String loggedInTagName) {
         this.userId = userId;
@@ -67,7 +67,7 @@ public class DataSourceMonitorFilter implements Filter {
                 SpringBootRestResponse restResponse = new SpringBootRestResponse(CODE_SECURITY, null, "unauthorized");
                 ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
             } else {
-                req.getRequestDispatcher("/beecp/login.html").forward(req, res);
+                req.getRequestDispatcher("/stone/login.html").forward(req, res);
             }
         }
     }

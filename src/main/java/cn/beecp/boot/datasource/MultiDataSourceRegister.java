@@ -16,6 +16,7 @@
 package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
+import cn.beecp.boot.datasource.monitor.DataSourceMonitorRegister;
 import cn.beecp.pool.PoolStaticCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
  *  SpringBoot dataSource config example
  *
  *  spring.datasource.dsId=ds1,ds2
- *  spring.datasource.ds1.type=cn.beecp.BeeDataSoruce
+ *  spring.datasource.ds1.type=cn.stone.BeeDataSoruce
  *  spring.datasource.ds1.primary=true
  *
  *  spring.datasource.ds2.primary=false
@@ -80,8 +81,13 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         //5:read sql statement config
         SpringBootDataSourceManager.getInstance().setupMonitorConfig(dataSourceMonitorConfig);
 
-        //6:register datasource to spring container
+        //6:assembly datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);
+
+        //7:register datasource monitor
+        DataSourceMonitorRegister monitorRegister = new DataSourceMonitorRegister();
+        monitorRegister.setEnvironment(environment);
+        monitorRegister.registerBeanDefinitions(classMetadata, registry);
     }
 
     /**
@@ -170,7 +176,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
     }
 
     /**
-     * 4: register datasource to springBoot
+     * 4: assembly datasource to springBoot
      *
      * @param dsMap datasource list
      */
@@ -181,7 +187,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         for (SpringBootDataSource ds : dsMap.values())
             registerDataSourceBean(ds, registry);
 
-        //register combine DataSource
+        //assembly combine DataSource
         if (!PoolStaticCenter.isBlank(combineDsId) && !PoolStaticCenter.isBlank(primaryDsId)) {
             ThreadLocal<SpringBootDataSource> dsThreadLocal = new ThreadLocal<>();
 
@@ -201,7 +207,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         }
     }
 
-    //4.1:register dataSource to Spring bean container
+    //4.1:assembly dataSource to Spring bean container
     private void registerDataSourceBean(SpringBootDataSource springDs, BeanDefinitionRegistry registry) {
         GenericBeanDefinition define = new GenericBeanDefinition();
         define.setPrimary(springDs.isPrimary());

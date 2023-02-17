@@ -37,8 +37,8 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SUCCESS;
  */
 @Controller
 public class DataSourceMonitor {
-    private final static String CN_PAGE = "/beecp/chinese.html";
-    private final static String EN_PAGE = "/beecp/english.html";
+    private final static String CN_PAGE = "/stone/chinese.html";
+    private final static String EN_PAGE = "/stone/english.html";
     private final String userId;
     private final String password;
     private final String loggedInTagName;
@@ -58,7 +58,7 @@ public class DataSourceMonitor {
 
     @RequestMapping("/beecp")
     public String welcome1() {
-        return "redirect:/beecp/";
+        return "redirect:/stone/";
     }
 
     @RequestMapping("/beecp/")
@@ -131,14 +131,14 @@ public class DataSourceMonitor {
     }
 
     @ResponseBody
-    @PostMapping("/beecp/clearDataSource")
+    @PostMapping("/beecp/restartPool")
     public SpringBootRestResponse clearDsConnections(@RequestBody Map<String, String> parameterMap) {
         try {
             String dsId = parameterMap != null ? parameterMap.get("dsId") : null;
-            dsManager.clearDsConnections(dsId);
+            dsManager.restartPool(dsId);
             return new SpringBootRestResponse(CODE_SUCCESS, null, "OK");
         } catch (Throwable e) {
-            return new SpringBootRestResponse(CODE_FAILED, e, "Failed to 'clearDsConnections'");
+            return new SpringBootRestResponse(CODE_FAILED, e, "Failed to 'restart datasource pool'");
         }
     }
 }

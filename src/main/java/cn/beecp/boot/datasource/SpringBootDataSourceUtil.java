@@ -58,7 +58,7 @@ public class SpringBootDataSourceUtil {
     //combineDefaultDs
     static final String Config_DS_Combine_PrimaryDs = "combinePrimaryId";
 
-    //indicator:Spring dataSource register as primary datasource
+    //indicator:Spring dataSource assembly as primary datasource
     private static final String Config_DS_Primary = "primary";
     //Datasource class name
     private static final String Config_DS_Type = "type";
@@ -71,7 +71,7 @@ public class SpringBootDataSourceUtil {
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
     private static SpringBootJsonTool jsonTool;
     //***************************************************************************************************************//
-    //                                1: spring register or base (3)                                                //
+    //                                1: spring assembly or base (3)                                                //
     //***************************************************************************************************************//
 
     static {

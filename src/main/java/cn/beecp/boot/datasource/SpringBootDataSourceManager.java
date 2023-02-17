@@ -103,9 +103,9 @@ public class SpringBootDataSourceManager {
     }
 
     //clear pool
-    public void clearDsConnections(String dsId) {
+    public void restartPool(String dsId) {
         SpringBootDataSource ds = dsMap.get(dsId);
-        if (ds != null) ds.clearAllConnections();
+        if (ds != null) ds.restartPool();
     }
 
     //get sql statement list

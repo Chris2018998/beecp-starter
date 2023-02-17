@@ -42,7 +42,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  * spring.datasource.redis-send-period=18000
  * spring.datasource.redis-read-period=18000
  *
- * spring.datasource.jsonToolClassName=cn.beecp.boot.datasource.util.JackSonTool
+ * spring.datasource.jsonToolClassName=cn.stone.boot.datasource.util.JackSonTool
  *
  * @author Chris.Liao
  */
@@ -61,8 +61,8 @@ public class DataSourceMonitorConfig {
     //*********************************sql trace config end***********************************************************//
 
     //*********************************monitor config begin **********************************************************//
-    private String monitorUserId;
-    private String monitorPassword;
+    private String monitorUserId = "admin";
+    private String monitorPassword = "admin";
     private String monitorLoggedInTagName = DataSourceMonitor.class.getName();
     //*********************************monitor config end************************************************************//
 
