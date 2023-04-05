@@ -16,7 +16,7 @@
 package cn.beecp.boot.datasource.monitor.redis;
 
 import cn.beecp.boot.datasource.statement.StatementTrace;
-import cn.beecp.pool.ConnectionPoolMonitorVo;
+import cn.beecp.BeeConnectionPoolMonitorVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 
 public class RedisPackage {
     private String packageUUID;
-    private List<ConnectionPoolMonitorVo> dsList;
+    private List<BeeConnectionPoolMonitorVo> dsList;
     private Collection<StatementTrace> sqlList;
 
     RedisPackage() {
@@ -47,11 +47,11 @@ public class RedisPackage {
         this.packageUUID = packageUUID;
     }
 
-    public List<ConnectionPoolMonitorVo> getDsList() {
+    public List<BeeConnectionPoolMonitorVo> getDsList() {
         return dsList;
     }
 
-    public void setDsList(List<ConnectionPoolMonitorVo> dsList) {
+    public void setDsList(List<BeeConnectionPoolMonitorVo> dsList) {
         this.dsList = dsList;
     }
 

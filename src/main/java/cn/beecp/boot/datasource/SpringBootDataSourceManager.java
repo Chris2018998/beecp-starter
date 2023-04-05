@@ -18,7 +18,7 @@ package cn.beecp.boot.datasource;
 import cn.beecp.boot.datasource.monitor.redis.RedisPushTask;
 import cn.beecp.boot.datasource.statement.StatementTrace;
 import cn.beecp.boot.datasource.statement.StatementTraceAlert;
-import cn.beecp.pool.ConnectionPoolMonitorVo;
+import cn.beecp.BeeConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
@@ -32,7 +32,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
-import static cn.beecp.pool.PoolStaticCenter.POOL_CLOSED;
 import static cn.beecp.pool.PoolStaticCenter.isBlank;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -42,6 +41,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * @author Chris.Liao
  */
 public class SpringBootDataSourceManager {
+    private static final int POOL_CLOSED = 3;
     private final static SpringBootDataSourceManager instance = new SpringBootDataSourceManager();
     private final Map<String, SpringBootDataSource> dsMap;
     private final ScheduledThreadPoolExecutor timerExecutor;
@@ -114,12 +114,12 @@ public class SpringBootDataSourceManager {
     }
 
     //get pool connection monitor
-    public List<ConnectionPoolMonitorVo> getPoolMonitorVoList() {
-        List<ConnectionPoolMonitorVo> poolMonitorVoList = new ArrayList<>(dsMap.size());
+    public List<BeeConnectionPoolMonitorVo> getPoolMonitorVoList() {
+        List<BeeConnectionPoolMonitorVo> poolMonitorVoList = new ArrayList<>(dsMap.size());
         Iterator<SpringBootDataSource> iterator = dsMap.values().iterator();
         while (iterator.hasNext()) {
             SpringBootDataSource ds = iterator.next();
-            ConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
+            BeeConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
             if (vo == null) continue;
             if (vo.getPoolState() == POOL_CLOSED) {//POOL_CLOSED
                 iterator.remove();

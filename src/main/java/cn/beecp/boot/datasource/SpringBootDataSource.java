@@ -15,10 +15,11 @@
  */
 package cn.beecp.boot.datasource;
 
+import cn.beecp.BeeConnectionPoolMonitorVo;
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.statement.StatementTraceUtil;
 import cn.beecp.jta.BeeJtaDataSource;
-import cn.beecp.pool.ConnectionPoolMonitorVo;
+import cn.beecp.pool.FastConnectionPoolMonitorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,10 +134,10 @@ public class SpringBootDataSource implements DataSource {
         }
     }
 
-    ConnectionPoolMonitorVo getPoolMonitorVo() {
+    BeeConnectionPoolMonitorVo getPoolMonitorVo() {
         if (poolMonitorVoMethod != null) {
             try {
-                ConnectionPoolMonitorVo vo = (ConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
+                BeeConnectionPoolMonitorVo vo = (BeeConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
                 if (notSetBeeDsId) setBeeDsIdToMonitorSingletonVo(vo);
                 return vo;
             } catch (Throwable e) {
@@ -146,16 +147,16 @@ public class SpringBootDataSource implements DataSource {
         return null;
     }
 
-    private synchronized void setBeeDsIdToMonitorSingletonVo(ConnectionPoolMonitorVo vo) {
+    private synchronized void setBeeDsIdToMonitorSingletonVo(BeeConnectionPoolMonitorVo vo) {
         setValueToField(vo, "dsId", dsId);
         setValueToField(vo, "dsUUID", dsUUID);
         notSetBeeDsId = false;
     }
 
-    private void setValueToField(ConnectionPoolMonitorVo vo, String fieldId, String value) {
+    private void setValueToField(BeeConnectionPoolMonitorVo vo, String fieldId, String value) {
         Field field = null;
         try {
-            Class monitorVoClass = ConnectionPoolMonitorVo.class;
+            Class monitorVoClass = FastConnectionPoolMonitorVo.class;
             field = monitorVoClass.getDeclaredField(fieldId);
             field.setAccessible(true);
             field.set(vo, value);
@@ -175,7 +176,7 @@ public class SpringBootDataSource implements DataSource {
                 Log.warn("DataSource method(getPoolMonitorVo) not found", e);
             }
             try {
-                poolRestartPoolMethod = dsClass.getMethod("restartPool", Boolean.TYPE);
+                poolRestartPoolMethod = dsClass.getMethod("clear", Boolean.TYPE);
             } catch (NoSuchMethodException e) {
                 Log.warn("DataSource method(clear) not found", e);
             }
