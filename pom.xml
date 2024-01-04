@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.chris2018998</groupId>
     <artifactId>beecp-spring-boot-starter</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
     <name>beecp-starter</name>
     <url>https://github.com/Chris2018998/BeeCP-Starter https://gitee.com/Chris2018998/BeeCP-Starter</url>
     <description>beecp starter on springboot</description>
@@ -47,7 +47,12 @@
         <dependency>
             <groupId>com.github.chris2018998</groupId>
             <artifactId>beecp</artifactId>
-            <version>3.4.2</version>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.1.1</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -62,11 +67,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>4.1.1</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
