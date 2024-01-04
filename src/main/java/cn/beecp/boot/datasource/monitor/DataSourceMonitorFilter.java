@@ -17,7 +17,7 @@ package cn.beecp.boot.datasource.monitor;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
-import cn.beecp.pool.ConnectionPoolStatics;
+import cn.beecp.pool.PoolStaticCenter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +53,7 @@ public class DataSourceMonitorFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (ConnectionPoolStatics.isBlank(userId)) {
+        if (PoolStaticCenter.isBlank(userId)) {
             chain.doFilter(req, res);
         } else {
             HttpServletRequest httpReq = (HttpServletRequest) req;

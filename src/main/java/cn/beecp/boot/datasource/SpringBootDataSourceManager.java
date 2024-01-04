@@ -32,7 +32,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.formatDate;
-import static cn.beecp.pool.ConnectionPoolStatics.isBlank;
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /*

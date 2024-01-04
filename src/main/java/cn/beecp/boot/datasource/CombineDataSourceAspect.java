@@ -23,7 +23,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 
-import static cn.beecp.pool.ConnectionPoolStatics.isBlank;
+import static cn.beecp.pool.PoolStaticCenter.isBlank;
 
 /*
  *  combine DataSource Aspect

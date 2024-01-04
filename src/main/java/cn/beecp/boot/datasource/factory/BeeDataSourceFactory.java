@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.getConfigValue;
-import static cn.beecp.pool.ConnectionPoolStatics.*;
+import static cn.beecp.pool.PoolStaticCenter.*;
 
 /*
  *  BeeDataSource Springboot Factory

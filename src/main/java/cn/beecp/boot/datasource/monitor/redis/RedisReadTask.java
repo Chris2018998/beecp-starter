@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.datasource.monitor.redis;
 
-import cn.beecp.pool.ConnectionPoolStatics;
+import cn.beecp.pool.PoolStaticCenter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -42,7 +42,7 @@ public class RedisReadTask extends RedisBaseTask {
             List<RedisPackage> redisPackageList = new LinkedList<>();
             for (String redisKey : jedis.keys(RedisKeyPrefix)) {
                 String monitorJson = jedis.get(redisKey);
-                if (!ConnectionPoolStatics.isBlank(monitorJson)) {
+                if (!PoolStaticCenter.isBlank(monitorJson)) {
                     redisPackageList.add(string2Object(monitorJson, RedisPackage.class));
                 }
             }
