@@ -17,7 +17,7 @@ package cn.beecp.boot.datasource.monitor;
 
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +37,7 @@ public class DataSourceMonitorFilter implements Filter {
     private final String loggedInTagName;
 
     private final String[] excludeUrls = {"/login", "/json", ".js", ".css", ".ico", ".jpg", ".png"};
-    private final String[] restUrls = {"/stone/login", "/stone/getSqlTraceList", "/stone/getDataSourceList", "/stone/clearDataSource"};
+    private final String[] restUrls = {"/beecp/login", "/beecp/getSqlTraceList", "/beecp/getDataSourceList", "/beecp/clearDataSource"};
 
     DataSourceMonitorFilter(String userId, String loggedInTagName) {
         this.userId = userId;
@@ -53,7 +53,7 @@ public class DataSourceMonitorFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (PoolStaticCenter.isBlank(userId)) {
+        if (ConnectionPoolStatics.isBlank(userId)) {
             chain.doFilter(req, res);
         } else {
             HttpServletRequest httpReq = (HttpServletRequest) req;
@@ -67,7 +67,7 @@ public class DataSourceMonitorFilter implements Filter {
                 SpringBootRestResponse restResponse = new SpringBootRestResponse(CODE_SECURITY, null, "unauthorized");
                 ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
             } else {
-                req.getRequestDispatcher("/stone/login.html").forward(req, res);
+                req.getRequestDispatcher("/beecp/login.html").forward(req, res);
             }
         }
     }

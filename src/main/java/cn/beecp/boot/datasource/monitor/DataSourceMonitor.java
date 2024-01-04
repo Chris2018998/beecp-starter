@@ -18,7 +18,7 @@ package cn.beecp.boot.datasource.monitor;
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +37,8 @@ import static cn.beecp.boot.datasource.SpringBootRestResponse.CODE_SUCCESS;
  */
 @Controller
 public class DataSourceMonitor {
-    private final static String CN_PAGE = "/stone/chinese.html";
-    private final static String EN_PAGE = "/stone/english.html";
+    private final static String CN_PAGE = "/beecp/chinese.html";
+    private final static String EN_PAGE = "/beecp/english.html";
     private final String userId;
     private final String password;
     private final String loggedInTagName;
@@ -58,7 +58,7 @@ public class DataSourceMonitor {
 
     @RequestMapping("/beecp")
     public String welcome1() {
-        return "redirect:/stone/";
+        return "redirect:/beecp/";
     }
 
     @RequestMapping("/beecp/")
@@ -94,7 +94,7 @@ public class DataSourceMonitor {
     public SpringBootRestResponse login(@RequestBody Map<String, String> paramMap) {
         if ("Y".equals(session.getAttribute(loggedInTagName)))//has logined
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
-        if (PoolStaticCenter.isBlank(userId))
+        if (ConnectionPoolStatics.isBlank(userId))
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
 
         try {

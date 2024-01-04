@@ -20,7 +20,7 @@ import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 
 import java.util.concurrent.TimeUnit;
 
-import static cn.beecp.pool.PoolStaticCenter.isBlank;
+import static cn.beecp.pool.ConnectionPoolStatics.isBlank;
 
 /*
  *  monitor config
@@ -42,7 +42,7 @@ import static cn.beecp.pool.PoolStaticCenter.isBlank;
  * spring.datasource.redis-send-period=18000
  * spring.datasource.redis-read-period=18000
  *
- * spring.datasource.jsonToolClassName=cn.stone.boot.datasource.util.JackSonTool
+ * spring.datasource.jsonToolClassName=cn.beecp.boot.datasource.util.JackSonTool
  *
  * @author Chris.Liao
  */

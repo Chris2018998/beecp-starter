@@ -17,7 +17,7 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.BeeDataSource;
 import cn.beecp.boot.datasource.factory.BeeDataSourceFactory;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +31,7 @@ import static cn.beecp.boot.datasource.SpringBootDataSourceUtil.*;
  * config example
  *
  * spring.datasource.dsId=beeDs
- * spring.datasource.type=cn.stone.BeeDataSource
+ * spring.datasource.type=cn.beecp.BeeDataSource
  * spring.datasource.username=root
  * spring.datasource.password=
  * spring.datasource.jdbcUrl=jdbc:mysql://localhost:3306/test
@@ -49,7 +49,7 @@ public class SingleDataSourceRegister {
     public DataSource beeDataSource(Environment environment) throws Exception {
         //1:read ds Id
         String dsId = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
-        if (PoolStaticCenter.isBlank(dsId)) dsId = "beeDataSource";//default ds Id
+        if (ConnectionPoolStatics.isBlank(dsId)) dsId = "beeDataSource";//default ds Id
 
         //2:read datasource monitor config
         DataSourceMonitorConfig dataSourceMonitorConfig = readMonitorConfig(environment);

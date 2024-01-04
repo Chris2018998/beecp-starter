@@ -72,7 +72,7 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             DataSourceMonitorFilter dsFilter = new DataSourceMonitorFilter(config.getMonitorUserId(), config.getMonitorLoggedInTagName());
             FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(dsFilter);
             registration.setName("beecpMonitorFilter");
-            registration.addUrlPatterns("/stone/*");
+            registration.addUrlPatterns("/beecp/*");
 
             GenericBeanDefinition define = new GenericBeanDefinition();
             define.setBeanClass(FilterRegistrationBean.class);
