@@ -20,7 +20,7 @@ import cn.beecp.boot.datasource.statement.StatementTraceAlert;
 
 import java.util.concurrent.TimeUnit;
 
-import static cn.beecp.pool.PoolStaticCenter.isBlank;
+import static cn.beecp.pool.ConnectionPoolStatics.isBlank;
 
 /*
  *  monitor config

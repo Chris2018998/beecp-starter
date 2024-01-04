@@ -18,7 +18,7 @@ package cn.beecp.boot.datasource.monitor;
 import cn.beecp.boot.datasource.SpringBootDataSourceManager;
 import cn.beecp.boot.datasource.SpringBootDataSourceUtil;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,7 +94,7 @@ public class DataSourceMonitor {
     public SpringBootRestResponse login(@RequestBody Map<String, String> paramMap) {
         if ("Y".equals(session.getAttribute(loggedInTagName)))//has logined
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
-        if (PoolStaticCenter.isBlank(userId))
+        if (ConnectionPoolStatics.isBlank(userId))
             return new SpringBootRestResponse(CODE_SUCCESS, null, "Login Success");
 
         try {

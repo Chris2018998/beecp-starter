@@ -41,12 +41,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static cn.beecp.pool.PoolStaticCenter.*;
+import static cn.beecp.pool.ConnectionPoolStatics.*;
 
 /*
  *  Spring Boot DataSource Util
  *
- *  @author Chris.Liao
+ *  @author Chris Liao
  */
 public class SpringBootDataSourceUtil {
     //Spring dataSource configuration prefix-key name

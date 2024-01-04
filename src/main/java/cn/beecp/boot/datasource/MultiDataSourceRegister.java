@@ -17,7 +17,7 @@ package cn.beecp.boot.datasource;
 
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.datasource.monitor.DataSourceMonitorRegister;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -99,13 +99,13 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
      */
     private List<String> getDsIdList(Environment environment, BeanDefinitionRegistry registry) {
         String dsIdsText = getConfigValue(Config_DS_Prefix, Config_DS_Id, environment);
-        if (PoolStaticCenter.isBlank(dsIdsText))
+        if (ConnectionPoolStatics.isBlank(dsIdsText))
             throw new SpringBootDataSourceException("Missed or not found config item:" + Config_DS_Prefix + "." + Config_DS_Id);
 
         String[] dsIds = dsIdsText.trim().split(",");
         ArrayList<String> dsIdList = new ArrayList<>(dsIds.length);
         for (String id : dsIds) {
-            if (PoolStaticCenter.isBlank(id)) continue;
+            if (ConnectionPoolStatics.isBlank(id)) continue;
 
             id = id.trim();
             if (dsIdList.contains(id))
@@ -135,13 +135,13 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
 
-        if (!PoolStaticCenter.isBlank(combineId)) {
+        if (!ConnectionPoolStatics.isBlank(combineId)) {
             if (dsIdList.contains(combineId))
                 throw new SpringBootDataSourceException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
             if (existsBeanDefinition(combineId, registry))
                 throw new SpringBootDataSourceException("Combine-dataSource id(" + combineId + ")has been registered by another bean");
 
-            if (PoolStaticCenter.isBlank(primaryDs))
+            if (ConnectionPoolStatics.isBlank(primaryDs))
                 throw new SpringBootDataSourceException("Missed or not found config item:" + Config_DS_Prefix + "." + Config_DS_Combine_PrimaryDs);
             if (!dsIdList.contains(primaryDs.trim()))
                 throw new SpringBootDataSourceException("Combine-primaryDs(" + primaryDs + "not found in ds-id list");
@@ -188,7 +188,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             registerDataSourceBean(ds, registry);
 
         //assembly combine DataSource
-        if (!PoolStaticCenter.isBlank(combineDsId) && !PoolStaticCenter.isBlank(primaryDsId)) {
+        if (!ConnectionPoolStatics.isBlank(combineDsId) && !ConnectionPoolStatics.isBlank(primaryDsId)) {
             ThreadLocal<SpringBootDataSource> dsThreadLocal = new ThreadLocal<>();
 
             GenericBeanDefinition define = new GenericBeanDefinition();
