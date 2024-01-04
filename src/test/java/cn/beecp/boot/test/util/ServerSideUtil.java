@@ -15,7 +15,7 @@
  */
 package cn.beecp.boot.test.util;
 
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -32,7 +32,7 @@ public class ServerSideUtil {
             e.printStackTrace();
             return "Failed";
         } finally {
-            PoolStaticCenter.oclose(con);
+            ConnectionPoolStatics.oclose(con);
         }
     }
 
@@ -61,10 +61,10 @@ public class ServerSideUtil {
             // e.printStackTrace();
             return "Failed";
         } finally {
-            PoolStaticCenter.oclose(st);
-            PoolStaticCenter.oclose(pst);
-            PoolStaticCenter.oclose(cst);
-            PoolStaticCenter.oclose(con);
+            ConnectionPoolStatics.oclose(st);
+            ConnectionPoolStatics.oclose(pst);
+            ConnectionPoolStatics.oclose(cst);
+            ConnectionPoolStatics.oclose(con);
         }
     }
 }

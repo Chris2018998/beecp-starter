@@ -21,7 +21,7 @@ import cn.beecp.boot.EnableMultiDs;
 import cn.beecp.boot.datasource.SpringBootRestResponse;
 import cn.beecp.boot.datasource.factory.SpringBootDataSourceException;
 import cn.beecp.boot.test.util.ServerSideUtil;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -56,7 +56,7 @@ public class MultiDsController {
     @GetMapping("/testGetConnection")
     public SpringBootRestResponse testGetConnection(String dsId) throws Exception {
         try {
-            if (PoolStaticCenter.isBlank(dsId))
+            if (ConnectionPoolStatics.isBlank(dsId))
                 throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
             if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
                 throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
@@ -71,13 +71,13 @@ public class MultiDsController {
     @GetMapping("/testSQL")
     public SpringBootRestResponse testSQL(String dsId, String sql, String type, String slowInd) throws Exception {
         try {
-            if (PoolStaticCenter.isBlank(dsId))
+            if (ConnectionPoolStatics.isBlank(dsId))
                 throw new SpringBootDataSourceException("DataSource Id cant't be null or empty");
             if (!"ds1".equals(dsId) && !"ds2".equals(dsId))
                 throw new SpringBootDataSourceException("DataSource Id must be one of list(ds1,ds2)");
-            if (PoolStaticCenter.isBlank(sql))
+            if (ConnectionPoolStatics.isBlank(sql))
                 throw new SpringBootDataSourceException("Execute SQL can't be null or empty");
-            if (PoolStaticCenter.isBlank(type))
+            if (ConnectionPoolStatics.isBlank(type))
                 throw new SpringBootDataSourceException("Execute type't be null or empty");
             if (!"Statement".equalsIgnoreCase(type) && !"PreparedStatement".equalsIgnoreCase(type) && !"CallableStatement".equalsIgnoreCase(type))
                 throw new SpringBootDataSourceException("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");

@@ -1,7 +1,7 @@
 package cn.beecp.boot.test.util;
 
 import cn.beecp.boot.datasource.SpringBootRestResponse;
-import cn.beecp.pool.PoolStaticCenter;
+import cn.beecp.pool.ConnectionPoolStatics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +134,7 @@ public class ClientSideUtil {
 
     private static <T> T string2Obj(String str, Class<T> clazz) {
         try {
-            if (PoolStaticCenter.isBlank(str) || clazz == null) {
+            if (ConnectionPoolStatics.isBlank(str) || clazz == null) {
                 return null;
             } else if (clazz.equals(String.class)) {
                 return (T) str;
