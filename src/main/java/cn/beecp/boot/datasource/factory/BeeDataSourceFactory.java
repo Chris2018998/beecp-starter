@@ -52,11 +52,29 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         }
     }
 
+    private static void setSqlExceptionFatalConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+        String sqlExceptionCode = getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_CODE, environment);
+        String sqlExceptionState = getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_STATE, environment);
+
+        if (!isBlank(sqlExceptionCode)) {
+            for (String code : sqlExceptionCode.trim().split(",")) {
+                config.addSqlExceptionCode(Integer.parseInt(code));
+            }
+        }
+
+        if (!isBlank(sqlExceptionState)) {
+            for (String state : sqlExceptionState.trim().split(",")) {
+                config.addSqlExceptionState(state);
+            }
+        }
+    }
+
     public DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception {
         //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
         SpringBootDataSourceUtil.setConfigPropertiesValue(config, dsPrefix, dsId, environment);
         setConnectPropertiesConfig(config, dsPrefix, environment);
+        setSqlExceptionFatalConfig(config, dsPrefix, environment);
 
         //2:try to lookup TransactionManager by jndi
         TransactionManager tm = null;
