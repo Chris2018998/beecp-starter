@@ -17,7 +17,7 @@ Maven坐标(Java8)
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.7.5</version>
+   <version>1.8.0</version>
 </dependency>
 ```
 
@@ -98,7 +98,7 @@ spring.datasource.xxx=value
 	
 <i>xxx代指数据源的配置属性名,更多属性请参照小蜜蜂连接属性列表</i>
  
-完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsDemo_JPA.rar
+完整参考代码: https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/SingleDsDemo_JPA.zip
 
 
 ## :tractor: 多源例子
@@ -130,4 +130,4 @@ spring.datasource.ds3.password=root
 spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test
 spring.datasource.ds3.driverClassName=com.mysql.cj.jdbc.Driver
 ```
-完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsDemo_JPA.rar
+完整参考代码：https://github.com/Chris2018998/BeeCP-Starter/blob/master/doc/MutilDsDemo_JPA.zip
