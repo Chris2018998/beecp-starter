@@ -18,6 +18,7 @@ package org.stone.beecp.springboot.factory;
 import org.springframework.core.env.Environment;
 import org.stone.beecp.BeeDataSource;
 import org.stone.beecp.BeeDataSourceConfig;
+import org.stone.beecp.BeeDataSourceConfigException;
 import org.stone.beecp.jta.BeeJtaDataSource;
 import org.stone.beecp.springboot.SpringBootDataSourceUtil;
 
@@ -58,7 +59,11 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
         if (!isBlank(sqlExceptionCode)) {
             for (String code : sqlExceptionCode.trim().split(",")) {
-                config.addSqlExceptionCode(Integer.parseInt(code));
+                try {
+                    config.addSqlExceptionCode(Integer.parseInt(code));
+                } catch (NumberFormatException e) {
+                    throw new BeeDataSourceConfigException(code + " is not a valid SQLException error code");
+                }
             }
         }
 
