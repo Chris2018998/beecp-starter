@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.beecp.boot.datasource.SingleDataSourceRegister
