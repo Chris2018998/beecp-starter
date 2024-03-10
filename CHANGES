@@ -1,0 +1,7 @@
+beecp-spring-boot-starter changes
+
+Changes in 4.0.0
+
+* change top level folder from cn to org.stone
+* upgrade beecp ver to 4.0.0
+ 
