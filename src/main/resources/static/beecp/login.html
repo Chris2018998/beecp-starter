@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>monitor login</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7fafc;
+        }
+
+        .wrapper {
+            margin: 0 auto;
+            width: 884px;
+        }
+
+        .loginBox {
+            background-color: #F0F4F6;
+            /*上divcolor*/
+            border: 1px solid #BfD6E1;
+            border-radius: 5px;
+            color: #444;
+            font: 14px 'Microsoft YaHei', '微软雅黑';
+            margin: 0 auto;
+            width: 388px
+        }
+
+        .loginBox .loginBoxCenter {
+            border-bottom: 1px solid #DDE0E8;
+            padding: 24px;
+        }
+
+        .loginBox .loginBoxCenter p {
+            margin-bottom: 10px
+        }
+
+        .loginBox .loginHead {
+            border-top: 0px solid #FFF;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            font: 30px 'Microsoft YaHei', '微软雅黑';
+            line-height: 28px;
+            overflow: hidden;
+            padding: 20px 24px;
+            text-align: center;
+            vertical-align: center;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+        }
+
+        .loginBox .loginBoxButtons {
+            /*background-color: #F0F4F6;*/
+            /*下divcolor*/
+            border-top: 0px solid #FFF;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            line-height: 28px;
+            overflow: hidden;
+            padding: 20px 24px;
+            vertical-align: center;
+            filter: alpha(Opacity=80);
+            -moz-opacity: 0.5;
+            opacity: 0.5;
+        }
+
+        .loginBox .loginInput {
+            border: 1px solid #D2D9dC;
+            border-radius: 2px;
+            color: #444;
+            font: 12px 'Microsoft YaHei', '微软雅黑';
+            padding: 8px 14px;
+            margin-bottom: 8px;
+            width: 310px;
+        }
+
+        .loginBox .loginInput:FOCUS {
+            border: 1px solid #B7D4EA;
+            box-shadow: 0 0 8px #B7D4EA;
+        }
+
+        .loginBox .loginBtn {
+            background-image: -moz-linear-gradient(to bottom, blue, #85CFEE);
+            border: 1px solid #98CCE7;
+            border-radius: 20px;
+            box-shadow: inset rgba(255, 255, 255, 0.6) 0 1px 1px, rgba(0, 0, 0, 0.1) 0 1px 1px;
+            color: #444;
+            /*登录*/
+            cursor: pointer;
+            float: right;
+            font: bold 13px Arial;
+            padding: 10px 50px;
+        }
+
+        .loginBox .loginBtn:HOVER {
+            background-image: -moz-linear-gradient(to top, blue, #85CFEE);
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="loginBox">
+        <div class="loginHead">
+            <label id="titleLable">BeeCP Monitor</label>
+        </div>
+        <div class="loginBoxCenter">
+            <p><label id="userIdLable">UserId：</label></p>
+            <p><input autocomplete="off" autofocus="autofocus" class="loginInput" id="userId" maxlength="50"
+                      name="userId"
+                      required="required" type="text"/></p>
+            <p><label id="passwordLable">Password：</label></p>
+            <p><input class="loginInput" id="password" maxlength="50" name="password" type="password"/></p>
+			
+			<p>
+			    <label id="languageLable">Language：</label>
+				<select id="language" autocomplete="off" onchange="languageChanged(this)">
+					<option value="en" selected>English</option>
+					<option value="cn">中文</option>
+				</select>
+			</p>
+        </div>
+        <div class="loginBoxButtons">
+            <input type="button" class="loginBtn" id="loginButton" onclick="login()" value="Login"/>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function getContextPath() {
+        var webFullPath = window.document.location.href;
+        var strPath = window.document.location.pathname;
+        var pos = webFullPath.indexOf(strPath);
+        var webHostPath = webFullPath.substring(0, pos);
+        var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
+        return (webHostPath + projectName);
+    }
+
+    function createXMLHttpRequest() {
+        if (window.XMLHttpRequest) {
+            return (new XMLHttpRequest());
+        } else {
+            var arr_t = ["MSXML2.XMLHTTP.4.0",
+                "MSXML2.XMLHTTP.3.0",
+                "MSXML2.XMLHTTP.2.6",
+                "MSXML2.XMLHTTP",
+                "Microsoft.XMLHTTP",
+                "MSXML.XMLHTTP"];
+            for (var i = 0; i < arr_t.length; i++) {
+                try {
+                    xmlhttp_ver = arr_t[i];
+                    return new ActiveXObject(arr_t[i]);
+                } catch (e) {
+                }
+            }
+        }
+        return null;
+    }
+
+    function languageChanged(language) {
+        if(language.value=='cn'){
+            document.getElementById("titleLable").innerHTML="BeeCP监控";
+            document.getElementById("userIdLable").innerHTML="用户：";
+            document.getElementById("passwordLable").innerHTML="密码：";
+            document.getElementById("languageLable").innerHTML="语言：";
+            document.getElementById("loginButton").value="登陆";
+        }else{
+            document.getElementById("titleLable").innerHTML="BeeCP Monitor";
+            document.getElementById("userIdLable").innerHTML="UserId：";
+            document.getElementById("passwordLable").innerHTML="Password：";
+            document.getElementById("languageLable").innerHTML="Language：";
+            document.getElementById("loginButton").value="Login";
+        }
+    }
+
+    function login() {
+        var inputUserId = document.getElementById("userId").value;
+        var inputPassword = document.getElementById("password").value;
+        if (inputUserId == "") {
+            alert("UserId can't be null");
+            return;
+        }
+        var data = {userId: inputUserId, password: inputPassword};
+        var contextPath = getContextPath();
+        var loginURL = contextPath + '/beecp/login';
+
+        var xmlHttp = createXMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var result =JSON.parse(this.responseText)
+                if (result.code==1) {
+					var language = document.getElementById("language").value;
+					if(language=='en'){
+                        alert("Login success");
+					    window.location.href = contextPath + "/beecp/english.html";
+					}else{
+						alert("登陆成功");
+						window.location.href = contextPath + "/beecp/chinese.html";
+					}
+                    window.event.returnValue = false;
+                } else {
+                    alert("Error userId or password");
+                }
+            }
+        };
+
+        xmlHttp.open("POST", loginURL, true);
+        xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlHttp.send(JSON.stringify(data));
+    }
+</script>
+</body>
+</html>
