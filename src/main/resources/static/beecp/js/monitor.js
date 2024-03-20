@@ -171,12 +171,10 @@ $(function() {
     };
 
     function getContextPath() {
-        var webFullPath = window.document.location.href;
-        var strPath = window.document.location.pathname;
-        var pos = webFullPath.indexOf(strPath);
-        var webHostPath = webFullPath.substring(0, pos);
-        var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
-        return (webHostPath + projectName);
+        var suffix ="beecp/";
+        var path = window.location.href;
+        var index = path.lastIndexOf(suffix);
+        return path.substring(0, index);//remove 'beecp/' suffix
     }
 
     function afterLoadSqlTraceList(data) { //after get result from server
