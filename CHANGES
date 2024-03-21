@@ -1,5 +1,11 @@
 beecp-spring-boot-starter changes
 
+Changes in 1.8.1
+
+* upgrade beecp to 4.0.1
+* fix web path parse error
+
+
 Changes in 1.8.0
 
 * change top level folder from cn to org.stone
