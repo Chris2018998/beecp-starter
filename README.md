@@ -41,16 +41,16 @@ Maven坐标(Java8)
 ### :capital_abcd: dsId
 数据源Id,作为BeanId注册进Spring容器，在多源（@EnableMultiDataSource）时可以配置多个，用逗号隔开例如：ds1,ds2
 ### :1234: type
-数据源类名，如果不填写则默认为：cn.beecp.BeeDataSource,此项配置可用于支持其他数据源
+数据源类名，如果不填写则默认为：org.stone.beecp.BeeDataSource,此项配置可用于支持其他数据源
 #### :capital_abcd: primary
 是否注册为默认数据标记
 ### :1234: jndiName
 数据源Jndi名，数据源来自部署容器本身，此项配置与type配置互斥
 :sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP/blob/master/README_ZH.md">BeeCP</a>属性清单*
 ## :book: 监控项配置 
-### :capital_abcd: spring.datasource.monitorUserId
+### :capital_abcd: spring.datasource.consoleUserId
 监控登陆用户Id，此项不配置则表示无需登陆
-### :1234: spring.datasource.monitorPassword
+### :1234: spring.datasource.consolePassword
 监控登陆用户口令
 ### :capital_abcd: spring.datasource.sql-trace
 sql执行监控开关，true则表示打开
@@ -66,7 +66,7 @@ sql处于监控池的最大时间，单位：毫秒
 ### :capital_abcd: spring.datasource.sql-trace-timeout-scan-period
 sql监控池定时扫描间隔时间，在池中时间大于sql-trace-timeout则被清理，单位：毫秒
 ### :1234: spring.datasource.sql-exec-alert-action
-sql执行预警触发类名（需要扩展类：cn.beecp.boot.datasource.statement.StatementTraceAlert），低效与错误sql触发
+sql执行预警触发类名（需要扩展类：org.stone.beecp.springboot.statement.StatementTraceAlert），低效与错误sql触发
 
 ## :point_right: 参考例子
 ```yml
@@ -76,7 +76,7 @@ spring.datasource.sql-trace-max-size=100              #SQL执行跟踪的个数
 spring.datasource.sql-trace-timeout=60000             #SQL执行跟踪最大时间 （毫秒） 
 spring.datasource.sql-exec-slow-time=5000             #SQL执行时间警告值（毫秒） 
 spring.datasource.sql-trace-timeout-scan-period=18000 #SQL执行跟踪扫描时间 （毫秒）
-spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：cn.beecp.boot.datasource.statement.StatementTraceAlert)
+spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值类名（需要扩展类：org.stone.beecp.springboot.statement.StatementTraceAlert)
 
 ```
 
@@ -84,7 +84,7 @@ spring.datasource.sql-exec-alert-action=xxxxx         #SQL执行时间预警值�
 若不启用@EnableMultiDataSource标签，启动器则自动尝试装载单源，前提系统ClassPath中存在小蜜蜂数据源类，适用于单一数据源的情况,参考配置如下
 
 ```yml
-spring.datasource.type=cn.beecp.BeeDataSource
+spring.datasource.type=orgs.stone.beecp.BeeDataSource
 spring.datasource.poolName=BeeCP1
 spring.datasource.username=root
 spring.datasource.password=
