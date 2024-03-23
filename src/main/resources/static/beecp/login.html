@@ -122,17 +122,17 @@
                       required="required" type="text"/></p>
             <p><label id="passwordLable">Password：</label></p>
             <p><input class="loginInput" id="password" maxlength="50" name="password" type="password"/></p>
-			
-			<p>
-			    <label id="languageLable">Language：</label>
-				<select id="language" autocomplete="off" onchange="languageChanged(this)">
-					<option value="en" selected>English</option>
-					<option value="cn">中文</option>
-				</select>
-			</p>
+
+            <p>
+                <label id="languageLable">Language：</label>
+                <select autocomplete="off" id="language" onchange="languageChanged(this.value)">
+                    <option selected value="en">English</option>
+                    <option value="cn">中文</option>
+                </select>
+            </p>
         </div>
         <div class="loginBoxButtons">
-            <input type="button" class="loginBtn" id="loginButton" onclick="login()" value="Login"/>
+            <input class="loginBtn" id="loginButton" onclick="login()" type="button" value="Login"/>
         </div>
     </div>
 </div>
@@ -168,18 +168,18 @@
     }
 
     function languageChanged(language) {
-        if(language.value=='cn'){
-            document.getElementById("titleLable").innerHTML="BeeCP监控";
-            document.getElementById("userIdLable").innerHTML="用户：";
-            document.getElementById("passwordLable").innerHTML="密码：";
-            document.getElementById("languageLable").innerHTML="语言：";
-            document.getElementById("loginButton").value="登陆";
-        }else{
-            document.getElementById("titleLable").innerHTML="BeeCP Monitor";
-            document.getElementById("userIdLable").innerHTML="UserId：";
-            document.getElementById("passwordLable").innerHTML="Password：";
-            document.getElementById("languageLable").innerHTML="Language：";
-            document.getElementById("loginButton").value="Login";
+        if (language == 'cn') {
+            document.getElementById("titleLable").innerHTML = "BeeCP监控";
+            document.getElementById("userIdLable").innerHTML = "用户：";
+            document.getElementById("passwordLable").innerHTML = "密码：";
+            document.getElementById("languageLable").innerHTML = "语言：";
+            document.getElementById("loginButton").value = "登录";
+        } else {
+            document.getElementById("titleLable").innerHTML = "BeeCP Monitor";
+            document.getElementById("userIdLable").innerHTML = "UserId：";
+            document.getElementById("passwordLable").innerHTML = "Password：";
+            document.getElementById("languageLable").innerHTML = "Language：";
+            document.getElementById("loginButton").value = "Login";
         }
     }
 
@@ -197,16 +197,16 @@
         var xmlHttp = createXMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var result =JSON.parse(this.responseText)
-                if (result.code==1) {
-					var language = document.getElementById("language").value;
-					if(language=='en'){
-                        alert("Login success");
-					    window.location.href = contextPath + "/beecp/english.html";
-					}else{
-						alert("登陆成功");
-						window.location.href = contextPath + "/beecp/chinese.html";
-					}
+                var result = JSON.parse(this.responseText);
+                if (result.code == 1) {
+                    var language = document.getElementById("language").value;
+                    if (language == 'en') {
+                        //alert("Login success");
+                        window.location.href = contextPath + "/beecp/english.html";
+                    } else {
+                        //alert("登陆成功");
+                        window.location.href = contextPath + "/beecp/chinese.html";
+                    }
                     window.event.returnValue = false;
                 } else {
                     alert("Error userId or password");
@@ -217,6 +217,15 @@
         xmlHttp.open("POST", loginURL, true);
         xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlHttp.send(JSON.stringify(data));
+    }
+
+    var browserLanguage = navigator.language || navigator.userLanguage;
+    if (browserLanguage.indexOf('zh') > -1) {
+        document.getElementById("language").value = "cn";
+        languageChanged("cn");
+    } else {
+        document.getElementById("language").value = "en";
+        languageChanged("en");
     }
 </script>
 </body>
