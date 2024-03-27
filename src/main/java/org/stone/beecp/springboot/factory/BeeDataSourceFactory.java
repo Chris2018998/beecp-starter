@@ -43,7 +43,7 @@ import static org.stone.tools.CommonUtil.isBlank;
  */
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
-    private static void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+    private void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
         config.addConnectProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
         String connectPropertiesCount = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
         if (!isBlank(connectPropertiesCount)) {
@@ -53,7 +53,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         }
     }
 
-    private static void setSqlExceptionFatalConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+    private void setSqlExceptionFatalConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
         String sqlExceptionCode = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_CODE, environment);
         String sqlExceptionState = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_STATE, environment);
 
@@ -74,12 +74,23 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         }
     }
 
+    private void setConfigPrintExclusionList(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
+        String exclusionListText =  SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONFIG_PRINT_EXCLUSION_LIST, environment);
+        if (!isBlank(exclusionListText)) {
+            config.clearAllConfigPrintExclusion();//remove existed exclusion
+            for (String exclusion : exclusionListText.trim().split(",")) {
+                config.addConfigPrintExclusion(exclusion);
+            }
+        }
+    }
+
     public DataSource createDataSource(String dsPrefix, String dsId, Environment environment) throws Exception {
         //1:read spring configuration and inject to datasource's config object
         BeeDataSourceConfig config = new BeeDataSourceConfig();
         SpringBootDataSourceUtil.setConfigPropertiesValue(config, dsPrefix, dsId, environment);
         setConnectPropertiesConfig(config, dsPrefix, environment);
         setSqlExceptionFatalConfig(config, dsPrefix, environment);
+        setConfigPrintExclusionList(config, dsPrefix, environment);
 
         //2:try to lookup TransactionManager by jndi
         TransactionManager tm = null;
