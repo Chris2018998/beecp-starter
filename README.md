@@ -1,6 +1,6 @@
 ![图片](https://user-images.githubusercontent.com/32663325/154847136-10e241ae-af4c-478a-a608-aaa685e0464b.png)
 <p align="left">
- <a><img src="https://img.shields.io/badge/JDK-1.8+-green.svg"></a>
+ <a><img src="https://img.shields.io/badge/JDK-8+-green.svg"></a>
  <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
  <a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
  <a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
@@ -12,12 +12,12 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 [*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou动态数据源启动器(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
 
 ## :arrow_down: 下载 
-Maven坐标(Java8)
+Maven坐标
 ```xml
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.8.1</version>
+   <version>1.8.2</version>
 </dependency>
 ```
 
