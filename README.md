@@ -1,6 +1,6 @@
 ![图片](https://user-images.githubusercontent.com/32663325/154847136-10e241ae-af4c-478a-a608-aaa685e0464b.png)
 <p align="left">
- <a><img src="https://img.shields.io/badge/JDK-8+-green.svg"></a>
+ <a><img src="https://img.shields.io/badge/Java-8+-green.svg"></a>
  <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
  <a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
  <a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
