@@ -15,6 +15,8 @@
  */
 package org.stone.beecp.springboot.annotation;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.stone.beecp.springboot.MultiDataSourceRegister;
 
@@ -29,5 +31,6 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Import(value = {MultiDataSourceRegister.class})
+@AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public @interface EnableMultiDs {
 }
