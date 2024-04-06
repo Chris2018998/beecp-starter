@@ -6,8 +6,6 @@ Changes in 1.8.3
 * 优化多数据源注解（@EnableMultiDs），移除其导入位置必须在@SpringBootApplication之前的硬性要求
 
 
-更新beecp-starter版本到1.8.3
-
 Changes in 1.8.2
 
 * 升级 beecp 到 4.0.2
