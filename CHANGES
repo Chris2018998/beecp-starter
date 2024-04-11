@@ -1,5 +1,10 @@
 beecp-spring-boot-starter changes
 
+
+Changes in 1.8.4
+
+* 部分配置项打印排除（url,username,password）
+
 Changes in 1.8.3
 
 * 升级 beecp 到 4.0.3
