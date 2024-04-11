@@ -35,10 +35,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.stone.beecp.pool.ConnectionPoolStatics.*;
@@ -70,6 +67,7 @@ public class SpringBootDataSourceUtil {
     private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
     private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
+    private static final List<String> DefaultExclusionList = Arrays.asList("username", "password", "url", "jdbcUrl", "jdbc-url", "jdbc_url");
     private static SpringBootJsonTool jsonTool;
     //***************************************************************************************************************//
     //                                1: spring assembly or base (3)                                                //
@@ -241,24 +239,28 @@ public class SpringBootDataSourceUtil {
     }
 
     public static String getConfigValue(String dsPrefix, final String propertyName, Environment environment) {
-        String value = readConfig(environment, dsPrefix + "." + propertyName);
+        String value = readConfig(environment, dsPrefix, propertyName);
         if (value != null) return value;
 
         String newPropertyName = propertyName.substring(0, 1).toLowerCase(Locale.US) + propertyName.substring(1);
-        value = readConfig(environment, dsPrefix + "." + newPropertyName);
+        value = readConfig(environment, dsPrefix, newPropertyName);
         if (value != null) return value;
 
-        value = readConfig(environment, dsPrefix + "." + propertyNameToFieldId(newPropertyName, Separator_MiddleLine));
+        value = readConfig(environment, dsPrefix, propertyNameToFieldId(newPropertyName, Separator_MiddleLine));
         if (value != null) return value;
 
-        return readConfig(environment, dsPrefix + "." + propertyNameToFieldId(newPropertyName, Separator_UnderLine));
+        return readConfig(environment, dsPrefix, propertyNameToFieldId(newPropertyName, Separator_UnderLine));
     }
 
-    private static String readConfig(Environment environment, String key) {
-        String value = environment.getProperty(key);
+    private static String readConfig(Environment environment, String dsPrefix, String key) {
+        String value = environment.getProperty(dsPrefix + "." + key);
         if (!isBlank(value)) {
             value = value.trim();
-            log.info("{}={}", key, value);
+            if (DefaultExclusionList.contains(key)) {
+                log.debug("{}={}", key, value);
+            } else {
+                log.info("{}={}", key, value);
+            }
         }
         return value;
     }
