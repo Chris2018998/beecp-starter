@@ -67,8 +67,11 @@ public class SpringBootDataSourceUtil {
     private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
     private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
-    private static final List<String> DefaultExclusionList = Arrays.asList("username", "password", "url", "jdbcUrl", "jdbc-url", "jdbc_url");
     private static SpringBootJsonTool jsonTool;
+    private static final List<String> DefaultExclusionList = Arrays.asList("username", "password", "url", "jdbcUrl", "jdbc-url", "jdbc_url",
+            "consoleUserId","consolePassword","console-userId","console-password","console_userId","console_password",
+            "console-user-id","console_user_id");
+
     //***************************************************************************************************************//
     //                                1: spring assembly or base (3)                                                //
     //***************************************************************************************************************//
