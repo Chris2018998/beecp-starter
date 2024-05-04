@@ -15,18 +15,17 @@
  */
 package org.stone.beecp.springboot.test.controller;
 
-import org.stone.beecp.springboot.annotation.DsId;
-import org.stone.beecp.springboot.annotation.EnableDsMonitor;
-import org.stone.beecp.springboot.annotation.EnableMultiDs;
-import org.stone.beecp.springboot.SpringBootRestResponse;
-import org.stone.beecp.springboot.factory.SpringBootDataSourceException;
-import org.stone.beecp.springboot.test.util.ServerSideUtil;
-import org.stone.beecp.pool.ConnectionPoolStatics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.stone.beecp.springboot.SpringBootRestResponse;
+import org.stone.beecp.springboot.annotation.DsId;
+import org.stone.beecp.springboot.annotation.EnableDsMonitor;
+import org.stone.beecp.springboot.annotation.EnableMultiDs;
+import org.stone.beecp.springboot.factory.SpringBootDataSourceException;
+import org.stone.beecp.springboot.test.util.ServerSideUtil;
 
 import javax.sql.DataSource;
 

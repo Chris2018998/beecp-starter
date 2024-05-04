@@ -15,7 +15,6 @@
  */
 package org.stone.beecp.springboot.test;
 
-import org.stone.beecp.springboot.test.controller.MultiDsController;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -30,6 +29,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.stone.beecp.springboot.test.controller.MultiDsController;
 import org.stone.beecp.springboot.test.util.ClientSideUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,11 +38,11 @@ import org.stone.beecp.springboot.test.util.ClientSideUtil;
 @WebAppConfiguration
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestPropConfig {
+    private final String connTakeTestURL = "/testGetConnection";
+    private final String executeSQLUrl = "/testSQL";
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
-    private String connTakeTestURL = "/testGetConnection";
-    private String executeSQLUrl = "/testSQL";
 
     @Before
     public void setUp() {

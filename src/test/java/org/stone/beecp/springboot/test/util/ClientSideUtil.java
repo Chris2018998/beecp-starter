@@ -1,7 +1,5 @@
 package org.stone.beecp.springboot.test.util;
 
-import org.stone.beecp.springboot.SpringBootRestResponse;
-import org.stone.beecp.pool.ConnectionPoolStatics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +9,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.stone.beecp.springboot.SpringBootRestResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -129,7 +128,7 @@ public class ClientSideUtil {
         System.out.println("Json Response:" + responseMessage);
 
         SpringBootRestResponse restResponse = string2Obj(responseMessage, SpringBootRestResponse.class);
-        if (restResponse.getCode()== SpringBootRestResponse.CODE_FAILED)
+        if (restResponse.getCode() == SpringBootRestResponse.CODE_FAILED)
             throw new Exception(restResponse.getMessage());
         return restResponse.getResult();
     }
