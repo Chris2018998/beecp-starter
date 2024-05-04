@@ -32,7 +32,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
  * DataSource Manager
@@ -89,7 +89,7 @@ public class SpringBootDataSourceManager {
             timerExecutor.scheduleAtFixedRate(new SqlTraceTimeoutTask(), 0, config.getSqlTraceTimeoutScanPeriod(), MILLISECONDS);
 
             String redisHost = config.getRedisHost();
-            if (!isBlank(redisHost)) {//send datasource info to redis
+            if (isNotBlank(redisHost)) {//send datasource info to redis
                 JedisPoolConfig redisConfig = new JedisPoolConfig();
                 redisConfig.setMinIdle(0);
                 redisConfig.setMaxTotal(1);
@@ -197,7 +197,7 @@ public class SpringBootDataSourceManager {
     }
 
     private static final class SqlTraceTimeoutTask implements Runnable {
-        private LinkedList<StatementTrace> sqlAlertTempList = new LinkedList<>();
+        private final LinkedList<StatementTrace> sqlAlertTempList = new LinkedList<>();
 
         public void run() {// check idle connection
             instance.removeTimeoutTrace(sqlAlertTempList);

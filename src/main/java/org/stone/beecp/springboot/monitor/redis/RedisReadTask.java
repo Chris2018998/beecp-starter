@@ -22,7 +22,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /**
  * Redis read task
@@ -42,7 +42,7 @@ public class RedisReadTask extends RedisBaseTask {
             List<RedisPackage> redisPackageList = new LinkedList<>();
             for (String redisKey : jedis.keys(RedisKeyPrefix)) {
                 String monitorJson = jedis.get(redisKey);
-                if (!isBlank(monitorJson)) {
+                if (isNotBlank(monitorJson)) {
                     redisPackageList.add(SpringBootDataSourceUtil.string2Object(monitorJson, RedisPackage.class));
                 }
             }

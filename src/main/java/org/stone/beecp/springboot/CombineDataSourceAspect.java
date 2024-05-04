@@ -24,6 +24,7 @@ import org.springframework.core.annotation.Order;
 import org.stone.beecp.springboot.annotation.DsId;
 
 import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 
 /*
@@ -60,7 +61,7 @@ public class CombineDataSourceAspect {
             dsThreadLocal.set(SpringBootDataSourceManager.getInstance().getSpringBootDataSource(dsId));
             return joinPoint.proceed();
         } finally {
-            if (!isBlank(dsId)) dsThreadLocal.remove();
+            if (isNotBlank(dsId)) dsThreadLocal.remove();
         }
     }
     //***************************************************************************************************************//

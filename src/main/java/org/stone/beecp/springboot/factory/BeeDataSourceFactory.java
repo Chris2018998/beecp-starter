@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 import static org.stone.beecp.pool.ConnectionPoolStatics.*;
-import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
  *  BeeDataSource Springboot Factory
@@ -46,7 +46,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
     private void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
         config.addConnectProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
         String connectPropertiesCount = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
-        if (!isBlank(connectPropertiesCount)) {
+        if (isNotBlank(connectPropertiesCount)) {
             int count = Integer.parseInt(connectPropertiesCount.trim());
             for (int i = 1; i <= count; i++)
                 config.addConnectProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i, environment));
@@ -57,7 +57,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         String sqlExceptionCode = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_CODE, environment);
         String sqlExceptionState = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_SQL_EXCEPTION_STATE, environment);
 
-        if (!isBlank(sqlExceptionCode)) {
+        if (isNotBlank(sqlExceptionCode)) {
             for (String code : sqlExceptionCode.trim().split(",")) {
                 try {
                     config.addSqlExceptionCode(Integer.parseInt(code));
@@ -67,7 +67,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
             }
         }
 
-        if (!isBlank(sqlExceptionState)) {
+        if (isNotBlank(sqlExceptionState)) {
             for (String state : sqlExceptionState.trim().split(",")) {
                 config.addSqlExceptionState(state);
             }
@@ -75,8 +75,8 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
     }
 
     private void setConfigPrintExclusionList(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
-        String exclusionListText =  SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONFIG_PRINT_EXCLUSION_LIST, environment);
-        if (!isBlank(exclusionListText)) {
+        String exclusionListText = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONFIG_PRINT_EXCLUSION_LIST, environment);
+        if (isNotBlank(exclusionListText)) {
             config.clearAllConfigPrintExclusion();//remove existed exclusion
             for (String exclusion : exclusionListText.trim().split(",")) {
                 config.addConfigPrintExclusion(exclusion);
@@ -95,7 +95,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         //2:try to lookup TransactionManager by jndi
         TransactionManager tm = null;
         String tmJndiName = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_TM_JNDI, environment);
-        if (!isBlank(tmJndiName)) {
+        if (isNotBlank(tmJndiName)) {
             Context nameCtx = new InitialContext();
             tm = (TransactionManager) nameCtx.lookup(tmJndiName);
         }

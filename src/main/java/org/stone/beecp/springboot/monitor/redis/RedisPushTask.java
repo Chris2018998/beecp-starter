@@ -36,7 +36,7 @@ public class RedisPushTask extends RedisBaseTask {
     public RedisPushTask(JedisPool pool, int expireSeconds) {
         super(pool);
         this.expireSeconds = expireSeconds;
-        this.dataPackage = new RedisPackage(RedisKeyPrefix + UUID.randomUUID().toString());
+        this.dataPackage = new RedisPackage(RedisKeyPrefix + UUID.randomUUID());
     }
 
     public void run() {

@@ -20,7 +20,7 @@ import org.stone.beecp.springboot.statement.StatementTraceAlert;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
  *  monitor config
@@ -160,7 +160,7 @@ public class DataSourceMonitorConfig {
     }
 
     public void setMonitorLoggedInTagName(String monitorLoggedInTagName) {
-        if (!isBlank(monitorLoggedInTagName))
+        if (isNotBlank(monitorLoggedInTagName))
             this.monitorLoggedInTagName = monitorLoggedInTagName;
     }
 

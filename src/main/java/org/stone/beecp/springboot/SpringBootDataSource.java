@@ -58,7 +58,7 @@ public class SpringBootDataSource implements DataSource {
 
         this.isBeeDs = ds instanceof BeeDataSource || ds instanceof BeeJtaDataSource;
         if (isBeeDs) readBeeDsMethods();
-        this.dsUUID = "SpringDs_" + UUID.randomUUID().toString();
+        this.dsUUID = "SpringDs_" + UUID.randomUUID();
     }
 
     String getDsId() {

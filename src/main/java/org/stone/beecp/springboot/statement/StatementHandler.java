@@ -31,7 +31,7 @@ class StatementHandler implements InvocationHandler {
     private final Statement statement;
     private final String statementType;
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
-    private StatementTrace traceVo;
+    private final StatementTrace traceVo;
 
     StatementHandler(Statement statement, String statementType, String dsId, String dsUUID, StatementTrace traceVo) {
         this.dsId = dsId;

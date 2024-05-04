@@ -30,6 +30,7 @@ import java.util.*;
 
 import static org.stone.beecp.springboot.SpringBootDataSourceUtil.*;
 import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
  *  SpringBoot dataSource config example
@@ -135,7 +136,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         combineId = (combineId == null) ? "" : combineId;
         primaryDs = (primaryDs == null) ? "" : primaryDs;
 
-        if (!isBlank(combineId)) {
+        if (isNotBlank(combineId)) {
             if (dsIdList.contains(combineId))
                 throw new SpringBootDataSourceException("Combine-dataSource id (" + combineId + ")can't be in ds-id list");
             if (existsBeanDefinition(combineId, registry))
@@ -188,7 +189,7 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
             registerDataSourceBean(ds, registry);
 
         //assembly combine DataSource
-        if (!isBlank(combineDsId) && !isBlank(primaryDsId)) {
+        if (isNotBlank(combineDsId) && isNotBlank(primaryDsId)) {
             ThreadLocal<SpringBootDataSource> dsThreadLocal = new ThreadLocal<>();
 
             GenericBeanDefinition define = new GenericBeanDefinition();

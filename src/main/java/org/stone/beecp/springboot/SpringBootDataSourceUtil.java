@@ -40,6 +40,7 @@ import java.util.function.Supplier;
 
 import static org.stone.beecp.pool.ConnectionPoolStatics.*;
 import static org.stone.tools.CommonUtil.isBlank;
+import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
  *  Spring Boot DataSource Util
@@ -67,10 +68,10 @@ public class SpringBootDataSourceUtil {
     private static final ThreadLocal<WeakReference<DateFormat>> DateFormatThreadLocal = new ThreadLocal<WeakReference<DateFormat>>();
     private static final Map<Class, SpringBootDataSourceFactory> DataSourceFactoryMap = new HashMap<>(1);
     private static final Logger log = LoggerFactory.getLogger(SpringBootDataSourceUtil.class);
-    private static SpringBootJsonTool jsonTool;
     private static final List<String> DefaultExclusionList = Arrays.asList("username", "password", "url", "jdbcUrl", "jdbc-url", "jdbc_url",
-            "consoleUserId","consolePassword","console-userId","console-password","console_userId","console_password",
-            "console-user-id","console_user_id");
+            "consoleUserId", "consolePassword", "console-userId", "console-password", "console_userId", "console_password",
+            "console-user-id", "console_user_id");
+    private static SpringBootJsonTool jsonTool;
 
     //***************************************************************************************************************//
     //                                1: spring assembly or base (3)                                                //
@@ -89,13 +90,13 @@ public class SpringBootDataSourceUtil {
     }
 
     public static boolean stringEquals(String a, String b) {
-        return a != null ? a.equals(b) : b == null;
+        return Objects.equals(a, b);
     }
 
 
     //create json tool implementation
     static void createJsonTool(String jsonClassName) {
-        if (!isBlank(jsonClassName)) {
+        if (isNotBlank(jsonClassName)) {
             try {
                 Class jsonToolClass = Class.forName(jsonClassName);
                 SpringBootJsonTool tool = (SpringBootJsonTool) jsonToolClass.newInstance();
@@ -150,14 +151,14 @@ public class SpringBootDataSourceUtil {
     static SpringBootDataSource createSpringBootDataSource(String dsPrefix, String dsId, Environment environment) {
         String jndiNameTex = getConfigValue(dsPrefix, Config_DS_Jndi, environment);
         SpringBootDataSource ds;
-        if (!isBlank(jndiNameTex)) {//jndi dataSource
+        if (isNotBlank(jndiNameTex)) {//jndi dataSource
             ds = lookupJndiDataSource(dsId, jndiNameTex);
         } else {//independent type
             ds = createDataSourceByDsType(dsPrefix, dsId, environment);
         }
 
         String primaryText = getConfigValue(dsPrefix, Config_DS_Primary, environment);
-        ds.setPrimary(isBlank(primaryText) ? false : Boolean.valueOf(primaryText));
+        ds.setPrimary(isNotBlank(primaryText) && Boolean.valueOf(primaryText));
         return ds;
     }
 
@@ -257,7 +258,7 @@ public class SpringBootDataSourceUtil {
 
     private static String readConfig(Environment environment, String dsPrefix, String key) {
         String value = environment.getProperty(dsPrefix + "." + key);
-        if (!isBlank(value)) {
+        if (isNotBlank(value)) {
             value = value.trim();
             if (DefaultExclusionList.contains(key)) {
                 log.debug("{}={}", key, value);
