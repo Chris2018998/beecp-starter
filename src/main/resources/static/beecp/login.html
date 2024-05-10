@@ -137,15 +137,6 @@
     </div>
 </div>
 <script type="text/javascript">
-    function getContextPath() {
-        var webFullPath = window.document.location.href;
-        var strPath = window.document.location.pathname;
-        var pos = webFullPath.indexOf(strPath);
-        var webHostPath = webFullPath.substring(0, pos);
-        var projectName = strPath.substring(0, strPath.substr(1).indexOf("/") + 1);
-        return (webHostPath + projectName);
-    }
-
     function createXMLHttpRequest() {
         if (window.XMLHttpRequest) {
             return (new XMLHttpRequest());
@@ -191,8 +182,7 @@
             return;
         }
         var data = {userId: inputUserId, password: inputPassword};
-        var contextPath = getContextPath();
-        var loginURL = contextPath + '/beecp/login';
+        var loginURL = 'beecp/login';
 
         var xmlHttp = createXMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
@@ -202,10 +192,10 @@
                     var language = document.getElementById("language").value;
                     if (language == 'en') {
                         //alert("Login success");
-                        window.location.href = contextPath + "/beecp/english.html";
+                        window.location.href = "beecp/english.html";
                     } else {
                         //alert("登陆成功");
-                        window.location.href = contextPath + "/beecp/chinese.html";
+                        window.location.href = "beecp/chinese.html";
                     }
                     window.event.returnValue = false;
                 } else {
