@@ -1,7 +1,7 @@
 $(function() {
     var language = $("html").attr("lang");
-    var dsURL = getContextPath() + '/beecp/getDataSourceList';
-    var sqlURL = getContextPath() + '/beecp/getSqlTraceList';
+    var dsURL = 'getDataSourceList';
+    var sqlURL = 'getSqlTraceList';
     var refreshMsg = language=='cn'? '刷新成功':'Refresh success';
 
     var sqlTraceList = []; //empty array
@@ -104,7 +104,7 @@ $(function() {
             dataType: 'json',
             success: function(data) {
                 if(data.code==3) {
-                    window.location.href = getContextPath() + "/beecp/login.html";
+                    window.location.href ="login.html";
                 }else if(data.code==2) {
                     alert("Error:"+data.message);
                 }else if(data.code==1) {
@@ -132,7 +132,7 @@ $(function() {
                 $("#ds_monitorTable tr:not(:first)").remove();
                 if (data) {
                     if(data.code==3) {
-                        window.location.href = getContextPath() + "/beecp/login.html";
+                        window.location.href = "login.html";
                     }else if(data.code==2) {
                         alert("Error:"+data.message);
                     }else if(data.code==1) {
@@ -169,13 +169,6 @@ $(function() {
             }
         });
     };
-
-    function getContextPath() {
-        var suffix ="beecp/";
-        var path = window.location.href;
-        var index = path.lastIndexOf(suffix);
-        return path.substring(0, index);//remove 'beecp/' suffix
-    }
 
     function afterLoadSqlTraceList(data) { //after get result from server
         if (data) {
