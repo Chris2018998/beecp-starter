@@ -10,20 +10,20 @@ spring:
     sql-exec-slow-time: 1
     sql-trace-timeout: 60000
     sql-trace-timeout-scan-period: 6000
-    sql-exec-alert-action: TestAlert
+    sql-exec-alert-action: org.stone.beecp.springboot.test.util.TestAlert
     dsId: ds1,ds2
     combineId: combineDs
     combinePrimaryId: ds1
     ds1:
       primary: true
       username: root
-      password: ''
+      password: root
       jdbcUrl: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
       type: org.stone.beecp.BeeDataSource
-      driverClassName: com.mysql.jdbc.Driver
+      driverClassName: com.mysql.cj.jdbc.Driver
     ds2:
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
-      password: ''
+      password: root
       username: root
       type: org.stone.beecp.BeeDataSource
