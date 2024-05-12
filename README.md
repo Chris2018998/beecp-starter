@@ -23,8 +23,8 @@ Maven坐标
 
 ## :computer: 监控画面
 监控地址:http://IP:port/xxxx/beecp 可打开监控界面（其中xxxx为项目部署名）
-   
-![图片](https://user-images.githubusercontent.com/32663325/153717085-00c35733-604a-4287-be1a-9b8cd42df9d5.png)
+
+![图片](https://github.com/Chris2018998/beecp-starter/assets/32663325/71dea68b-833a-4154-96c4-687f66d333f6)
 
 ![图片](https://user-images.githubusercontent.com/32663325/153717101-3f82894a-62ba-4686-a78b-98656aedf619.png)
 
