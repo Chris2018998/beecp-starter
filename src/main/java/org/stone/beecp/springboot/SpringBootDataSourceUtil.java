@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static org.stone.beecp.pool.ConnectionPoolStatics.*;
+import static org.stone.tools.BeanUtil.*;
 import static org.stone.tools.CommonUtil.isBlank;
 import static org.stone.tools.CommonUtil.isNotBlank;
 
