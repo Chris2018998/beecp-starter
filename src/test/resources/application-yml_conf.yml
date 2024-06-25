@@ -21,9 +21,12 @@ spring:
       jdbcUrl: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
       type: org.stone.beecp.BeeDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
+      #false: support virtual threads
+      enableThreadLocal: false
     ds2:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
       password: root
       username: root
       type: org.stone.beecp.BeeDataSource
+      enableThreadLocal: true
