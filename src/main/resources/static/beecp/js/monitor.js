@@ -140,6 +140,10 @@ $(function() {
                             function (i, element) {
                                 var mode = element.poolMode;
                                 var state = element.poolState;
+                                var creatingDesc;
+                                var creatingTimeoutDesc;
+                                var creatingTime = element.creatingTime;
+                                var creatingTimeout = element.creatingTimeout;
 
                                 if (language == 'cn') {
                                     mode = (mode == 'compete') ? '竞争' : '公平';
@@ -147,11 +151,27 @@ $(function() {
                                     else if (state == 1) state = "已启动";
                                     else if (state == 2) state = "已关闭";
                                     else if (state == 3) state = "重置中";
+
+                                    if(creatingTime!=0){
+                                        creatingDesc='是';
+                                        creatingTimeoutDesc=createTimeout?'已超时' : '未超时';
+                                    }else{
+                                        creatingDesc='否';
+                                        creatingTimeoutDesc='';
+                                    }
                                 } else {
                                     if (state == 0) state = "uninitialized";
                                     else if (state == 1) state = "started";
                                     else if (state == 2) state = "closed";
                                     else if (state == 3) state = "clearing";
+
+                                    if(creatingTime!=0){
+                                        creatingDesc='Yes';
+                                        creatingTimeoutDesc=createTimeout?'Yes' : 'No';
+                                    }else{
+                                        creatingDesc='No';
+                                        creatingTimeoutDesc='';
+                                    }
                                 }
 
                                 var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
@@ -160,7 +180,10 @@ $(function() {
                                     + "<td>" + element.idleSize + "</td>"
                                     + "<td>" + element.usingSize + "</td>"
                                     + "<td>" + element.semaphoreWaitingSize + "</td>"
-                                    + "<td>" + element.transferWaitingSize + "</td>" + "</tr>";
+                                    + "<td>" + element.transferWaitingSize + "</td>"
+                                    + "<td>" + creatingDesc + "</td>"
+                                    + "<td>" + creatingTimeoutDesc + "</td>" + "</tr>";
+
                                 $("#ds_monitorTable").append(tableHtml);
                             });
                         $('#ds_monitorTable').trigger("update");
