@@ -129,14 +129,31 @@ public class DataSourceMonitor {
     }
 
     @ResponseBody
-    @PostMapping("/beecp/restartPool")
-    public SpringBootRestResponse clearDsConnections(@RequestBody Map<String, String> parameterMap) {
+    @PostMapping("/beecp/clearPool")
+    public SpringBootRestResponse clearPool(@RequestBody Map<String, String> parameterMap) {
         try {
-            String dsId = parameterMap != null ? parameterMap.get("dsId") : null;
-            dsManager.restartPool(dsId);
+            if (parameterMap != null && parameterMap.containsKey("dsId")) {
+                String dsId = parameterMap.get("dsId");
+                dsManager.clearPool(dsId);
+            }
             return new SpringBootRestResponse(SpringBootRestResponse.CODE_SUCCESS, null, "OK");
         } catch (Throwable e) {
-            return new SpringBootRestResponse(SpringBootRestResponse.CODE_FAILED, e, "Failed to 'restart datasource pool'");
+            return new SpringBootRestResponse(SpringBootRestResponse.CODE_FAILED, e, "Failed to clear datasource pool'");
+        }
+    }
+
+
+    @ResponseBody
+    @PostMapping("/beecp/interruptPool")
+    public SpringBootRestResponse interruptPool(@RequestBody Map<String, String> parameterMap) {
+        try {
+            if (parameterMap != null && parameterMap.containsKey("dsId")) {
+                String dsId = parameterMap.get("dsId");
+                dsManager.interruptPool(dsId);
+            }
+            return new SpringBootRestResponse(SpringBootRestResponse.CODE_SUCCESS, null, "OK");
+        } catch (Throwable e) {
+            return new SpringBootRestResponse(SpringBootRestResponse.CODE_FAILED, e, "Failed to interrupt datasource pool'");
         }
     }
 }

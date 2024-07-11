@@ -49,6 +49,7 @@ public class SpringBootDataSource implements DataSource {
     private boolean traceSql;
     private Method poolMonitorVoMethod;
     private Method poolRestartPoolMethod;
+    private Method poolInterruptPoolMethod;
     private boolean notSetBeeDsId = true;
 
     SpringBootDataSource(String dsId, DataSource ds, boolean jndiDs) {
@@ -122,10 +123,20 @@ public class SpringBootDataSource implements DataSource {
         if (!jndiDs) SpringBootDataSourceUtil.tryToCloseDataSource(ds);
     }
 
-    void restartPool() {
+    void clearPool() {
         if (poolRestartPoolMethod != null) {
             try {
                 poolRestartPoolMethod.invoke(ds, false);
+            } catch (Throwable e) {
+                Log.warn("Failed to execute dataSource 'restartPool' method", e);
+            }
+        }
+    }
+
+    void interruptPool() {
+        if (poolInterruptPoolMethod != null) {
+            try {
+                poolInterruptPoolMethod.invoke(ds, false);
             } catch (Throwable e) {
                 Log.warn("Failed to execute dataSource 'restartPool' method", e);
             }
@@ -175,6 +186,12 @@ public class SpringBootDataSource implements DataSource {
             }
             try {
                 poolRestartPoolMethod = dsClass.getMethod("clear", Boolean.TYPE);
+            } catch (NoSuchMethodException e) {
+                Log.warn("DataSource method(clear) not found", e);
+            }
+
+            try {
+                poolInterruptPoolMethod = dsClass.getMethod("interruptOnCreation");
             } catch (NoSuchMethodException e) {
                 Log.warn("DataSource method(clear) not found", e);
             }

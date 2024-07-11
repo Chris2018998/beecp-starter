@@ -71,6 +71,7 @@ public class SpringBootDataSourceUtil {
     private static final List<String> DefaultExclusionList = Arrays.asList("username", "password", "url", "jdbcUrl", "jdbc-url", "jdbc_url",
             "consoleUserId", "consolePassword", "console-userId", "console-password", "console_userId", "console_password",
             "console-user-id", "console_user_id");
+
     private static SpringBootJsonTool jsonTool;
 
     //***************************************************************************************************************//

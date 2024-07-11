@@ -1,7 +1,40 @@
+var dsURL = 'getDataSourceList';
+var sqlURL = 'getSqlTraceList';
+var clearURL = 'clearPool';
+var interruptURL = 'interruptPool';
+var language = $("html").attr("lang");
+
+function poolClear(dsId){
+    $.ajax({
+        type: 'POST',
+        url: clearURL,
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({'dsId':dsId}),
+        success: function(data) {
+           if(data.code==1) {
+               //alert(language=='cn'? '清理成功':'Clear success');
+               $('#ds_refresh_button').trigger("click");
+          }
+        }
+    });
+}
+
+function poolInterrupt(dsId){
+     $.ajax({
+        type: 'POST',
+        url: interruptURL,
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({'dsId':dsId}),
+        success: function(data) {
+            //alert(language=='cn'? '中断成功':'Interrupt success');
+            $('#ds_refresh_button').trigger("click");
+        }
+     });
+ }
+
 $(function() {
-    var language = $("html").attr("lang");
-    var dsURL = 'getDataSourceList';
-    var sqlURL = 'getSqlTraceList';
     var refreshMsg = language=='cn'? '刷新成功':'Refresh success';
 
     var sqlTraceList = []; //empty array
@@ -140,37 +173,47 @@ $(function() {
                             function (i, element) {
                                 var mode = element.poolMode;
                                 var state = element.poolState;
-                                var creatingDesc;
-                                var creatingTimeoutDesc;
                                 var creatingTime = element.creatingTime;
                                 var creatingTimeout = element.creatingTimeout;
+                                var creatingDesc;
+                                var creatingTimeoutDesc;
+                                var clearButtonDesc;
+                                var interruptButtonDesc;
 
                                 if (language == 'cn') {
+                                    clearButtonDesc='清理';
+                                    interruptButtonDesc='中断';
                                     mode = (mode == 'compete') ? '竞争' : '公平';
                                     if (state == 0) state = "未初始化";
-                                    else if (state == 1) state = "已启动";
-                                    else if (state == 2) state = "已关闭";
-                                    else if (state == 3) state = "重置中";
+                                    else if (state == 1) state = "启动中";
+                                    else if (state == 2) state = "已启动";
+                                    else if (state == 3) state = "关闭中";
+                                    else if (state == 4) state = "已关闭";
+                                    else if (state == 5) state = "清理中";
 
                                     if(creatingTime!=0){
                                         creatingDesc='是';
                                         creatingTimeoutDesc=createTimeout?'已超时' : '未超时';
                                     }else{
-                                        creatingDesc='否';
-                                        creatingTimeoutDesc='';
+                                        creatingDesc='N/A';
+                                        creatingTimeoutDesc='N/A';
                                     }
                                 } else {
-                                    if (state == 0) state = "uninitialized";
-                                    else if (state == 1) state = "started";
-                                    else if (state == 2) state = "closed";
-                                    else if (state == 3) state = "clearing";
+                                   clearButtonDesc='Clear';
+                                   interruptButtonDesc='Interrupt';
+                                   if (state == 0) state = "uninitialized";
+                                   else if (state == 1) state = "starting";
+                                   else if (state == 2) state = "ready";
+                                   else if (state == 3) state = "closing";
+                                   else if (state == 4) state = "closed";
+                                   else if (state == 5) state = "clearing";
 
-                                    if(creatingTime!=0){
+                                   if(creatingTime!=0){
                                         creatingDesc='Yes';
-                                        creatingTimeoutDesc=createTimeout?'Yes' : 'No';
+                                        creatingTimeoutDesc=createTimeout?'Yes' : 'N/A';
                                     }else{
-                                        creatingDesc='No';
-                                        creatingTimeoutDesc='';
+                                        creatingDesc='N/A';
+                                        creatingTimeoutDesc='N/A';
                                     }
                                 }
 
@@ -182,8 +225,12 @@ $(function() {
                                     + "<td>" + element.semaphoreWaitingSize + "</td>"
                                     + "<td>" + element.transferWaitingSize + "</td>"
                                     + "<td>" + creatingDesc + "</td>"
-                                    + "<td>" + creatingTimeoutDesc + "</td>" + "</tr>";
+                                    + "<td>" + creatingTimeoutDesc + "</td>"
+                                    + "<td><input id='pool_clear_button' onclick='poolClear(\""+element.dsId+"\")' type='button' value='"+clearButtonDesc+"'/>";
+                                    if(creatingTimeoutDesc !='N/A')
+                                        tableHtml= tableHtml + "<input id='pool_interrupt_button' onclick='poolInterrupt(\""+element.dsId+"\")' type='button' value='"+interruptButtonDesc+"'/>";
 
+                                    tableHtml= tableHtml + "</td></tr>";
                                 $("#ds_monitorTable").append(tableHtml);
                             });
                         $('#ds_monitorTable').trigger("update");
