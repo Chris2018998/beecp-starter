@@ -26,7 +26,7 @@ Maven坐标
 
 ![图片](https://github.com/Chris2018998/beecp-starter/assets/32663325/71dea68b-833a-4154-96c4-687f66d333f6)
 
-![图片](https://user-images.githubusercontent.com/32663325/153717101-3f82894a-62ba-4686-a78b-98656aedf619.png)
+![图片](https://github.com/user-attachments/assets/ff42dfac-ac61-49f8-94ac-c8f0419469da)
 
 ![图片](https://user-images.githubusercontent.com/32663325/153717113-d47d85bf-b1db-4e80-9844-d4d4fe9adf32.png)
 
