@@ -1,5 +1,16 @@
 beecp-spring-boot-starter changes
 
+Changes in 1.8.6
+
+1：升级Beecp至4.0.5
+2：监控提供中断和重置的功能
+3：修复内部bean重复注册的问题
+
+Changes in 1.8.5
+
+1：数据源装载时不打印控制台的用户名密码
+2：操作页面内部使用相对路径调用后端接口
+
 
 Changes in 1.8.4
 
