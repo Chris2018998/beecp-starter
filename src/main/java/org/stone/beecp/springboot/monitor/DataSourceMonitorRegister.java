@@ -59,9 +59,9 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
                     config.getConsolePassword(),
                     config.getMonitorLoggedInTagName())));
             registry.registerBeanDefinition(resetControllerRegName, define);
-            log.info("Register DataSource-restController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
+            log.info("Registered dataSource-monitorController({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
-            log.error("BeanDefinition id {} already exists in spring context", resetControllerRegName);
+            log.error("BeanDefinition id({}) already exists in spring context", resetControllerRegName);
         }
 
         //3: assembly monitor controller filter
@@ -78,9 +78,9 @@ public class DataSourceMonitorRegister implements EnvironmentAware, ImportBeanDe
             define.setPrimary(true);
             define.setInstanceSupplier(SpringBootDataSourceUtil.createSpringSupplier(registration));
             registry.registerBeanDefinition(resetControllerFilterRegName, define);
-            log.info("Register DataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
+            log.info("Registered dataSource-restController-Filter({}) with id:{}", define.getBeanClassName(), resetControllerRegName);
         } else {
-            log.error("BeanDefinition id {} already exists in spring context", resetControllerFilterRegName);
+            log.error("BeanDefinition id({}) already exists in spring context", resetControllerFilterRegName);
         }
     }
 }
