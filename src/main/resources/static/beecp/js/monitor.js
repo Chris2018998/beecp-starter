@@ -181,12 +181,12 @@ $(function() {
                                 var interruptButtonDesc;
 
                                 if (language == 'cn') {
-                                    clearButtonDesc='清理';
+                                    clearButtonDesc='重置';
                                     interruptButtonDesc='中断';
                                     mode = (mode == 'compete') ? '竞争' : '公平';
                                     if (state == 0) state = "未初始化";
                                     else if (state == 1) state = "启动中";
-                                    else if (state == 2) state = "已启动";
+                                    else if (state == 2) state = "已就绪";
                                     else if (state == 3) state = "关闭中";
                                     else if (state == 4) state = "已关闭";
                                     else if (state == 5) state = "清理中";
