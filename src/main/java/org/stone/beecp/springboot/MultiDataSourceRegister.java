@@ -24,7 +24,6 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.stone.beecp.springboot.factory.SpringBootDataSourceException;
-import org.stone.beecp.springboot.monitor.DataSourceMonitorRegister;
 
 import java.util.*;
 
@@ -85,10 +84,10 @@ public class MultiDataSourceRegister implements EnvironmentAware, ImportBeanDefi
         //6:assembly datasource to spring container
         this.registerDataSources(dsMap, combineProperties, registry);
 
-        //7:register datasource monitor
-        DataSourceMonitorRegister monitorRegister = new DataSourceMonitorRegister();
-        monitorRegister.setEnvironment(environment);
-        monitorRegister.registerBeanDefinitions(classMetadata, registry);
+//        //7:register datasource monitor
+//        DataSourceMonitorRegister monitorRegister = new DataSourceMonitorRegister();
+//        monitorRegister.setEnvironment(environment);
+//        monitorRegister.registerBeanDefinitions(classMetadata, registry);
     }
 
     /**
