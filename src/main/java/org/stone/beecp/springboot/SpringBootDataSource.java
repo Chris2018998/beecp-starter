@@ -191,7 +191,7 @@ public class SpringBootDataSource implements DataSource {
             }
 
             try {
-                poolInterruptPoolMethod = dsClass.getMethod("interruptOnCreation");
+                poolInterruptPoolMethod = dsClass.getMethod("interruptConnectionCreating", Boolean.TYPE);
             } catch (NoSuchMethodException e) {
                 Log.warn("DataSource method(clear) not found", e);
             }
