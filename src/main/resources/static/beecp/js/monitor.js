@@ -173,10 +173,8 @@ $(function() {
                             function (i, element) {
                                 var mode = element.poolMode;
                                 var state = element.poolState;
-                                var creatingTime = element.creatingTime;
-                                var creatingTimeout = element.creatingTimeout;
-                                var creatingDesc;
-                                var creatingTimeoutDesc;
+                                var creatingCount = element.creatingCount;
+                                var creatingTimeoutCount = element.creatingTimeoutCount;
                                 var clearButtonDesc;
                                 var interruptButtonDesc;
 
@@ -190,14 +188,6 @@ $(function() {
                                     else if (state == 3) state = "关闭中";
                                     else if (state == 4) state = "已关闭";
                                     else if (state == 5) state = "清理中";
-
-                                    if(creatingTime!=0){
-                                        creatingDesc='是';
-                                        creatingTimeoutDesc=createTimeout?'已超时' : '未超时';
-                                    }else{
-                                        creatingDesc='N/A';
-                                        creatingTimeoutDesc='N/A';
-                                    }
                                 } else {
                                    clearButtonDesc='Clear';
                                    interruptButtonDesc='Interrupt';
@@ -207,14 +197,6 @@ $(function() {
                                    else if (state == 3) state = "closing";
                                    else if (state == 4) state = "closed";
                                    else if (state == 5) state = "clearing";
-
-                                   if(creatingTime!=0){
-                                        creatingDesc='Yes';
-                                        creatingTimeoutDesc=createTimeout?'Yes' : 'N/A';
-                                    }else{
-                                        creatingDesc='N/A';
-                                        creatingTimeoutDesc='N/A';
-                                    }
                                 }
 
                                 var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
@@ -224,10 +206,10 @@ $(function() {
                                     + "<td>" + element.usingSize + "</td>"
                                     + "<td>" + element.semaphoreWaitingSize + "</td>"
                                     + "<td>" + element.transferWaitingSize + "</td>"
-                                    + "<td>" + creatingDesc + "</td>"
-                                    + "<td>" + creatingTimeoutDesc + "</td>"
+                                    + "<td>" + creatingCount + "</td>"
+                                    + "<td>" + creatingTimeoutCount + "</td>"
                                     + "<td><input id='pool_clear_button' onclick='poolClear(\""+element.dsId+"\")' type='button' value='"+clearButtonDesc+"'/>";
-                                    if(creatingTimeoutDesc !='N/A')
+                                    if(creatingTimeoutCount >0)
                                         tableHtml= tableHtml + "<input id='pool_interrupt_button' onclick='poolInterrupt(\""+element.dsId+"\")' type='button' value='"+interruptButtonDesc+"'/>";
 
                                     tableHtml= tableHtml + "</td></tr>";
