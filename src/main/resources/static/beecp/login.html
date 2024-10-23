@@ -136,28 +136,8 @@
         </div>
     </div>
 </div>
+<script src="beecp/js/jQuery-2.1.4.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-    function createXMLHttpRequest() {
-        if (window.XMLHttpRequest) {
-            return (new XMLHttpRequest());
-        } else {
-            var arr_t = ["MSXML2.XMLHTTP.4.0",
-                "MSXML2.XMLHTTP.3.0",
-                "MSXML2.XMLHTTP.2.6",
-                "MSXML2.XMLHTTP",
-                "Microsoft.XMLHTTP",
-                "MSXML.XMLHTTP"];
-            for (var i = 0; i < arr_t.length; i++) {
-                try {
-                    xmlhttp_ver = arr_t[i];
-                    return new ActiveXObject(arr_t[i]);
-                } catch (e) {
-                }
-            }
-        }
-        return null;
-    }
-
     function languageChanged(language) {
         if (language == 'cn') {
             document.getElementById("titleLable").innerHTML = "BeeCP监控";
@@ -181,32 +161,29 @@
             alert("UserId can't be null");
             return;
         }
-        var data = {userId: inputUserId, password: inputPassword};
-        var loginURL = 'beecp/login';
 
-        var xmlHttp = createXMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var result = JSON.parse(this.responseText);
-                if (result.code == 1) {
-                    var language = document.getElementById("language").value;
+        $.ajax({
+            type: 'POST',
+            url: 'beecp/login',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({userId: inputUserId, password: inputPassword}),
+            success: function(data) {
+                if(data.code==1){
+                    var language=document.getElementById("language").value;
                     if (language == 'en') {
-                        //alert("Login success");
                         window.location.href = "beecp/english.html";
                     } else {
-                        //alert("登陆成功");
                         window.location.href = "beecp/chinese.html";
                     }
-                    window.event.returnValue = false;
-                } else {
-                    alert("Error userId or password");
+                }else{
+                    alert("Error userId or error password");
                 }
-            }
-        };
+            },
+            error: function(xhr, status, error) {
 
-        xmlHttp.open("POST", loginURL, true);
-        xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xmlHttp.send(JSON.stringify(data));
+            }
+        });
     }
 
     var browserLanguage = navigator.language || navigator.userLanguage;
