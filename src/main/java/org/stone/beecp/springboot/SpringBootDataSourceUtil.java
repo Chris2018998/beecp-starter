@@ -48,9 +48,14 @@ import static org.stone.tools.CommonUtil.isNotBlank;
  *  @author Chris Liao
  */
 public class SpringBootDataSourceUtil {
+    //Spring boot virtual threads
+    public static final String Config_Virtual_Thread = "spring.threads.virtual.enabled";
+    //thread local enable
+    public static final String Config_ThreadLocal_Enable = "enableThreadLocal";
+
     //Spring dataSource configuration prefix-key name
     static final String Config_DS_Prefix = "spring.datasource";
-    //DataSource config id list on springboot
+    //DataSource config id list on spring boot
     static final String Config_DS_Id = "dsId";
     //combineId
     static final String Config_DS_CombineId = "combineId";

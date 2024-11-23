@@ -28,6 +28,8 @@ import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 import static org.stone.beecp.pool.ConnectionPoolStatics.*;
+import static org.stone.beecp.springboot.SpringBootDataSourceUtil.Config_ThreadLocal_Enable;
+import static org.stone.beecp.springboot.SpringBootDataSourceUtil.Config_Virtual_Thread;
 import static org.stone.tools.CommonUtil.isNotBlank;
 
 /*
@@ -102,6 +104,15 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
         //3:create dataSource instance
         BeeDataSource ds = new BeeDataSource(config);
+
+        //4:disable threadLocal if exists virtual thread config item
+        String threadLocalEnable = SpringBootDataSourceUtil.getConfigValue(dsPrefix, Config_ThreadLocal_Enable, environment);
+        if (threadLocalEnable == null) {
+            boolean enableVirtualThread = Boolean.parseBoolean(environment.getProperty(Config_Virtual_Thread, "false"));
+            ds.setEnableThreadLocal(!enableVirtualThread);
+        }
+
+        //5:create jta dataSource or not
         return (tm != null) ? new BeeJtaDataSource(ds, tm) : ds;
     }
 }
