@@ -1,5 +1,9 @@
 beecp-spring-boot-starter changes
 
+Changes in 1.8.13
+1: 升级Beecp至4.1.4
+2: 支持虚拟线程（未配置enableThreadLocal项且spring.threads.virtual.enabled=true)
+
 Changes in 1.8.12
 1：升级Beecp至4.1.3
 

@@ -19,7 +19,7 @@ Maven坐标
 <dependency>
    <groupId>com.github.chris2018998</groupId>
    <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.8.12</version>
+   <version>1.8.13</version>
 </dependency>
 ```
 
