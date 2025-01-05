@@ -1,9 +1,9 @@
 <a><img src="https://img.shields.io/badge/Java-8+-green.svg"></a>
 <a><img src="https://img.shields.io/badge/Springboot-2.x-blue.svg"></a>
-<a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
-<a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
- 
-BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>管理工具
+![](https://img.shields.io/maven-central/v/com.github.chris2018998/beecp-spring-boot-starter?logo=apache-maven)
+![](https://img.shields.io/github/license/Chris2018998/beecp-starter)
+
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>的数据源启动器
 
 ```xml
 <dependency>
