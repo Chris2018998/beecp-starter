@@ -1,21 +1,9 @@
-![图片](https://user-images.githubusercontent.com/32663325/154847136-10e241ae-af4c-478a-a608-aaa685e0464b.png)
-<p align="left">
- <a><img src="https://img.shields.io/badge/Java-8+-green.svg"></a>
- <a><img src="https://img.shields.io/badge/Springboot-2.0.9+-blue.svg"></a>
- <a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
- <a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
-</p>
-
-## :coffee: 简介
-
-BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>在Springboot的数据源管理工具
-
-[
-*如果您在寻找一款更专业性数据源管理工具，推荐使用Baomidou动态数据源启动器(https://github.com/baomidou/dynamic-datasource-spring-boot-starter)*]
-
-## :arrow_down: 下载
-
-Maven坐标
+<a><img src="https://img.shields.io/badge/Java-8+-green.svg"></a>
+<a><img src="https://img.shields.io/badge/Springboot-2.x-blue.svg"></a>
+<a><img src="https://maven-badges.herokuapp.com/maven-central/com.github.chris2018998/beecp-spring-boot-starter/badge.svg"></a>
+<a><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg"></a>
+ 
+BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>管理工具
 
 ```xml
 <dependency>
@@ -25,17 +13,18 @@ Maven坐标
 </dependency>
 ```
 
-## :computer: 监控画面
+##
+:computer: **监控画面** 
 
 监控地址:http://IP:port/xxxx/beecp 可打开监控界面（其中xxxx为项目部署名）
 
-![图片](https://github.com/Chris2018998/beecp-starter/assets/32663325/71dea68b-833a-4154-96c4-687f66d333f6)
+![图片](doc/images/login.png)
+![图片](doc/images/ds-cn.png)
+![图片](doc/images/sql-cn.png)
 
-![图片](https://github.com/user-attachments/assets/ff42dfac-ac61-49f8-94ac-c8f0419469da)
 
-![图片](https://user-images.githubusercontent.com/32663325/153717113-d47d85bf-b1db-4e80-9844-d4d4fe9adf32.png)
-
-## :book: 应用标签
+## 
+:book: **应用标签**
 
 | 标签               | 备注                   |
 |------------------|----------------------|
@@ -43,7 +32,8 @@ Maven坐标
 | @EnableDsMonitor | 连接池监控启用标签，否则监控界面无法打开 |
 | @DsId            | 组合数据源应用时，可指定数据源id    |
 
-## :book: 数据源配置项
+## 
+:book: **数据源配置项**
 
 ### :capital_abcd: dsId
 
@@ -62,7 +52,8 @@ Maven坐标
 数据源Jndi名，数据源来自部署容器本身，此项配置与type配置互斥
 :sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP/blob/master/README_ZH.md">BeeCP</a>属性清单*
 
-## :book: 监控项配置
+## 
+:book: **监控项配置**
 
 ### :capital_abcd: spring.datasource.consoleUserId
 
