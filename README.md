@@ -18,10 +18,11 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 
 监控地址:http://IP:port/xxxx/beecp 可打开监控界面（其中xxxx为项目部署名）
 
-![图片](doc/images/login.png)
-![图片](doc/images/ds-cn.png)
-![图片](doc/images/sql-cn.png)
+![image](https://github.com/user-attachments/assets/1d8e62fb-d297-4ecc-a7c5-a9ab5205b923)
 
+![image](https://github.com/user-attachments/assets/7da9112b-63e4-4f00-8c6d-d99ec8cf1767)
+
+![image](https://github.com/user-attachments/assets/0ba61744-c3aa-4b0f-8cb1-26bc59e76bc4)
 
 ## 
 :book: **应用标签**
