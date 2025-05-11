@@ -15,11 +15,11 @@
  */
 package org.stone.beecp.springboot.monitor;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.stone.beecp.springboot.SpringBootDataSourceUtil;
 import org.stone.beecp.springboot.SpringBootRestResponse;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;

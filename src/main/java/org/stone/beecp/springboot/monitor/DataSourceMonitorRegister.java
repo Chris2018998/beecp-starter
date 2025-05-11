@@ -15,6 +15,7 @@
  */
 package org.stone.beecp.springboot.monitor;
 
+import jakarta.servlet.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -26,8 +27,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.stone.beecp.springboot.DataSourceMonitorConfig;
 import org.stone.beecp.springboot.SpringBootDataSourceUtil;
-
-import javax.servlet.Filter;
 
 /**
  * Register Monitor to springboot
