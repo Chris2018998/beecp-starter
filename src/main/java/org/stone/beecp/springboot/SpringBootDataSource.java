@@ -20,12 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.stone.beecp.BeeConnectionPoolMonitorVo;
 import org.stone.beecp.BeeDataSource;
 import org.stone.beecp.jta.BeeJtaDataSource;
-import org.stone.beecp.pool.FastConnectionPoolMonitorVo;
 import org.stone.beecp.springboot.statement.StatementTraceUtil;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,7 +48,6 @@ public class SpringBootDataSource implements DataSource {
     private Method poolMonitorVoMethod;
     private Method poolRestartPoolMethod;
     private Method poolInterruptPoolMethod;
-    private boolean notSetBeeDsId = true;
 
     SpringBootDataSource(String dsId, DataSource ds, boolean jndiDs) {
         this.dsId = dsId;
@@ -147,33 +144,15 @@ public class SpringBootDataSource implements DataSource {
         if (poolMonitorVoMethod != null) {
             try {
                 BeeConnectionPoolMonitorVo vo = (BeeConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
-                if (notSetBeeDsId) setBeeDsIdToMonitorSingletonVo(vo);
-                return vo;
+                SpringConnectionPoolMonitorVo newVo = new SpringConnectionPoolMonitorVo(vo);
+                newVo.setDsId(dsId);
+                newVo.setDsUUID(dsUUID);
+                return newVo;
             } catch (Throwable e) {
                 Log.warn("Failed to execute dataSource 'getPoolMonitorVo' method", e);
             }
         }
         return null;
-    }
-
-    private synchronized void setBeeDsIdToMonitorSingletonVo(BeeConnectionPoolMonitorVo vo) {
-        setValueToField(vo, "dsId", dsId);
-        setValueToField(vo, "dsUUID", dsUUID);
-        notSetBeeDsId = false;
-    }
-
-    private void setValueToField(BeeConnectionPoolMonitorVo vo, String fieldId, String value) {
-        Field field = null;
-        try {
-            Class monitorVoClass = FastConnectionPoolMonitorVo.class;
-            field = monitorVoClass.getDeclaredField(fieldId);
-            field.setAccessible(true);
-            field.set(vo, value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            //do nothing
-        } finally {
-            if (field != null) field.setAccessible(false);
-        }
     }
 
     private void readBeeDsMethods() {

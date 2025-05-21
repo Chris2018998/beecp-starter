@@ -15,75 +15,58 @@
  */
 package org.stone.beecp.springboot.test;
 
-//import org.junit.Assert;
-//import org.junit.Before;
-//import org.junit.FixMethodOrder;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.junit.runners.MethodSorters;
-
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.stone.beecp.springboot.test.controller.MultiDsController;
 import org.stone.beecp.springboot.test.util.ClientSideUtil;
 
-@SpringBootTest(classes = MultiDsController.class)
+@SpringBootTest(classes = MultiDsController.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("yml_conf")
-@WebAppConfiguration
+@AutoConfigureMockMvc
 public class TestYmlConfig {
     private final String connTakeTestURL = "/testGetConnection";
     private final String executeSQLUrl = "/testSQL";
-    private MockMvc mockMvc;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
-    private MockMvc getMockMvc() {
-        if (mockMvc == null) {
-            this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        }
-        return mockMvc;
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
     public void test1GetDs1Conn() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testGetConnection("ds1", getMockMvc(), connTakeTestURL), "Not found dataSource(ds1) in trace list");
+        Assertions.assertTrue(ClientSideUtil.testGetConnection("ds1", mockMvc, connTakeTestURL), "Not found dataSource(ds1) in trace list");
     }
 
     @Test
     public void test2GetDs2Conn() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testGetConnection("ds2", getMockMvc(), connTakeTestURL), "Not found dataSource(ds2) in trace list");
+        Assertions.assertTrue(ClientSideUtil.testGetConnection("ds2", mockMvc, connTakeTestURL), "Not found dataSource(ds2) in trace list");
     }
 
     @Test
     public void test3SqlStatement() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER", "Statement", getMockMvc(), 0, executeSQLUrl), "target sql not in trace list");
+        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER", "Statement", mockMvc, 0, executeSQLUrl), "target sql not in trace list");
     }
 
     @Test
     public void test4SqlPreparedStatement() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", getMockMvc(), 0, executeSQLUrl), "target sql not in trace list");
+        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER2", "PreparedStatement", mockMvc, 0, executeSQLUrl), "target sql not in trace list");
     }
 
     @Test
     public void test5SqlCallableStatement() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", getMockMvc(), 0, executeSQLUrl), "target sql not in trace list");
+        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "{call BEECP_HELLO()}", "CallableStatement", mockMvc, 0, executeSQLUrl), "target sql not in trace list");
     }
 
     @Test
     public void test6SqlError() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", getMockMvc(), 1, executeSQLUrl), "target sql not in trace list");
+        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds1", "select * from TEST_USER3", "PreparedStatement", mockMvc, 1, executeSQLUrl), "target sql not in trace list");
     }
 
     @Test
     public void test7SqlSlow() throws Exception {
-        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", getMockMvc(), 2, executeSQLUrl), "target sql not in trace list");
+        Assertions.assertTrue(ClientSideUtil.testExecuteSQL("ds2", "select * from TEST_USER2", "PreparedStatement", mockMvc, 2, executeSQLUrl), "target sql not in trace list");
     }
 }
