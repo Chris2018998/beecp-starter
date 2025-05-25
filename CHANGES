@@ -1,5 +1,9 @@
 beecp-spring-boot-starter changes
 
+Changes in 2.0.0
+1: 升级Beecp至4.2.0
+2: 支持Springboot3
+
 Changes in 1.8.17
 1: 升级Beecp至4.1.8
 
