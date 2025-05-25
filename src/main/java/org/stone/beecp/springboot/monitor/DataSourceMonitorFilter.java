@@ -66,7 +66,7 @@ public class DataSourceMonitorFilter implements Filter {
                 SpringBootRestResponse restResponse = new SpringBootRestResponse(SpringBootRestResponse.CODE_SECURITY, null, "unauthorized");
                 ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
             } else {
-                req.getRequestDispatcher("/beecp/login.html").forward(req, res);
+                req.getRequestDispatcher("/beecp/forward.html").forward(req, res);
             }
         }
     }

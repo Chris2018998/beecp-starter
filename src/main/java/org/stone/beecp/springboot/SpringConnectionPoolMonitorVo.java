@@ -23,9 +23,9 @@ import org.stone.beecp.BeeConnectionPoolMonitorVo;
  * @author Chris Liao
  */
 public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo {
+    private final BeeConnectionPoolMonitorVo vo;
     private String dsId;
     private String dsUUID;
-    private final BeeConnectionPoolMonitorVo vo;
 
     public SpringConnectionPoolMonitorVo(BeeConnectionPoolMonitorVo vo) {
         this.vo = vo;

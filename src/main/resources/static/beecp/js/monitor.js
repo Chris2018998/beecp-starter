@@ -203,7 +203,7 @@ $(function() {
                                     + "<td>" + mode + "</td>" + "<td>" + state + "</td>"
                                     + "<td>" + element.poolMaxSize + "</td>"
                                     + "<td>" + element.idleSize + "</td>"
-                                    + "<td>" + element.usingSize + "</td>"
+                                    + "<td>" + element.borrowedSize + "</td>"
                                     + "<td>" + element.semaphoreWaitingSize + "</td>"
                                     + "<td>" + element.transferWaitingSize + "</td>"
                                     + "<td>" + creatingCount + "</td>"

@@ -136,7 +136,7 @@
         </div>
     </div>
 </div>
-<script src="beecp/js/jQuery-2.1.4.min.js" type="text/javascript"></script>
+<script src="js/jQuery-2.1.4.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     function languageChanged(language) {
         if (language == 'cn') {
@@ -164,7 +164,7 @@
 
         $.ajax({
             type: 'POST',
-            url: 'beecp/login',
+            url: 'login',
             dataType: 'json',
             contentType: 'application/json',
             data: JSON.stringify({userId: inputUserId, password: inputPassword}),
@@ -172,9 +172,9 @@
                 if(data.code==1){
                     var language=document.getElementById("language").value;
                     if (language == 'en') {
-                        window.location.href = "beecp/english.html";
+                        window.location.href = "english.html";
                     } else {
-                        window.location.href = "beecp/chinese.html";
+                        window.location.href = "chinese.html";
                     }
                 }else{
                     alert("Error userId or error password");

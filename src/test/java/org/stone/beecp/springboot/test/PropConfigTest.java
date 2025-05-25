@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.stone.beecp.springboot.test.controller.MultiDsController;
 import org.stone.beecp.springboot.test.util.ClientSideUtil;
 
-@SpringBootTest(classes = MultiDsController.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = MultiDsController.class)
 @ActiveProfiles("prop_conf")
 @AutoConfigureMockMvc
 public class PropConfigTest {

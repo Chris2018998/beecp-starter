@@ -27,7 +27,7 @@ import org.stone.beecp.springboot.test.controller.MultiDsController;
 import static org.stone.beecp.springboot.test.util.ClientSideUtil.testExecuteSQL;
 import static org.stone.beecp.springboot.test.util.ClientSideUtil.testGetConnection;
 
-@SpringBootTest(classes = MultiDsController.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = MultiDsController.class)
 @ActiveProfiles("prop_conf")
 @AutoConfigureMockMvc
 public class CombineDsTest {
