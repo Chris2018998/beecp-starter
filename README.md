@@ -6,15 +6,17 @@
 BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂连接池)</a>的数据源启动器
 
 ```xml
+
 <dependency>
-   <groupId>com.github.chris2018998</groupId>
-   <artifactId>beecp-spring-boot-starter</artifactId>
-   <version>1.8.18</version>
+    <groupId>com.github.chris2018998</groupId>
+    <artifactId>beecp-spring-boot-starter</artifactId>
+    <version>1.8.19</version>
 </dependency>
 ```
 
 ##
-:computer: **监控画面** 
+
+:computer: **监控画面**
 
 监控地址:http://IP:port/xxxx/beecp 可打开监控界面（其中xxxx为项目部署名）
 
@@ -24,7 +26,8 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 
 ![image](https://github.com/user-attachments/assets/0ba61744-c3aa-4b0f-8cb1-26bc59e76bc4)
 
-## 
+##  
+
 :book: **应用标签**
 
 | 标签               | 备注                   |
@@ -33,7 +36,8 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 | @EnableDsMonitor | 连接池监控启用标签，否则监控界面无法打开 |
 | @DsId            | 组合数据源应用时，可指定数据源id    |
 
-## 
+##  
+
 :book: **数据源配置项**
 
 ### :capital_abcd: dsId
@@ -53,7 +57,8 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 数据源Jndi名，数据源来自部署容器本身，此项配置与type配置互斥
 :sunny: *更多属性项，请参照<a href="https://github.com/Chris2018998/BeeCP/blob/master/README_ZH.md">BeeCP</a>属性清单*
 
-## 
+##  
+
 :book: **监控项配置**
 
 ### :capital_abcd: spring.datasource.consoleUserId
@@ -134,23 +139,23 @@ application.properties文件配置
 
 ```yml
 #按单加载的列表，为数据源的名字清单
-spring.datasource.dsId=ds1,ds2,ds3 
-    
-#第1数据源
-spring.datasource.ds1.primary=true  
+spring.datasource.dsId=ds1,ds2,ds3
+
+  #第1数据源
+spring.datasource.ds1.primary=true
 spring.datasource.ds1.poolName=BeeCP1
 spring.datasource.ds1.username=root
 spring.datasource.ds1.password=root
 spring.datasource.ds1.jdbcUrl=jdbc:mysql://localhost:3306/test
 spring.datasource.ds1.driverClassName=com.mysql.cj.jdbc.Driver
-     
-#第2数据源（容器jndi数据源,不加入监控）
-spring.datasource.ds2.jndiName=testDB 
-      
-#第3数据源(其他类型数据源,不加入监控）
+
+  #第2数据源（容器jndi数据源,不加入监控）
+spring.datasource.ds2.jndiName=testDB
+
+  #第3数据源(其他类型数据源,不加入监控）
 spring.datasource.ds3.poolName=Hikari
-#其他数据源类名，类型必须配置
-spring.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource 
+  #其他数据源类名，类型必须配置
+spring.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource
 spring.datasource.ds3.username=root
 spring.datasource.ds3.password=root
 spring.datasource.ds3.jdbcUrl=jdbc:mysql://localhost:3306/test

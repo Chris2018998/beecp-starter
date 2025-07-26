@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.chris2018998</groupId>
     <artifactId>beecp-spring-boot-starter</artifactId>
-    <version>1.8.18</version>
+    <version>1.8.19</version>
     <name>beecp-starter</name>
     <url>https://github.com/Chris2018998/BeeCP-Starter https://gitee.com/Chris2018998/BeeCP-Starter</url>
     <description>beecp starter on springBoot</description>
@@ -37,20 +37,16 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>beecp-ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>stone-central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
-        <repository>
-            <id>beecp-ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
     </distributionManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.github.chris2018998</groupId>
             <artifactId>beecp</artifactId>
-            <version>4.1.8</version>
+            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
@@ -116,6 +112,16 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>stone-central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

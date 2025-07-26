@@ -147,8 +147,10 @@ public class SpringBootDataSource implements DataSource {
         if (poolMonitorVoMethod != null) {
             try {
                 BeeConnectionPoolMonitorVo vo = (BeeConnectionPoolMonitorVo) poolMonitorVoMethod.invoke(ds);
-                if (notSetBeeDsId) setBeeDsIdToMonitorSingletonVo(vo);
-                return vo;
+                SpringConnectionPoolMonitorVo newVo = new SpringConnectionPoolMonitorVo(vo);
+                newVo.setDsId(dsId);
+                newVo.setDsUUID(dsUUID);
+                return newVo;
             } catch (Throwable e) {
                 Log.warn("Failed to execute dataSource 'getPoolMonitorVo' method", e);
             }
