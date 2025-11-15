@@ -164,15 +164,15 @@ public class SpringBootDataSource implements DataSource {
                 Log.warn("DataSource method(getPoolMonitorVo) not found", e);
             }
             try {
-                poolRestartPoolMethod = dsClass.getMethod("clear", Boolean.TYPE);
+                poolRestartPoolMethod = dsClass.getMethod("restart", Boolean.TYPE);
             } catch (NoSuchMethodException e) {
-                Log.warn("DataSource method(clear) not found", e);
+                Log.warn("DataSource method(restart) not found", e);
             }
 
             try {
-                poolInterruptPoolMethod = dsClass.getMethod("interruptConnectionCreating", Boolean.TYPE);
+                poolInterruptPoolMethod = dsClass.getMethod("interruptWaitingThreads");
             } catch (NoSuchMethodException e) {
-                Log.warn("DataSource method(clear) not found", e);
+                Log.warn("DataSource method(interruptWaitingThreads) not found", e);
             }
         }
     }
