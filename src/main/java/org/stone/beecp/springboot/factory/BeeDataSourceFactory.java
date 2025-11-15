@@ -46,12 +46,12 @@ import static org.stone.tools.CommonUtil.isNotBlank;
 public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
 
     private void setConnectPropertiesConfig(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
-        config.addConnectProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP, environment));
-        String connectPropertiesCount = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_SIZE, environment);
+        config.addConnectionFactoryProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_FACTORY_PROP, environment));
+        String connectPropertiesCount = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_FACTORY_PROP_SIZE, environment);
         if (isNotBlank(connectPropertiesCount)) {
             int count = Integer.parseInt(connectPropertiesCount.trim());
             for (int i = 1; i <= count; i++)
-                config.addConnectProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONNECT_PROP_KEY_PREFIX + i, environment));
+                config.addConnectionFactoryProperty(SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_FACTORY_PROP_KEY_PREFIX + i, environment));
         }
     }
 
@@ -77,11 +77,11 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
     }
 
     private void setConfigPrintExclusionList(BeeDataSourceConfig config, String dsPrefix, Environment environment) {
-        String exclusionListText = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_CONFIG_PRINT_EXCLUSION_LIST, environment);
+        String exclusionListText = SpringBootDataSourceUtil.getConfigValue(dsPrefix, CONFIG_EXCLUSION_LIST_OF_PRINT, environment);
         if (isNotBlank(exclusionListText)) {
-            config.clearAllConfigPrintExclusion();//remove existed exclusion
+            config.clearExclusionListOfPrint();//remove existed exclusion
             for (String exclusion : exclusionListText.trim().split(",")) {
-                config.addConfigPrintExclusion(exclusion);
+                config.addExclusionNameOfPrint(exclusion);
             }
         }
     }
@@ -109,7 +109,7 @@ public class BeeDataSourceFactory implements SpringBootDataSourceFactory {
         String threadLocalEnable = SpringBootDataSourceUtil.getConfigValue(dsPrefix, Config_ThreadLocal_Enable, environment);
         if (threadLocalEnable == null) {
             boolean enableVirtualThread = Boolean.parseBoolean(environment.getProperty(Config_Virtual_Thread, "false"));
-            ds.setEnableThreadLocal(!enableVirtualThread);
+            ds.setUseThreadLocal(!enableVirtualThread);
         }
 
         //5:create jta dataSource or not

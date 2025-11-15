@@ -55,12 +55,20 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getPoolMode();
     }
 
-    public int getPoolMaxSize() {
-        return vo.getPoolMaxSize();
+    public int getMaxSize() {
+        return vo.getMaxSize();
     }
 
-    public int getPoolState() {
-        return vo.getPoolState();
+    public boolean isClosed(){
+        return vo.isClosed();
+    }
+
+    public boolean isReady(){
+        return vo.isReady();
+    }
+
+    public boolean isStarting(){
+        return vo.isStarting();
     }
 
     public int getIdleSize() {
@@ -71,6 +79,14 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getBorrowedSize();
     }
 
+    public int getSemaphoreSize() {
+        return vo.getSemaphoreSize();
+    }
+
+    public int getSemaphoreAcquiredSize() {
+        return vo.getSemaphoreAcquiredSize();
+    }
+
     public int getSemaphoreWaitingSize() {
         return vo.getSemaphoreWaitingSize();
     }
@@ -79,11 +95,15 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getTransferWaitingSize();
     }
 
-    public int getCreatingCount() {
-        return vo.getCreatingCount();
+    public int getCreatingSize() {
+        return vo.getCreatingSize();
     }
 
-    public int getCreatingTimeoutCount() {
-        return vo.getCreatingTimeoutCount();
+    public int getCreatingTimeoutSize() {
+        return vo.getCreatingTimeoutSize();
     }
+
+    public boolean isEnabledLogPrint(){return vo.isEnabledLogPrint();}
+
+    public boolean isEnabledMethodExecutionLogCache(){return vo.isEnabledMethodExecutionLogCache();}
 }

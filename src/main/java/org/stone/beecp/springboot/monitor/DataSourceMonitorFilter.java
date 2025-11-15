@@ -15,11 +15,11 @@
  */
 package org.stone.beecp.springboot.monitor;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import org.stone.beecp.springboot.SpringBootDataSourceUtil;
 import org.stone.beecp.springboot.SpringBootRestResponse;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +66,7 @@ public class DataSourceMonitorFilter implements Filter {
                 SpringBootRestResponse restResponse = new SpringBootRestResponse(SpringBootRestResponse.CODE_SECURITY, null, "unauthorized");
                 ps.write(SpringBootDataSourceUtil.object2String(restResponse).getBytes(StandardCharsets.UTF_8));
             } else {
-                req.getRequestDispatcher("/beecp/login.html").forward(req, res);
+                req.getRequestDispatcher("/beecp/forward.html").forward(req, res);
             }
         }
     }

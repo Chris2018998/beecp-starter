@@ -125,8 +125,9 @@ public class SpringBootDataSourceManager {
         while (iterator.hasNext()) {
             SpringBootDataSource ds = iterator.next();
             BeeConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
+
             if (vo == null) continue;
-            if (vo.getPoolState() == POOL_CLOSED) {//POOL_CLOSED
+            if (vo.isClosed()) {//POOL_CLOSED
                 iterator.remove();
             } else {
                 poolMonitorVoList.add(vo);
