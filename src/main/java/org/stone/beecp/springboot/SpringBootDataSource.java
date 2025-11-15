@@ -80,6 +80,7 @@ public class SpringBootDataSource implements DataSource {
 
     public Connection getConnection() throws SQLException {
         Connection con = ds.getConnection();
+        if (isBeeDs) return con;
         return traceSql ? StatementTraceUtil.createConnection(con, dsId, dsUUID) : con;
     }
 
