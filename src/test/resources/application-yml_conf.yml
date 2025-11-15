@@ -4,13 +4,6 @@ server:
     context-path: /dsDemo
 spring:
   datasource:
-    sql-trace: true
-    sql-show: true
-    sql-trace-max-size: 100
-    sql-exec-slow-time: 1
-    sql-trace-timeout: 60000
-    sql-trace-timeout-scan-period: 6000
-    sql-exec-alert-action: org.stone.beecp.springboot.test.util.TestAlert
     dsId: ds1,ds2
     combineId: combineDs
     combinePrimaryId: ds1
