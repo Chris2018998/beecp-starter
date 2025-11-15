@@ -59,15 +59,15 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getMaxSize();
     }
 
-    public boolean isClosed(){
+    public boolean isClosed() {
         return vo.isClosed();
     }
 
-    public boolean isReady(){
+    public boolean isReady() {
         return vo.isReady();
     }
 
-    public boolean isStarting(){
+    public boolean isStarting() {
         return vo.isStarting();
     }
 
@@ -103,7 +103,11 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getCreatingTimeoutSize();
     }
 
-    public boolean isEnabledLogPrint(){return vo.isEnabledLogPrint();}
+    public boolean isEnabledLogPrint() {
+        return vo.isEnabledLogPrint();
+    }
 
-    public boolean isEnabledMethodExecutionLogCache(){return vo.isEnabledMethodExecutionLogCache();}
+    public boolean isEnabledMethodExecutionLogCache() {
+        return vo.isEnabledMethodExecutionLogCache();
+    }
 }

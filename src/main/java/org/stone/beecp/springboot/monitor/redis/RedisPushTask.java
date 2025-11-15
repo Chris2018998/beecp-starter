@@ -16,8 +16,6 @@
 package org.stone.beecp.springboot.monitor.redis;
 
 import org.stone.beecp.springboot.SpringBootDataSourceManager;
-import org.stone.beecp.springboot.SpringBootDataSourceUtil;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.UUID;
@@ -39,18 +37,18 @@ public class RedisPushTask extends RedisBaseTask {
         this.dataPackage = new RedisPackage(RedisKeyPrefix + UUID.randomUUID());
     }
 
-    public void run() {
-        Jedis jedis = null;
-        try {
-            dataPackage.setDsList(dsManager.getPoolMonitorVoList());
-            dataPackage.setSqlList(dsManager.getSqlExecutionList());
-            String jsonPackage = SpringBootDataSourceUtil.object2String(dataPackage);
-            jedis = pool.getResource();
-            jedis.setex(dataPackage.getPackageUUID(), expireSeconds, jsonPackage);
-        } catch (Throwable e) {
-            Log.error("Failed send monitor-package to redis,cause:", e);
-        } finally {
-            if (jedis != null) jedis.close();
-        }
+    public void run() {//abandon
+//        Jedis jedis = null;
+//        try {
+//            dataPackage.setDsList(dsManager.getPoolMonitorVoList());
+//            dataPackage.setSqlList(dsManager.getSqlExecutionList());
+//            String jsonPackage = SpringBootDataSourceUtil.object2String(dataPackage);
+//            jedis = pool.getResource();
+//            jedis.setex(dataPackage.getPackageUUID(), expireSeconds, jsonPackage);
+//        } catch (Throwable e) {
+//            Log.error("Failed send monitor-package to redis,cause:", e);
+//        } finally {
+//            if (jedis != null) jedis.close();
+//        }
     }
 }

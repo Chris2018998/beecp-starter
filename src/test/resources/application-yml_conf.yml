@@ -16,17 +16,20 @@ spring:
     combinePrimaryId: ds1
     ds1:
       primary: true
+      poolName: ds1
+      enableMethodExecutionLogCache: true
+      type: org.stone.beecp.BeeDataSource
       username: root
       password: root
       jdbcUrl: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
-      type: org.stone.beecp.BeeDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
       #false: support virtual threads
-      enableThreadLocal: false
+      useThreadLocal: false
     ds2:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
+      poolName: ds2
+      enableMethodExecutionLogCache: true
       password: root
       username: root
-      type: org.stone.beecp.BeeDataSource
-      enableThreadLocal: true
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
+      useThreadLocal: true

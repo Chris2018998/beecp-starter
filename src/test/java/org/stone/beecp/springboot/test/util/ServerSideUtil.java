@@ -32,11 +32,11 @@ public class ServerSideUtil {
         }
     }
 
-    public static String testSQL(DataSource ds, String sql, String type, String slowInd) throws Exception {
+    public static String testSQL(String dsId,DataSource ds, String sql, String type, String slowInd) throws Exception {
         Statement st = null;
         PreparedStatement pst = null;
         CallableStatement cst = null;
-
+        System.out.println("("+dsId+")........Execute sql............:"+sql);
         try (Connection con = ds.getConnection()) {
             if ("Statement".equalsIgnoreCase(type)) {
                 st = con.createStatement();

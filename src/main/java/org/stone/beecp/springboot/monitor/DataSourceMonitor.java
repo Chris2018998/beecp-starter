@@ -15,15 +15,17 @@
  */
 package org.stone.beecp.springboot.monitor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.stone.beecp.springboot.SpringBootDataSourceManager;
 import org.stone.beecp.springboot.SpringBootDataSourceUtil;
 import org.stone.beecp.springboot.SpringBootRestResponse;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 import static org.stone.tools.CommonUtil.isBlank;
@@ -41,7 +43,11 @@ public class DataSourceMonitor {
     private final String password;
     private final String loggedInTagName;
     private final SpringBootDataSourceManager dsManager = SpringBootDataSourceManager.getInstance();
+    @Autowired
+    public ObjectMapper objectMapper;
     private HttpSession session;
+    private boolean ignoreSet;
+
 
     DataSourceMonitor(String userId, String password, String loggedInTagName) {
         this.userId = userId;
@@ -84,6 +90,14 @@ public class DataSourceMonitor {
         return EN_PAGE;
     }
 
+
+    private synchronized void ignoreResultJson() {
+        if (!ignoreSet) {
+            objectMapper.addMixIn(org.stone.beecp.BeeMethodExecutionLog.class, MethodExecutionLogMixIn.class);
+            this.ignoreSet = true;
+        }
+    }
+
     //****************************************************************************************************************//
     //                                         Below are Rest methods                                                 //
     //****************************************************************************************************************//
@@ -121,6 +135,8 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/getSqlTraceList")
     public SpringBootRestResponse getSqTraceList() {
+        if (this.ignoreSet) ignoreResultJson();
+
         try {
             return new SpringBootRestResponse(SpringBootRestResponse.CODE_SUCCESS, dsManager.getSqlExecutionList(), "OK");
         } catch (Throwable e) {

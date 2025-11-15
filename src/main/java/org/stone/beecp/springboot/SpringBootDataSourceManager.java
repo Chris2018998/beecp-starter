@@ -15,9 +15,12 @@
  */
 package org.stone.beecp.springboot;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.stone.beecp.BeeConnectionPoolMonitorVo;
+import org.stone.beecp.BeeMethodExecutionLog;
 import org.stone.beecp.springboot.monitor.redis.RedisPushTask;
 import org.stone.beecp.springboot.statement.StatementTrace;
 import org.stone.beecp.springboot.statement.StatementTraceAlert;
@@ -26,6 +29,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
@@ -45,7 +49,8 @@ public class SpringBootDataSourceManager {
     private final Map<String, SpringBootDataSource> dsMap;
     private final ScheduledThreadPoolExecutor timerExecutor;
     private final Logger Log = LoggerFactory.getLogger(SpringBootDataSourceManager.class);
-
+    @Autowired
+    public ObjectMapper objectMapper;
     private boolean sqlShow;
     private boolean sqlTrace;
     private long sqlExecSlowTime;
@@ -54,6 +59,7 @@ public class SpringBootDataSourceManager {
     private StatementTraceAlert sqlTraceAlert;
     private AtomicInteger sqlTracedSize;
     private ConcurrentLinkedDeque<StatementTrace> sqlTraceQueue;
+    private boolean ignoreSet;
 
     private SpringBootDataSourceManager() {
         this.dsMap = new ConcurrentHashMap<>(1);
@@ -114,8 +120,15 @@ public class SpringBootDataSourceManager {
     }
 
     //get sql statement list
-    public Collection<StatementTrace> getSqlExecutionList() {
-        return sqlTraceQueue;
+    public Collection<BeeMethodExecutionLog> getSqlExecutionList() throws SQLException {
+        LinkedList<BeeMethodExecutionLog> sqlExecutionList = new LinkedList<>();
+        for (SpringBootDataSource ds : dsMap.values()) {
+            List<BeeMethodExecutionLog> sqlList = ds.getSqlExecutionList();
+            if (sqlList != null && !sqlList.isEmpty()) {
+                sqlExecutionList.addAll(sqlList);
+            }
+        }
+        return sqlExecutionList;
     }
 
     //get pool connection monitor

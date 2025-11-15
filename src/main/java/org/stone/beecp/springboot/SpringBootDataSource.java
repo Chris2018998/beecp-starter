@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stone.beecp.BeeConnectionPoolMonitorVo;
 import org.stone.beecp.BeeDataSource;
+import org.stone.beecp.BeeMethodExecutionLog;
 import org.stone.beecp.jta.BeeJtaDataSource;
+import org.stone.beecp.pool.MethodExecutionLog;
 import org.stone.beecp.springboot.statement.StatementTraceUtil;
 
 import javax.sql.DataSource;
@@ -28,6 +30,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -137,6 +140,14 @@ public class SpringBootDataSource implements DataSource {
             } catch (Throwable e) {
                 Log.warn("Failed to execute dataSource 'restartPool' method", e);
             }
+        }
+    }
+
+    List<BeeMethodExecutionLog> getSqlExecutionList() throws SQLException {
+        if (isBeeDs) {
+            return ((BeeDataSource) ds).getMethodExecutionLog(MethodExecutionLog.Type_SQL_Execution);
+        } else {
+            return null;
         }
     }
 

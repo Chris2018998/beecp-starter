@@ -83,7 +83,7 @@ public class MultiDsController {
                 throw new SpringBootDataSourceException("Execute type must be one of list(Statement,PreparedStatement,CallableStatement)");
 
             DataSource ds = "ds1".equals(dsId) ? ds1 : ds2;
-            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(ds, sql, type, slowInd), "Ok");
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(dsId,ds, sql, type, slowInd), "Ok");
         } catch (Throwable e) {
             return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
         }
@@ -113,7 +113,7 @@ public class MultiDsController {
     @DsId("ds1")
     public SpringBootRestResponse testExecSQL1(String sql, String type, String slowInd) throws Exception {
         try {
-            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(combineDs, sql, type, slowInd), "OK");
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL("combineDs",combineDs, sql, type, slowInd), "OK");
         } catch (Throwable e) {
             return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
         }
@@ -123,7 +123,7 @@ public class MultiDsController {
     @DsId("ds2")
     public SpringBootRestResponse testExecSQL2(String sql, String type, String slowInd) throws Exception {
         try {
-            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL(combineDs, sql, type, slowInd), "OK");
+            return new SpringBootRestResponse(CODE_SUCCESS, ServerSideUtil.testSQL("combineDs",combineDs, sql, type, slowInd), "OK");
         } catch (Throwable e) {
             return new SpringBootRestResponse(CODE_FAILED, e, "Failed");
         }

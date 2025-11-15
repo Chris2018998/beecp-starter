@@ -59,11 +59,14 @@ public class ClientSideUtil {
 
         if (testType == 0) {//normal
             for (Map map : sqlList) {
-                String pDsId = map.get("dsId").toString();
+                String pDsId = map.get("poolName").toString();
                 String exeSql = map.get("sql").toString();
                 boolean execInd = map.get("endTime") != null;
                 if (dsId.equals(pDsId) && execInd && sql.equals(exeSql)) {
-                    String tookTimeMs = map.get("tookTimeMs").toString();
+                    long startTime =Long.valueOf(map.get("startTime").toString());
+                    long endTime = Long.valueOf(map.get("endTime").toString());
+                    long tookTimeMs = endTime-startTime;
+
                     log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
                     return true;
                 }
@@ -71,13 +74,16 @@ public class ClientSideUtil {
             return false;
         } else if (testType == 1) {//error test
             for (Map map : sqlList) {
-                String pDsId = map.get("dsId").toString();
+                String pDsId = map.get("poolName").toString();
                 String exeSql = map.get("sql").toString();
                 boolean execInd = map.get("endTime") != null;
-                boolean execSuccessInd = (boolean) map.get("successInd");
+                boolean execSuccessInd = (boolean) map.get("successful");
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && !execSuccessInd) {
-                    String tookTimeMs = map.get("tookTimeMs").toString();
-                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
+                    long startTime =Long.valueOf(map.get("startTime").toString());
+                    long endTime = Long.valueOf(map.get("endTime").toString());
+                    long tookTimeMs = endTime-startTime;
+
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, Long.valueOf(tookTimeMs), exeSql);
                     return true;
                 }
             }
@@ -85,15 +91,18 @@ public class ClientSideUtil {
         } else if (testType == 2) {//slow test
             for (Map map : sqlList) {
                 System.out.println("test map:" + map);
-                String pDsId = map.get("dsId").toString();
+                String pDsId = map.get("poolName").toString();
                 String exeSql = map.get("sql").toString();
                 boolean execInd = map.get("endTime") != null;
                 boolean execSlowInd = false;
-                if (execInd) execSlowInd = (Boolean) map.get("slowInd");
+                //if (execInd) execSlowInd = (Boolean) map.get("slow");
 
                 if (dsId.equals(pDsId) && sql.equals(exeSql) && execInd && execSlowInd) {
-                    String tookTimeMs = map.get("tookTimeMs").toString();
-                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, tookTimeMs, exeSql);
+                    long startTime =Long.valueOf(map.get("startTime").toString());
+                    long endTime = Long.valueOf(map.get("endTime").toString());
+                    long tookTimeMs = endTime-startTime;
+
+                    log.info("ds:{},Time:{}ms,SQL:{}", pDsId, Long.valueOf(tookTimeMs), exeSql);
                     return true;
                 }
             }
