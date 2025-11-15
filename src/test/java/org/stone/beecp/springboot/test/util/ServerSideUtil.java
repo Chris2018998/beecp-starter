@@ -24,15 +24,11 @@ import java.util.concurrent.locks.LockSupport;
 
 public class ServerSideUtil {
     public static String testGetConnection(DataSource ds) throws Exception {
-        Connection con = null;
-        try {
-            con = ds.getConnection();
+        try (Connection con = ds.getConnection()) {
             return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             return "Failed";
-        } finally {
-            ConnectionPoolStatics.oclose(con);
         }
     }
 
@@ -40,10 +36,8 @@ public class ServerSideUtil {
         Statement st = null;
         PreparedStatement pst = null;
         CallableStatement cst = null;
-        Connection con = null;
 
-        try {
-            con = ds.getConnection();
+        try (Connection con = ds.getConnection()) {
             if ("Statement".equalsIgnoreCase(type)) {
                 st = con.createStatement();
                 st.execute(sql);
@@ -61,10 +55,9 @@ public class ServerSideUtil {
             // e.printStackTrace();
             return "Failed";
         } finally {
-            ConnectionPoolStatics.oclose(st);
-            ConnectionPoolStatics.oclose(pst);
-            ConnectionPoolStatics.oclose(cst);
-            ConnectionPoolStatics.oclose(con);
+            if (st != null) ConnectionPoolStatics.oclose(st);
+            if (pst != null) ConnectionPoolStatics.oclose(pst);
+            if (cst != null) ConnectionPoolStatics.oclose(cst);
         }
     }
 }
