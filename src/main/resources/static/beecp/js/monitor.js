@@ -1,20 +1,21 @@
 var dsURL = 'getDataSourceList';
 var sqlURL = 'getSqlTraceList';
-var clearURL = 'clearPool';
+var restartURL = 'restartPool';
 var interruptURL = 'interruptPool';
 var language = $("html").attr("lang");
 
-function poolClear(dsId){
+function poolRestart(dsId){
     $.ajax({
         type: 'POST',
-        url: clearURL,
+        url: restartURL,
         dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({'dsId':dsId}),
         success: function(data) {
            if(data.code==1) {
-               //alert(language=='cn'? '清理成功':'Clear success');
-               $('#ds_refresh_button').trigger("click");
+               alert(language=='cn'? '重启成功':'Restart success');
+               getDsListFromServer();
+               getSqlListFromServer();
           }
         }
     });
@@ -149,6 +150,7 @@ $(function() {
                     $("#sql_next").attr("disabled", true);
                     $("#sql_last").attr("disabled", true);
                     $("#sql_monitorTable tr:not(:first)").remove();
+
                     afterLoadSqlTraceList(data.result);
                 }
             }
@@ -173,13 +175,13 @@ $(function() {
                             function (i, element) {
                                 var mode = element.poolMode;
                                 var state = element.poolState;
-                                var creatingCount = element.creatingCount;
-                                var creatingTimeoutCount = element.creatingTimeoutCount;
+                                var creatingSize = element.creatingSize;
+                                var creatingTimeoutSize = element.creatingTimeoutSize;
                                 var clearButtonDesc;
                                 var interruptButtonDesc;
 
                                 if (language == 'cn') {
-                                    clearButtonDesc='重置';
+                                    clearButtonDesc='重启';
                                     interruptButtonDesc='中断';
                                     mode = (mode == 'compete') ? '竞争' : '公平';
                                     if (state == 0) state = "未初始化";
@@ -189,27 +191,27 @@ $(function() {
                                     else if (state == 4) state = "已关闭";
                                     else if (state == 5) state = "清理中";
                                 } else {
-                                   clearButtonDesc='Clear';
+                                   clearButtonDesc='Restart';
                                    interruptButtonDesc='Interrupt';
                                    if (state == 0) state = "uninitialized";
                                    else if (state == 1) state = "starting";
                                    else if (state == 2) state = "ready";
                                    else if (state == 3) state = "closing";
                                    else if (state == 4) state = "closed";
-                                   else if (state == 5) state = "clearing";
+                                   else if (state == 5) state = "restarting";
                                 }
 
                                 var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
                                     + "<td>" + mode + "</td>" + "<td>" + state + "</td>"
-                                    + "<td>" + element.poolMaxSize + "</td>"
+                                    + "<td>" + element.maxSize + "</td>"
                                     + "<td>" + element.idleSize + "</td>"
-                                    + "<td>" + element.usingSize + "</td>"
+                                    + "<td>" + element.borrowedSize + "</td>"
                                     + "<td>" + element.semaphoreWaitingSize + "</td>"
                                     + "<td>" + element.transferWaitingSize + "</td>"
-                                    + "<td>" + creatingCount + "</td>"
-                                    + "<td>" + creatingTimeoutCount + "</td>"
-                                    + "<td><input id='pool_clear_button' onclick='poolClear(\""+element.dsId+"\")' type='button' value='"+clearButtonDesc+"'/>";
-                                    if(creatingTimeoutCount >0)
+                                    + "<td>" + creatingSize + "</td>"
+                                    + "<td>" + creatingTimeoutSize + "</td>"
+                                    + "<td><input id='pool_restart_button' onclick='poolRestart(\""+element.dsId+"\")' type='button' value='"+clearButtonDesc+"'/>";
+                                    if(creatingTimeoutSize >0)
                                         tableHtml= tableHtml + "<input id='pool_interrupt_button' onclick='poolInterrupt(\""+element.dsId+"\")' type='button' value='"+interruptButtonDesc+"'/>";
 
                                     tableHtml= tableHtml + "</td></tr>";
@@ -261,21 +263,21 @@ $(function() {
             var element = sqlTraceList[i];
             var bgcolor = "";
 
-            if (element.endTimeMs>0) {
-                if (!element.successInd) { //fail
-                    bgcolor = " class='sqlExecFail'";
-                } else if (element.slowInd) { //slow
-                    bgcolor = " class='sqlExecSlow'";
-                }
+            if (element.exception) { //fail
+                bgcolor = " class='sqlExecFail'";
+            } else if (element.slowInd) { //slow
+                bgcolor = " class='sqlExecSlow'";
             }
 
+            var tookTimeMs;
+            if(element.endTime>0)tookTimeMs=element.endTime-element.startTime;
             var tableHtml = "<tr " + bgcolor + ">" + "<td>"
-                + element.sql + "</td>" + "<td>" + element.dsId
+                + element.sql + "</td>" + "<td>" + element.poolName
                 + "</td>" + "<td>" + element.startTime
                 + "</td>" + "<td>" + element.endTime
-                + "</td>" + "<td>" + element.tookTimeMs
-                + "</td>" + "<td>" + element.successInd
-                + "</td>" + "<td>" + element.statementType + '.' + element.methodName + "</td>" + "</tr>";
+                + "</td>" + "<td>" + tookTimeMs
+                + "</td>" + "<td>" + element.exception
+                + "</td>" + "<td>" + element.method + "</td>" + "</tr>";
             $("#sql_monitorTable").append(tableHtml);
             if (++count > curSqlPageSize) break;
         }

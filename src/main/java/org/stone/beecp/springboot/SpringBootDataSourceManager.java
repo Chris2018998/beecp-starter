@@ -108,7 +108,7 @@ public class SpringBootDataSourceManager {
     }
 
     //clear pool
-    public void clearPool(String dsId) {
+    public void restartPool(String dsId) {
         SpringBootDataSource ds = dsMap.get(dsId);
         if (ds != null) ds.clearPool();
     }
@@ -125,6 +125,9 @@ public class SpringBootDataSourceManager {
         for (SpringBootDataSource ds : dsMap.values()) {
             List<BeeMethodExecutionLog> sqlList = ds.getSqlExecutionList();
             if (sqlList != null && !sqlList.isEmpty()) {
+//                for(BeeMethodExecutionLog log:sqlList){
+//                    System.out.println("("+log.getPoolName() +"):"+log.getSql());
+//                }
                 sqlExecutionList.addAll(sqlList);
             }
         }

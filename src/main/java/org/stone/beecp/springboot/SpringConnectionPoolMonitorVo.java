@@ -55,6 +55,10 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getPoolMode();
     }
 
+    public int getPoolState() {
+        return vo.getPoolState();
+    }
+
     public int getMaxSize() {
         return vo.getMaxSize();
     }

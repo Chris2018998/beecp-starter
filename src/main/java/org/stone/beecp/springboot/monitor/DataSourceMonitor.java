@@ -135,7 +135,7 @@ public class DataSourceMonitor {
     @ResponseBody
     @PostMapping("/beecp/getSqlTraceList")
     public SpringBootRestResponse getSqTraceList() {
-        if (this.ignoreSet) ignoreResultJson();
+        if (!this.ignoreSet) ignoreResultJson();
 
         try {
             return new SpringBootRestResponse(SpringBootRestResponse.CODE_SUCCESS, dsManager.getSqlExecutionList(), "OK");
@@ -145,12 +145,12 @@ public class DataSourceMonitor {
     }
 
     @ResponseBody
-    @PostMapping("/beecp/clearPool")
-    public SpringBootRestResponse clearPool(@RequestBody Map<String, String> parameterMap) {
+    @PostMapping("/beecp/restartPool")
+    public SpringBootRestResponse restartPool(@RequestBody Map<String, String> parameterMap) {
         try {
             if (parameterMap != null && parameterMap.containsKey("dsId")) {
                 String dsId = parameterMap.get("dsId");
-                dsManager.clearPool(dsId);
+                dsManager.restartPool(dsId);
             }
             return new SpringBootRestResponse(SpringBootRestResponse.CODE_SUCCESS, null, "OK");
         } catch (Throwable e) {
