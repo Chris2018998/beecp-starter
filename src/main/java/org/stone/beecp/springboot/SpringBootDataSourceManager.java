@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.stone.beecp.BeeConnectionPoolMonitorVo;
-import org.stone.beecp.BeeMethodExecutionLog;
+import org.stone.beecp.BeeMethodLog;
 import org.stone.beecp.springboot.monitor.redis.RedisPushTask;
 import org.stone.beecp.springboot.statement.StatementTrace;
 import org.stone.beecp.springboot.statement.StatementTraceAlert;
@@ -120,12 +120,12 @@ public class SpringBootDataSourceManager {
     }
 
     //get sql statement list
-    public Collection<BeeMethodExecutionLog> getSqlExecutionList() throws SQLException {
-        LinkedList<BeeMethodExecutionLog> sqlExecutionList = new LinkedList<>();
+    public Collection<BeeMethodLog> getSqlExecutionList() throws SQLException {
+        LinkedList<BeeMethodLog> sqlExecutionList = new LinkedList<>();
         for (SpringBootDataSource ds : dsMap.values()) {
-            List<BeeMethodExecutionLog> sqlList = ds.getSqlExecutionList();
+            List<BeeMethodLog> sqlList = ds.getSqlExecutionList();
             if (sqlList != null && !sqlList.isEmpty()) {
-//                for(BeeMethodExecutionLog log:sqlList){
+//                for(BeeMethodLog log:sqlList){
 //                    System.out.println("("+log.getPoolName() +"):"+log.getSql());
 //                }
                 sqlExecutionList.addAll(sqlList);
@@ -135,15 +135,14 @@ public class SpringBootDataSourceManager {
     }
 
     //get pool connection monitor
-    public List<BeeConnectionPoolMonitorVo> getPoolMonitorVoList() {
+    public List<BeeConnectionPoolMonitorVo> getPoolMonitorVoList()throws SQLException {
         List<BeeConnectionPoolMonitorVo> poolMonitorVoList = new ArrayList<>(dsMap.size());
         Iterator<SpringBootDataSource> iterator = dsMap.values().iterator();
         while (iterator.hasNext()) {
             SpringBootDataSource ds = iterator.next();
             BeeConnectionPoolMonitorVo vo = ds.getPoolMonitorVo();
-
             if (vo == null) continue;
-            if (vo.isClosed()) {//POOL_CLOSED
+            if (ds.isClosed()) {//POOL_CLOSED
                 iterator.remove();
             } else {
                 poolMonitorVoList.add(vo);

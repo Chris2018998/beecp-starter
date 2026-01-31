@@ -10,7 +10,7 @@ spring:
     ds1:
       primary: true
       poolName: ds1
-      enableMethodExecutionLogCache: true
+      enableLogCache: true
       type: org.stone.beecp.BeeDataSource
       username: root
       password: root
@@ -20,7 +20,7 @@ spring:
       useThreadLocal: false
     ds2:
       poolName: ds2
-      enableMethodExecutionLogCache: true
+      enableLogCache: true
       password: root
       username: root
       driver-class-name: com.mysql.cj.jdbc.Driver

@@ -173,8 +173,20 @@ $(function() {
                     }else if(data.code==1) {
                         $.each(data.result,
                             function (i, element) {
-                                var mode = element.poolMode;
-                                var state = element.poolState;
+                                var isFairMode = element.fairMode;
+                                var stateCode=-1;
+				var stateDesc;
+                               
+							   if(element.lazy)stateCode=1;
+                                //else if(element.new)state=0;
+                                else if(element.starting)stateCode=1;
+                                else if(element.ready)stateCode=2;
+                                else if(element.closing)stateCode=3;
+                                else if(element.restarting)stateCode=5;
+                                else if(element.restartFailed)stateCode=6;
+                                else if(element.suspended)stateCode=7;
+                                else stateCode=4;
+
                                 var creatingSize = element.creatingSize;
                                 var creatingTimeoutSize = element.creatingTimeoutSize;
                                 var clearButtonDesc;
@@ -183,26 +195,34 @@ $(function() {
                                 if (language == 'cn') {
                                     clearButtonDesc='重启';
                                     interruptButtonDesc='中断';
-                                    mode = (mode == 'compete') ? '竞争' : '公平';
-                                    if (state == 0) state = "未初始化";
-                                    else if (state == 1) state = "启动中";
-                                    else if (state == 2) state = "已就绪";
-                                    else if (state == 3) state = "关闭中";
-                                    else if (state == 4) state = "已关闭";
-                                    else if (state == 5) state = "清理中";
+                                    mode = isFairMode?'公平':'非公平';
+
+                                    if (stateCode == -1) stateDesc = "未初始化";
+                                    else if (stateCode == 0) stateDesc = "未初始化";
+                                    else if (stateCode == 1) stateDesc = "启动中";
+                                    else if (stateCode == 2) stateDesc = "已就绪";
+                                    else if (stateCode == 3) stateDesc = "关闭中";
+                                    else if (stateCode == 4) stateDesc = "已关闭";
+                                    else if (stateCode == 5) stateDesc = "重启中";
+                                    else if (stateCode == 6) stateDesc = "重启失败";
+                                    else if (stateCode == 7) stateDesc = "已挂起";
                                 } else {
                                    clearButtonDesc='Restart';
                                    interruptButtonDesc='Interrupt';
-                                   if (state == 0) state = "uninitialized";
-                                   else if (state == 1) state = "starting";
-                                   else if (state == 2) state = "ready";
-                                   else if (state == 3) state = "closing";
-                                   else if (state == 4) state = "closed";
-                                   else if (state == 5) state = "restarting";
+                                   mode = isFairMode?'fair':'unfair';
+                                   if (stateCode == -1) stateDesc = "uninitialized";
+                                   else  if (stateCode == 0) stateDesc = "new";
+                                   else if (stateCode == 1) stateDesc = "starting";
+                                   else if (stateCode == 2) stateDesc = "ready";
+                                   else if (stateCode == 3) stateDesc = "closing";
+                                   else if (stateCode == 4) stateDesc = "closed";
+                                   else if (stateCode == 5) stateDesc = "restarting";
+                                   else if (stateCode == 6) stateDesc = "restart_failed";
+                                   else if (stateCode == 7) stateDesc = "suspended";
                                 }
 
                                 var tableHtml = "<tr>" + "<td>" + element.dsId + "</td>"
-                                    + "<td>" + mode + "</td>" + "<td>" + state + "</td>"
+                                    + "<td>" + mode + "</td>" + "<td>" + stateDesc + "</td>"
                                     + "<td>" + element.maxSize + "</td>"
                                     + "<td>" + element.idleSize + "</td>"
                                     + "<td>" + element.borrowedSize + "</td>"
@@ -215,7 +235,7 @@ $(function() {
                                         tableHtml= tableHtml + "<input id='pool_interrupt_button' onclick='poolInterrupt(\""+element.dsId+"\")' type='button' value='"+interruptButtonDesc+"'/>";
 
                                     tableHtml= tableHtml + "</td></tr>";
-                                $("#ds_monitorTable").append(tableHtml);
+                                    $("#ds_monitorTable").append(tableHtml);
                             });
                         $('#ds_monitorTable').trigger("update");
                     }
@@ -273,16 +293,29 @@ $(function() {
             if(element.endTime>0)tookTimeMs=element.endTime-element.startTime;
             var tableHtml = "<tr " + bgcolor + ">" + "<td>"
                 + element.sql + "</td>" + "<td>" + element.poolName
-                + "</td>" + "<td>" + element.startTime
-                + "</td>" + "<td>" + element.endTime
+                + "</td>" + "<td>" + formatDateFromMilliseconds(element.startTime)
+                + "</td>" + "<td>" + formatDateFromMilliseconds(element.endTime)
                 + "</td>" + "<td>" + tookTimeMs
                 + "</td>" + "<td>" + element.exception
                 + "</td>" + "<td>" + element.method + "</td>" + "</tr>";
+
             $("#sql_monitorTable").append(tableHtml);
             if (++count > curSqlPageSize) break;
         }
         $('#sql_monitorTable').trigger("update");
     }
+
+    function formatDateFromMilliseconds(milliseconds) {
+        var date = new Date(milliseconds);
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');
+        var day = date.getDate().toString().padStart(2, '0');
+        var hours = date.getHours().toString().padStart(2, '0');
+        var minutes = date.getMinutes().toString().padStart(2, '0');
+        var seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
     //$("#ds_refresh_button").trigger("click");
     //$("#sql_refresh_button").trigger("click");
     getDsListFromServer();

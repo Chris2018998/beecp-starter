@@ -35,7 +35,7 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return dsId;
     }
 
-    public void setDsId(String dsId) {
+    void setDsId(String dsId) {
         this.dsId = dsId;
     }
 
@@ -43,36 +43,66 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return dsUUID;
     }
 
-    public void setDsUUID(String dsUUID) {
+    void setDsUUID(String dsUUID) {
         this.dsUUID = dsUUID;
     }
 
+    //***************************************************************************************************************//
+    //                                        1: Unchangeable fields                                                 //
+    //***************************************************************************************************************//
     public String getPoolName() {
         return vo.getPoolName();
     }
 
-    public String getPoolMode() {
-        return vo.getPoolMode();
+    public boolean isFairMode() {
+        return vo.isFairMode();
     }
 
-    public int getPoolState() {
-        return vo.getPoolState();
+    public boolean useThreadLocal() {
+        return vo.useThreadLocal();
     }
 
-    public int getMaxSize() {
-        return vo.getMaxSize();
+    //***************************************************************************************************************//
+    //                                     2: State`methods                                                           //
+    //***************************************************************************************************************//
+    public boolean isLazy() {
+        return vo.isLazy();
     }
 
-    public boolean isClosed() {
-        return vo.isClosed();
+    public boolean isNew() {
+        return vo.isNew();
     }
 
     public boolean isReady() {
         return vo.isReady();
     }
 
+    public boolean isClosing() {
+        return vo.isClosing();
+    }
+
     public boolean isStarting() {
         return vo.isStarting();
+    }
+
+    public boolean isRestarting() {
+        return vo.isRestarting();
+    }
+
+    public boolean isRestartFailed() {
+        return vo.isRestartFailed();
+    }
+
+    public boolean isSuspended() {
+        return vo.isSuspended();
+    }
+
+    //***************************************************************************************************************//
+    //                                     3: Other methods                                                          //
+    //***************************************************************************************************************//
+
+    public int getMaxSize() {
+        return vo.getMaxSize();
     }
 
     public int getIdleSize() {
@@ -83,12 +113,20 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getBorrowedSize();
     }
 
+    public int getCreatingSize() {
+        return vo.getCreatingSize();
+    }
+
+    public int getCreatingTimeoutSize() {
+        return vo.getCreatingTimeoutSize();
+    }
+
     public int getSemaphoreSize() {
         return vo.getSemaphoreSize();
     }
 
-    public int getSemaphoreAcquiredSize() {
-        return vo.getSemaphoreAcquiredSize();
+    public int getSemaphoreRemainSize() {
+        return vo.getSemaphoreRemainSize();
     }
 
     public int getSemaphoreWaitingSize() {
@@ -99,19 +137,11 @@ public class SpringConnectionPoolMonitorVo implements BeeConnectionPoolMonitorVo
         return vo.getTransferWaitingSize();
     }
 
-    public int getCreatingSize() {
-        return vo.getCreatingSize();
+    public boolean isEnabledLogPrinter() {
+        return vo.isEnabledLogPrinter();
     }
 
-    public int getCreatingTimeoutSize() {
-        return vo.getCreatingTimeoutSize();
-    }
-
-    public boolean isEnabledLogPrint() {
-        return vo.isEnabledLogPrint();
-    }
-
-    public boolean isEnabledMethodExecutionLogCache() {
-        return vo.isEnabledMethodExecutionLogCache();
+    public boolean isEnabledLogCache() {
+        return vo.isEnabledLogCache();
     }
 }

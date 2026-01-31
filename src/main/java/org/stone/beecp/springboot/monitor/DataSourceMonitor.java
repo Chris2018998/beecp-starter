@@ -93,7 +93,7 @@ public class DataSourceMonitor {
 
     private synchronized void ignoreResultJson() {
         if (!ignoreSet) {
-            objectMapper.addMixIn(org.stone.beecp.BeeMethodExecutionLog.class, MethodExecutionLogMixIn.class);
+            objectMapper.addMixIn(org.stone.beecp.BeeMethodLog.class, MethodExecutionLogMixIn.class);
             this.ignoreSet = true;
         }
     }

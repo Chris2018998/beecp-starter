@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stone.beecp.BeeConnectionPoolMonitorVo;
 import org.stone.beecp.BeeDataSource;
-import org.stone.beecp.BeeMethodExecutionLog;
+import org.stone.beecp.BeeMethodLog;
 import org.stone.beecp.jta.BeeJtaDataSource;
 import org.stone.beecp.pool.MethodExecutionLog;
 import org.stone.beecp.springboot.statement.StatementTraceUtil;
@@ -30,8 +30,12 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
+import static org.stone.beecp.BeeMethodLog.Type_Connection_Log;
+import static org.stone.beecp.BeeMethodLog.Type_Statement_Log;
 
 /**
  * statement datasource
@@ -76,6 +80,18 @@ public class SpringBootDataSource implements DataSource {
 
     void setTraceSql(boolean traceSql) {
         this.traceSql = traceSql;
+    }
+
+    public boolean isClosed() throws SQLException {
+        if (this.isBeeDs) {
+            if (ds instanceof BeeJtaDataSource) {
+                return ((BeeJtaDataSource) ds).isClosed();
+            } else {
+                return ((BeeDataSource) ds).isClosed();
+            }
+        } else {
+            return false;
+        }
     }
 
     public Connection getConnection() throws SQLException {
@@ -144,9 +160,13 @@ public class SpringBootDataSource implements DataSource {
         }
     }
 
-    List<BeeMethodExecutionLog> getSqlExecutionList() throws SQLException {
+    List<BeeMethodLog> getSqlExecutionList() throws SQLException {
         if (isBeeDs) {
-            return ((BeeDataSource) ds).getMethodExecutionLog(MethodExecutionLog.Type_SQL_Execution);
+            BeeDataSource beeDs= (BeeDataSource)ds;
+            List<BeeMethodLog>sqlLogList =new LinkedList<>();
+            sqlLogList.addAll(beeDs.getLogs(Type_Connection_Log));
+            sqlLogList.addAll(beeDs.getLogs(Type_Statement_Log));
+            return sqlLogList;
         } else {
             return null;
         }
