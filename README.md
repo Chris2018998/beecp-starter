@@ -10,7 +10,7 @@ BeeCP-Starter是<a href="https://github.com/Chris2018998/BeeCP">BeeCP(小蜜蜂�
 <dependency>
     <groupId>com.github.chris2018998</groupId>
     <artifactId>beecp-spring-boot-starter</artifactId>
-    <version>1.8.21</version>
+    <version>1.8.22</version>
 </dependency>
 ```
 
